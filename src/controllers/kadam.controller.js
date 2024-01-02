@@ -1,20 +1,9 @@
-const mongoose = require('mongoose');
 const KPLO = require("../models/KNR_POND_LEVEL_OVERVIEW")
 const KDOP = require("../models/KNR_DAM_OVERVIEW_POS")
 const KDOD = require("../models/KNR_DAM_OVERVIEW_DICH")
 const KHDOP = require("../models/NKR_HR_DAM_OVERVIEW_POS")
 const KHDOD = require("../models/NKR_HR_DAM_OVERVIEW_DICH")
 const KSADVM = require("../models/NKR_SPARE_ADVM")
-const { log } = require('winston');
-
-async function connectToMongoDBKadam() {
-    try {
-        await mongoose.connect('mongodb://127.0.0.1:27017/hyderabad');
-    } catch (error) {
-        console.error('Error connecting to MongoDB:', error);
-        throw error;
-    }
-}
 
 async function kadamMongoDBData(data) {
     try {

@@ -1,20 +1,10 @@
-const mongoose = require('mongoose');
 const LHRA = require("../models/LMD_HR_RIGHT_ADVM")
 const LPLO = require("../models/LMD_POND_LEVEL_OVERVIEW");
 const LDOP = require("../models/LMD_DAM_OVERVIEW_POS")
 const LDAD = require("../models/LMD_DAM_OVERVIEW_DICH")
 const LHDOP = require("../models/LMD_HR_DAM_OVERVIEW_POS")
 const LHDOD = require("../models/LMD_HR_DAM_OVERVIEW_DICH");
-const { log } = require('winston');
 
-async function connectToMongoDBLmd() {
-    try {
-        await mongoose.connect('mongodb://127.0.0.1:27017/hyderabad');
-    } catch (error) {
-        console.error('Error connecting to MongoDB:', error);
-        throw error;
-    }
-}
 
 async function lmdMongoDBData(data) {
     try {
@@ -416,4 +406,4 @@ async function lmdMongoDBData(data) {
     }
 }
 
-module.exports = { connectToMongoDBLmd, lmdMongoDBData };
+module.exports = { lmdMongoDBData };

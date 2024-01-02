@@ -40,7 +40,6 @@ const lmd_config = {
 
 async function connectToSespSQL() {
   try {
-    console.log('Connecting to SQL Server...');
     await sql.connect(sesp_config);
     console.log('Connected to SQL Server!');
   } catch (error) {
@@ -51,7 +50,6 @@ async function connectToSespSQL() {
 
 async function connectTokadamSQL(){
     try {
-        console.log('Connecting to SQL Server...');
         await sql.connect(kadam_config);
         console.log('Connected to SQL Server!');
     } catch (error) {
@@ -62,7 +60,6 @@ async function connectTokadamSQL(){
 
 async function connectToLmdSQl(){
   try {
-    console.log('Connecting to SQL Server...');
     await sql.connect(lmd_config);
     console.log('Connected to SQL Server!');
 } catch (error) {
@@ -152,4 +149,4 @@ async function KADAM(){
   }
 }
 
-module.exports = { connectToSespSQL, SRSPDAM, connectTokadamSQL, KADAM, connectToLmdSQl, LMDDAM };
+module.exports = { SRSPDAM, KADAM, LMDDAM };

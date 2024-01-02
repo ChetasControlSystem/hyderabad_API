@@ -1,20 +1,11 @@
-const mongoose = require('mongoose');
+const cron = require('cron');
+
 const SPLO = require('../models/SRSP_POND_LEVEL_OVERVIEW')
 const SSDOP = require("../models/SRSP_SSD_DAM_OVERVIEW_POS")
 const SHDOP = require("../models/SRSP_HR_DAM_OVERVIEW_POS")
 const SDOD = require("../models/SRSP_SSD_DAM_OVERVIEW_DICH")
 const SHKA = require("../models/SRSP_HR_KAKATIYA_ADVM")
 const SHDOD = require("../models/SRSP_HR_DAM_OVERVIEW_DICH")
-const { log } = require('winston');
-
-async function connectToMongoDB() {
-  try {
-    await mongoose.connect('mongodb://127.0.0.1:27017/hyderabad');
-  } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
-    throw error;
-  }
-}
 
 async function handleMongoDBData(data) {
   try {
@@ -424,4 +415,4 @@ async function handleMongoDBData(data) {
 
 
 
-module.exports = { connectToMongoDB, handleMongoDBData };
+module.exports = { handleMongoDBData }

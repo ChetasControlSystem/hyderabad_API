@@ -44,11 +44,10 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-      permission: {
-        type: [mongoose.SchemaTypes.ObjectId],
-        required: false,
-        ref: 'permission',
-      },
+    permission: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'permission',
+    }],
   },
   {
     timestamps: true, versionKey: false
