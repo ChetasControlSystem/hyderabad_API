@@ -43,7 +43,7 @@ const sendVerificationEmail = catchAsync(async (req, res) => {
 });
 
 const verifyEmail = catchAsync(async (req, res) => {
-  await authService.verifyEmail(req.query.token);
+  await authService.verifyEmail(req.query.token, req.user);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
