@@ -37,16 +37,16 @@ const userSchema = mongoose.Schema(
     },
     role: {
       type: String,
-      enum: roles,
+      enum: ["user", "admin"],
       default: 'user',
     },
-    isEmailVerified: {
+    isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     permission: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'permission',
+      ref: 'Permission',
     }],
   },
   {

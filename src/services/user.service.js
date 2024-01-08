@@ -1,4 +1,5 @@
 const httpStatus = require('http-status');
+const CheckPer = require("../middlewares/permission")
 const { User, Permission } = require('../models');
 const ApiError = require('../utils/ApiError');
 
@@ -12,7 +13,7 @@ const createUser = async (userBody, user) => {
   const checkPermission = await Permission.find({ _id: { $in: user.permission } }).select("name");
 
   // Check if 'userPermission' is present in the checkPermission array
-  const hasUserPermission = checkPermission.some(permission => permission.name === "userPermission");
+  const hasUserPermission = checkPermission.some(permission => permission.name == CheckPer.USER);
 
   // Check either the user has 'userPermission' or is an admin
   if (hasUserPermission || user.role === "admin") {
@@ -39,7 +40,7 @@ const queryUsers = async (filter, options, user) => {
   const checkPermission = await Permission.find({ _id: { $in: user.permission } }).select("name");
 
   // Check if 'userPermission' is present in the checkPermission array
-  const hasUserPermission = checkPermission.some(permission => permission.name === "userPermission");
+  const hasUserPermission = checkPermission.some(permission => permission.name == CheckPer.USER);
 
   // Check either the user has 'userPermission' or is an admin
   if (hasUserPermission || user.role === "admin") {
@@ -58,7 +59,7 @@ const queryUsers = async (filter, options, user) => {
  */
 const getUserById = async (id, user) => {
   const checkPermission = await Permission.find({ _id: { $in: user.permission } }).select("name");
-  const hasUserPermission = checkPermission.some(permission => permission.name === "userPermission");
+  const hasUserPermission = checkPermission.some(permission => permission.name == CheckPer.USER);
 
   if (hasUserPermission || user.role === "admin") {
     return User.findById(id);
@@ -86,7 +87,7 @@ const getUserByEmail = async (email) => {
 const updateUserById = async (userId, updateBody, user) => {
 
   const checkPermission = await Permission.find({ _id: { $in: user.permission } }).select("name");
-  const hasUserPermission = checkPermission.some(permission => permission.name === "userPermission");
+  const hasUserPermission = checkPermission.some(permission => permission.name == CheckPer.USER);
 
   if (hasUserPermission || user.role === "admin") {
 
@@ -114,7 +115,7 @@ const updateUserById = async (userId, updateBody, user) => {
 const deleteUserById = async (userId, user) => {
 
   const checkPermission = await Permission.find({ _id: { $in: user.permission } }).select("name");
-  const hasUserPermission = checkPermission.some(permission => permission.name === "userPermission");
+  const hasUserPermission = checkPermission.some(permission => permission.name == CheckPer.USER);
 
   if (hasUserPermission || user.role === "admin") {
 

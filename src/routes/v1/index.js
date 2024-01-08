@@ -3,6 +3,8 @@ const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
 const docsRoute = require('./docs.route');
 const permissionRoute = require("./permission.route")
+const sidemenuRoute = require('./sidemenu.route')
+const lmdRoute = require('./lmd.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -19,6 +21,14 @@ const defaultRoutes = [
   {
     path: '/permission',
     route: permissionRoute
+  },
+  {
+    path: '/sidemenu',
+    route: sidemenuRoute
+  },
+  {
+    path: '/lmd',
+    route: lmdRoute
   }
 ];
 
