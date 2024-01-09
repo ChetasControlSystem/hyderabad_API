@@ -1,12 +1,11 @@
 const httpStatus = require('http-status');
-const { LMDS } = require('../models');
-
+const { KNRS } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 
 const createSalientFeature = async (userBody) => {
     try {
-      return LMDS.create(userBody);
+      return KNRS.create(userBody);
     } catch (error) {
       throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
     }
@@ -14,7 +13,7 @@ const createSalientFeature = async (userBody) => {
 
   const getSalientFeature = async()=>{
     try {
-        const showOneSalientFeature = await LMDS.findOne();
+        const showOneSalientFeature = await KNRS.findOne();
         return showOneSalientFeature
     } catch (error) {
       throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);

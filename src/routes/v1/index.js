@@ -5,6 +5,7 @@ const docsRoute = require('./docs.route');
 const permissionRoute = require("./permission.route")
 const sidemenuRoute = require('./sidemenu.route')
 const lmdRoute = require('./lmd.route');
+const srspRoute = require('./srsp.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -29,6 +30,10 @@ const defaultRoutes = [
   {
     path: '/lmd',
     route: lmdRoute
+  },
+  {
+    path: '/srsp',
+    route: srspRoute
   }
 ];
 

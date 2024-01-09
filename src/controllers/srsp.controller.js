@@ -1,4 +1,6 @@
-const cron = require('cron');
+const { srspService } = require('../services');
+const httpStatus = require('http-status');
+const catchAsync = require('../utils/catchAsync');
 
 const SPLO = require('../models/SRSP_POND_LEVEL_OVERVIEW')
 const SSDOP = require("../models/SRSP_SSD_DAM_OVERVIEW_POS")
@@ -414,5 +416,17 @@ async function handleMongoDBData(data) {
 }
 
 
+const createSalientFeature = catchAsync(async (req, res) => {
 
-module.exports = { handleMongoDBData }
+  const createSalientFeature = await srspService.createSalientFeature(req.body);
+
+  res.status(httpStatus.CREATED).send(createSalientFeature);
+});
+
+const getSalientFeature = catchAsync(async (req, res)=>{
+  const getSalientFeature = await srspService.getSalientFeature();
+  res.send(getSalientFeature);
+})
+
+
+module.exports = { handleMongoDBData, createSalientFeature, getSalientFeature  }

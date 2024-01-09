@@ -1,4 +1,4 @@
-const { lmdService } = require('../services');
+const { srspService } = require('../services');
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 
@@ -414,9 +414,14 @@ async function lmdMongoDBData(data) {
 
 const createSalientFeature = catchAsync(async (req, res) => {
 
-    const createSalientFeature = await lmdService.createSalientFeature(req.body);
+    const createSalientFeature = await srspService.createSalientFeature(req.body);
 
     res.status(httpStatus.CREATED).send(createSalientFeature);
   });
 
-module.exports = { lmdMongoDBData, createSalientFeature };
+  const getSalientFeature = catchAsync(async (req, res)=>{
+    const getSalientFeature = await srspService.getSalientFeature();
+    res.send(getSalientFeature);
+  })
+
+module.exports = { lmdMongoDBData, createSalientFeature,getSalientFeature };

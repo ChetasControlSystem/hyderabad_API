@@ -1,3 +1,7 @@
+const { knrService } = require('../services');
+const httpStatus = require('http-status');
+const catchAsync = require('../utils/catchAsync');
+
 const KPLO = require("../models/KNR_POND_LEVEL_OVERVIEW")
 const KDOP = require("../models/KNR_DAM_OVERVIEW_POS")
 const KDOD = require("../models/KNR_DAM_OVERVIEW_DICH")
@@ -406,4 +410,18 @@ async function kadamMongoDBData(data) {
     }
 }
 
-module.exports = {  kadamMongoDBData };
+
+
+const createSalientFeature = catchAsync(async (req, res) => {
+
+    const createSalientFeature = await knrService.createSalientFeature(req.body);
+
+    res.status(httpStatus.CREATED).send(createSalientFeature);
+  });
+
+  const getSalientFeature = catchAsync(async (req, res)=>{
+    const getSalientFeature = await knrService.getSalientFeature();
+    res.send(getSalientFeature);
+  })
+
+module.exports = {  kadamMongoDBData, createSalientFeature,  getSalientFeature};
