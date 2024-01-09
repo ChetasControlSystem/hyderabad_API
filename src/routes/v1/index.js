@@ -6,6 +6,7 @@ const permissionRoute = require("./permission.route")
 const sidemenuRoute = require('./sidemenu.route')
 const lmdRoute = require('./lmd.route');
 const srspRoute = require('./srsp.route');
+const kadamRoute = require('./kadam.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -34,6 +35,10 @@ const defaultRoutes = [
   {
     path: '/srsp',
     route: srspRoute
+  },
+  {
+    path: '/kadam',
+    route: kadamRoute
   }
 ];
 

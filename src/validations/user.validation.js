@@ -39,7 +39,12 @@ const updateUser = {
       email: Joi.string().email(),
       password: Joi.string().custom(password),
       name: Joi.string(),
-      isActive: Joi.boolean()
+      isActive: Joi.boolean(),
+      role: Joi.string().valid('user', 'admin'),
+      permission: Joi.alternatives().try(
+        Joi.string().required().custom(objectId),
+        Joi.array().items(Joi.string().custom(objectId)).required()
+      ),
     })
     .min(1),
 };

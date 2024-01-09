@@ -15,6 +15,7 @@ const createSalientFeature = async (userBody) => {
   const getSalientFeature = async()=>{
     try {
         const showOneSalientFeature = await LMDS.findOne();
+        console.log(showOneSalientFeature , "++++++++++++++++++++++++");
         return showOneSalientFeature
     } catch (error) {
       throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);

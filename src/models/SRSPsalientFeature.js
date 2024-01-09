@@ -183,6 +183,9 @@ const SrspSalientFeature = mongoose.Schema(
         Inflow2: {
             type: String
         },
+        Outflow: {
+            type: String
+        },
     },
     {
         timestamps: true, versionKey: false
