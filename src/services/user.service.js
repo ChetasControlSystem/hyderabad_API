@@ -1,6 +1,5 @@
 const httpStatus = require('http-status');
-const CheckPer = require("../middlewares/permission")
-const { User, Permission } = require('../models');
+const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -10,19 +9,20 @@ const ApiError = require('../utils/ApiError');
  */
 const createUser = async (userBody, user) => {
 
-  const checkPermission = await Permission.find({ _id: { $in: user.permission } }).select("name");
+  // const checkPermission = await Permission.find({ _id: { $in: user.permission } }).select("name");
 
-  // Check if 'userPermission' is present in the checkPermission array
-  const hasUserPermission = checkPermission.some(permission => permission.name == CheckPer.USER);
+  // // Check if 'userPermission' is present in the checkPermission array
+  // const hasUserPermission = checkPermission.some(permission => permission.name == CheckPer.USER);
 
-  // Check either the user has 'userPermission' or is an admin
-  if (hasUserPermission || user.role === "admin") {
+  // // Check either the user has 'userPermission' or is an admin
+  // if (hasUserPermission || user.role === "admin") {
+    if(user.role === "admin"){
     if (await User.isEmailTaken(userBody.email)) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
     }
     return User.create(userBody);
   } else {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'You are a not access creating user');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You are not authorized to access this data');
   }
 };
 
@@ -37,18 +37,13 @@ const createUser = async (userBody, user) => {
  * @returns {Promise<QueryResult>}
  */
 const queryUsers = async (filter, options, user) => {
-  const checkPermission = await Permission.find({ _id: { $in: user.permission } }).select("name");
 
-  // Check if 'userPermission' is present in the checkPermission array
-  const hasUserPermission = checkPermission.some(permission => permission.name == CheckPer.USER);
-
-  // Check either the user has 'userPermission' or is an admin
-  if (hasUserPermission || user.role === "admin") {
-
+  if (user.role === "admin") {
     const users = await User.paginate(filter, options);
     return users;
+
   } else {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'You are a not access get user');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You are not authorized to access this data');
   }
 };
 
@@ -58,14 +53,12 @@ const queryUsers = async (filter, options, user) => {
  * @returns {Promise<User>}
  */
 const getUserById = async (id, user) => {
-  const checkPermission = await Permission.find({ _id: { $in: user.permission } }).select("name");
-  const hasUserPermission = checkPermission.some(permission => permission.name == CheckPer.USER);
 
-  if (hasUserPermission || user.role === "admin") {
+  if ( user.role === "admin") {
     return User.findById(id);
 
   } else {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'You are a not access get user');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You are not authorized to access this data');
   }
 };
 
@@ -86,10 +79,7 @@ const getUserByEmail = async (email) => {
  */
 const updateUserById = async (userId, updateBody, user) => {
 
-  const checkPermission = await Permission.find({ _id: { $in: user.permission } }).select("name");
-  const hasUserPermission = checkPermission.some(permission => permission.name == CheckPer.USER);
-
-  if (hasUserPermission || user.role === "admin") {
+  if ( user.role === "admin") {
 
     const user = await User.findById(userId);
     if (!user) {
@@ -102,7 +92,7 @@ const updateUserById = async (userId, updateBody, user) => {
     await user.save();
     return user;
   } else {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'You are a not access get user');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You are not authorized to access this data');
   }
 };
 
@@ -114,10 +104,7 @@ const updateUserById = async (userId, updateBody, user) => {
  */
 const deleteUserById = async (userId, user) => {
 
-  const checkPermission = await Permission.find({ _id: { $in: user.permission } }).select("name");
-  const hasUserPermission = checkPermission.some(permission => permission.name == CheckPer.USER);
-
-  if (hasUserPermission || user.role === "admin") {
+  if (user.role === "admin") {
 
     const user = await User.findById(userId);
     if (!user) {
@@ -126,7 +113,7 @@ const deleteUserById = async (userId, user) => {
     await user.remove();
     return user;
   } else {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'You are a not access get user');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You are not authorized to access this data');
   }
 };
 

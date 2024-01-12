@@ -66,6 +66,10 @@ const SanjayDamPondLevel = mongoose.Schema(
             type: Number,
             require: true
         },
+        liveCapacIty: {
+            type: Number,
+            require: true
+        },
         grossStorage: {
             type: Number,
             require: true
@@ -107,10 +111,6 @@ const SanjayDamPondLevel = mongoose.Schema(
             require: true
         },
         pondLevel: {
-            type: Number,
-            require: true
-        },
-        D28: {
             type: Number,
             require: true
         },

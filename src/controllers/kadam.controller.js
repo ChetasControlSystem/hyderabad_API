@@ -5,13 +5,13 @@ const catchAsync = require('../utils/catchAsync');
 const KPLO = require("../models/KNR_POND_LEVEL_OVERVIEW")
 const KDOP = require("../models/KNR_DAM_OVERVIEW_POS")
 const KDOD = require("../models/KNR_DAM_OVERVIEW_DICH")
-const KHDOP = require("../models/NKR_HR_DAM_OVERVIEW_POS")
-const KHDOD = require("../models/NKR_HR_DAM_OVERVIEW_DICH")
-const KSADVM = require("../models/NKR_SPARE_ADVM")
+const KHDOP = require("../models/KNR_HR_DAM_OVERVIEW_POS")
+const KHDOD = require("../models/KNR_HR_DAM_OVERVIEW_DICH")
+const KSADVM = require("../models/KNR_SPARE_ADVM")
 
 async function kadamMongoDBData(data) {
     try {
-        
+
         const kadamPondLevel = data.kadamPondLevel
         const kadamKnrDamOverviewPosition = data.kadamKnrDamOverviewPosition
         const kadamKnrDamOverviewDischarge = data.kadamKnrDamOverviewDischarge
@@ -27,8 +27,8 @@ async function kadamMongoDBData(data) {
             inflow1Discharge: row.D4,
             inflow2Discharge: row.D5,
             inflow3Discharge: row.D6,
-            damDownstreamLevel: row.D7,
-            damDownstreamDischarge: row.D8,
+            damOuflowLevel: row.D7,
+            damOuflowDischarge: row.D8,
             hrrDownstreamLevel: row.D9,
             hrrDownstreamDischarge: row.D10,
             D11: row.D11,
@@ -37,18 +37,18 @@ async function kadamMongoDBData(data) {
             D14: row.D14,
             D15: row.D15,
             D16: row.D16,
-            D17: row.D17,
-            D18: row.D18,
-            D19: row.D19,
-            D20: row.D20,
-            D21: row.D21,
-            D22: row.D22,
-            D23: row.D23,
-            D24: row.D24,
-            D25: row.D25,
-            D26: row.D26,
-            D27: row.D27,
-            D28: row.D28,
+            liveCapacIty: row.D17,
+            grossStorage: row.D18,
+            catchmentArea: row.D19,
+            contourArea: row.D20,
+            ayacutArea: row.D21,
+            filling: row.D22,
+            fullReservoirLevel: row.D23,
+            instantaneousGateDischarge: row.D24,
+            instantaneousCanalDischarge: row.D25,
+            totalDamDischarge: row.D26,
+            cumulativeDamDischarge: row.D27,
+            pondLevel: row.D28,
             D29: row.D29,
             D30: row.D30,
             D31: row.D31,
@@ -403,7 +403,7 @@ async function kadamMongoDBData(data) {
         } else {
             await KSADVM.insertMany(mappedData5);
         }
-       
+
 
     } catch (error) {
         console.error('Error handling MongoDB data:', error);
@@ -413,15 +413,45 @@ async function kadamMongoDBData(data) {
 
 
 const createSalientFeature = catchAsync(async (req, res) => {
-
     const createSalientFeature = await knrService.createSalientFeature(req.body);
-
     res.status(httpStatus.CREATED).send(createSalientFeature);
-  });
+});
 
-  const getSalientFeature = catchAsync(async (req, res)=>{
+const getSalientFeature = catchAsync(async (req, res) => {
     const getSalientFeature = await knrService.getSalientFeature();
     res.send(getSalientFeature);
-  })
+})
 
-module.exports = {  kadamMongoDBData, createSalientFeature,  getSalientFeature};
+const kadamDamOverview = catchAsync(async (req, res) => {
+    
+    const getLastDataKadamDamPondLevelOverview = await knrService.getLastDataKadamDamPondLevelOverview();
+    const getLastDataKadamDamOverviewPos = await knrService.getLastDataKadamDamOverviewPos();
+    const getLastDataKadamDamOverviewDish = await knrService.getLastDataKadamDamOverviewDish();
+    const getLastDataKadamHrDamOverviewPos = await knrService.getLastDataKadamHrDamOverviewPos();
+    const getLastDataKadamHrDamOverviewDish = await knrService.getLastDataKadamHrDamOverviewDish();
+
+    const combinedData = {
+        getLastDataKadamDamPondLevelOverview,
+        getLastDataKadamDamOverviewPos,
+        getLastDataKadamDamOverviewDish,
+        getLastDataKadamHrDamOverviewPos,
+        getLastDataKadamHrDamOverviewDish,
+      };
+  
+      res.json(combinedData);
+
+
+})
+
+const getLastDataKadamDamSpareAdvm = catchAsync(async (req, res) => {
+    const getLastDataKadamDamSpareAdvm = await knrService.getLastDataKadamDamSpareAdvm();
+    res.send(getLastDataKadamDamSpareAdvm);
+})
+
+module.exports = {
+    kadamMongoDBData,
+    createSalientFeature,
+    getSalientFeature,
+    kadamDamOverview,
+    getLastDataKadamDamSpareAdvm
+};

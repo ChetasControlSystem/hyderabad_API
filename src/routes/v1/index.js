@@ -1,6 +1,7 @@
 const express = require('express');
 const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
+const roleRoute = require('./role.route');
 const docsRoute = require('./docs.route');
 const permissionRoute = require("./permission.route")
 const sidemenuRoute = require('./sidemenu.route')
@@ -19,6 +20,10 @@ const defaultRoutes = [
   {
     path: '/users',
     route: userRoute,
+  }, 
+  {
+    path: '/role',
+    route: roleRoute,
   },
   {
     path: '/permission',

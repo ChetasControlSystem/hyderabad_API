@@ -66,6 +66,10 @@ const lmdHrDamPondLevel = mongoose.Schema(
             type: Number,
             require: true
         },
+        liveCapacIty: {
+            type: Number,
+            require: true
+        },
         grossStorage: {
             type: Number,
             require: true

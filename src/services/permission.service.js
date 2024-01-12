@@ -9,9 +9,9 @@ const createPermission = async (userBody, user) => {
   try {
 
     const requestingUser = await User.findById(user);
-    if (!requestingUser || requestingUser.role !== 'admin') {
-      throw new ApiError(httpStatus.FORBIDDEN, 'Access forbidden. User does not have admin role.');
-    }
+    // if (!requestingUser || requestingUser.role !== 'admin') {
+    //   throw new ApiError(httpStatus.FORBIDDEN, 'Access forbidden. User does not have admin role.');
+    // }
 
     return Permission.create(userBody);
   } catch (error) {

@@ -26,11 +26,11 @@ const knrPondLevelOverview = mongoose.Schema(
             type: Number,
             require: true
         },
-        damDownstreamLevel: {
+        damOuflowLevel: {
             type: Number,
             require: true
         },
-        damDownstreamDischarge: {
+        damOuflowDischarge: {
             type: Number,
             require: true
         },
@@ -63,6 +63,10 @@ const knrPondLevelOverview = mongoose.Schema(
             require: true
         },
         D16: {
+            type: Number,
+            require: true
+        },
+        liveCapacIty: {
             type: Number,
             require: true
         },
@@ -107,10 +111,6 @@ const knrPondLevelOverview = mongoose.Schema(
             require: true
         },
         pondLevel: {
-            type: Number,
-            require: true
-        },
-        D28: {
             type: Number,
             require: true
         },

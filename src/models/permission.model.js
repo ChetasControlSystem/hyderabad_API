@@ -1,3 +1,4 @@
+const { boolean } = require('joi');
 const mongoose = require('mongoose');
 
 const permissionSchema = mongoose.Schema(
@@ -6,6 +7,14 @@ const permissionSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    roleName:[{
+      type : String,
+      enum: ["user", "admin", "lmdSuperuser", "lmdUser", "srspSuperuser", "srspUser", "kadamSuperuser", "kadamUser"],
+    }],
+    isActive: {
+      type: Boolean,
+      default: true,
+    }
   },
   {
     timestamps: true, versionKey: false,

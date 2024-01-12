@@ -7,6 +7,8 @@ const router = express.Router()
 router.post('/create-salientfeature', auth(), srspController.createSalientFeature);
 router.get('/get-salientfeature', auth(), srspController.getSalientFeature);
 
+router.get('/srsp-overview', auth(), srspController.srspDamOverview);
+router.get('/overview-advm', auth(), srspController.getLastDataSrspDamSpareAdvm);
 
 
 module.exports = router;

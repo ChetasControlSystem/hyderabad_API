@@ -7,6 +7,8 @@ const router = express.Router()
 router.post('/create-salientfeature', auth(), lmdController.createSalientFeature);
 router.get('/get-salientfeature', auth(), lmdController.getSalientFeature);
 
+router.get('/lmd-overview', auth(), lmdController.lmdDamOverview);
+router.get('/overview-advm', auth(), lmdController.getLastDataLmdDamSpareAdvm);
 
 
 module.exports = router;

@@ -37,18 +37,18 @@ async function handleMongoDBData(data) {
       hrfDownstreamDischarge: row.D14,
       hrlDownstreamLevel: row.D15,
       hrlDownstreamDischarge: row.D16,
-      grossStorage: row.D17,
-      catchmentArea: row.D18,
-      contourArea: row.D19,
-      ayacutArea: row.D20,
-      filling: row.D21,
-      fullReservoirLevel: row.D22,
-      instantaneousGateDischarge: row.D23,
-      instantaneousCanalDischarge: row.D24,
-      totalDamDischarge: row.D25,
-      cumulativeDamDischarge: row.D26,
-      pondLevel: row.D27,
-      D28: row.D28,
+      liveCapacIty: row.D17,
+      grossStorage: row.D18,
+      catchmentArea: row.D19,
+      contourArea: row.D20,
+      ayacutArea: row.D21,
+      filling: row.D22,
+      fullReservoirLevel: row.D23,
+      instantaneousGateDischarge: row.D24,
+      instantaneousCanalDischarge: row.D25,
+      totalDamDischarge: row.D26,
+      cumulativeDamDischarge: row.D27,
+      pondLevel: row.D28,
       D29: row.D29,
       D30: row.D30,
       D31: row.D31,
@@ -417,9 +417,7 @@ async function handleMongoDBData(data) {
 
 
 const createSalientFeature = catchAsync(async (req, res) => {
-
   const createSalientFeature = await srspService.createSalientFeature(req.body);
-
   res.status(httpStatus.CREATED).send(createSalientFeature);
 });
 
@@ -428,5 +426,31 @@ const getSalientFeature = catchAsync(async (req, res)=>{
   res.send(getSalientFeature);
 })
 
+const srspDamOverview = catchAsync(async (req, res) => {
+    
+  const getLastDataSrspDamPondLevelOverview = await srspService.getLastDataSrspDamPondLevelOverview();
+  const getLastDataSrspDamOverviewPos = await srspService.getLastDataSrspDamOverviewPos();
+  const getLastDataSrspDamOverviewDish = await srspService.getLastDataSrspDamOverviewDish();
+  const getLastDataSrspHrDamOverviewPos = await srspService.getLastDataSrspHrDamOverviewPos();
+  const getLastDataSrspHrDamOverviewDish = await srspService.getLastDataSrspHrDamOverviewDish();
 
-module.exports = { handleMongoDBData, createSalientFeature, getSalientFeature  }
+  const combinedData = {
+    getLastDataSrspDamPondLevelOverview,
+    getLastDataSrspDamOverviewPos,
+    getLastDataSrspDamOverviewDish,
+    getLastDataSrspHrDamOverviewPos,
+    getLastDataSrspHrDamOverviewDish,
+    };
+
+    res.json(combinedData);
+
+
+})
+
+const getLastDataSrspDamSpareAdvm = catchAsync(async (req, res) => {
+  const getLastDataLmdDamSpareAdvm = await srspService.getLastDataSrspDamSpareAdvm();
+  res.send(getLastDataLmdDamSpareAdvm);
+})
+
+
+module.exports = { handleMongoDBData, createSalientFeature, getSalientFeature, srspDamOverview, getLastDataSrspDamSpareAdvm}

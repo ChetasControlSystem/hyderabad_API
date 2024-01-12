@@ -6,7 +6,8 @@ const register = {
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
     name: Joi.string().required(),
-    permission: Joi.array().items(Joi.string())
+    // permission: Joi.array().items(Joi.string())
+    role: Joi.string().valid("user", "admin", "lmdSuperuser", "lmdUser", "srspSuperuser", "srspUser", "kadamSuperuser", "kadamUser"),
   }),
 };
 
