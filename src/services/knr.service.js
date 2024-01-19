@@ -26,7 +26,7 @@ const getSalientFeature = async () => {
 const getLastDataKadamDamPondLevelOverview = async () => {
   try {
     const getLastDataKadamDamPondLevelOverview = await KNR_POND_LEVEL_OVERVIEW.findOne()
-    .select("pondLevel liveCapacIty grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge")
+    .select("pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge")
     .sort({ dateTime: -1 });
 console.log(getLastDataKadamDamPondLevelOverview);
     return getLastDataKadamDamPondLevelOverview

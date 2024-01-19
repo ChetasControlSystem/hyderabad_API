@@ -66,7 +66,7 @@ const lmdHrDamPondLevel = mongoose.Schema(
             type: Number,
             require: true
         },
-        liveCapacIty: {
+        liveCapacity: {
             type: Number,
             require: true
         },
@@ -178,6 +178,30 @@ const lmdHrDamPondLevel = mongoose.Schema(
         dateTime: {
             type: Date,
             require: true
+        },
+        date: {
+            type: String,
+            // required: true
+        },
+        time: {
+            type: String,
+            // required: true
+        },
+        year: {
+            type: Number,
+            // required: true
+        },
+        week: {
+            type: Number,
+            // required: true
+        },
+        month: {
+            type: Number,
+            // required: true
+        },
+        quarter: {
+            type: Number,
+            // required: true
         },
     },
     {

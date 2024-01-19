@@ -10,5 +10,8 @@ router.get('/get-salientfeature', auth(), lmdController.getSalientFeature);
 router.get('/lmd-overview', auth(), lmdController.lmdDamOverview);
 router.get('/overview-advm', auth(), lmdController.getLastDataLmdDamSpareAdvm);
 
+router.get('/adv-report', auth(), lmdController.lmdHrRightAdvmReport);
+
+
 
 module.exports = router;
