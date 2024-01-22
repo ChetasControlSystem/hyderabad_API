@@ -19,22 +19,22 @@ async function startServer() {
     // Connect to MongoDB and handle data
 
     // Define the cron job to run every 5 minutes
-// const cronJob = new cron.CronJob('*/1 * * * *', async () => {
-//   try {
+const cronJob = new cron.CronJob('*/1 * * * *', async () => {
+  try {
     // Call the function to handle MongoDB data directly
 
     await handleMongoDBData(result);
     await lmdMongoDBData(lmd);
     await kadamMongoDBData(kadanData);
 
-//     console.log('Cron job executed successfully.');
-//   } catch (error) {
-//     console.error('Error in cron job:', error);
-//   }
-// });
+    console.log('Cron job executed successfully.');
+  } catch (error) {
+    console.error('Error in cron job:', error);
+  }
+});
 
 // Start the cron job
-// cronJob.start();
+cronJob.start();
 
   
     // await handleMongoDBData(result);

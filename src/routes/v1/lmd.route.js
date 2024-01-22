@@ -12,6 +12,9 @@ router.get('/overview-advm', auth(), lmdController.getLastDataLmdDamSpareAdvm);
 
 router.get('/adv-report', auth(), lmdController.lmdHrRightAdvmReport);
 
+router.get('/sevenDayReport', auth(), lmdController.sevenDayReport);
+
+
 
 
 module.exports = router;

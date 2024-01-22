@@ -100,22 +100,100 @@ const getLastDataLmdDamSpareAdvm = async () => {
 
 const lmdHrRightAdvmReport = async (startDate, endDate) => {
   try {
-    const lmdHrRightAdvmReport = await LMD_HR_RIGHT_ADVM.find({
-      dateTime: {
-        $gte: new Date(new Date(startDate).setHours(00, 00, 00)),
-        $lt: new Date(new Date(endDate).setHours(23, 59, 59))
-      },
-    });
+    // const lmdHrRightAdvmReport = await LMD_HR_RIGHT_ADVM.find({
+    //   dateTime: {
+    //     $gte: new Date(new Date(startDate).setHours(00, 00, 00)),
+    //     $lt: new Date(new Date(endDate).setHours(23, 59, 59))
+    //   },
+    // });
 
-    console.log(lmdHrRightAdvmReport.length);
+    // console.log(lmdHrRightAdvmReport.length);
 
 
+    const lmdHrRightAdvmReport= await LMD_HR_RIGHT_ADVM.createIndexes({dateTime : 1})
     return lmdHrRightAdvmReport;
   } catch (error) {
     console.error("Error:", error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
+
+const sevenDayReport = async () => {
+  try {
+    // Get the current date
+    const currentDate = new Date();
+
+    // Calculate the date 7 days ago
+    const sevenDaysAgo = new Date(currentDate);
+    sevenDaysAgo.setDate(currentDate.getDate() - 7);
+
+    // Find pond levels within the last 7 days
+    const pondLevelSevenDayReport = await LMD_POND_LEVEL_OVERVIEW.find({
+      dateTime: { $gte: sevenDaysAgo, $lte: currentDate }
+    });
+
+    // Group records by date
+    const groupedByDate = {};
+    pondLevelSevenDayReport.forEach(entry => {
+      const dateKey = entry.dateTime.toISOString().split('T')[0]; // Extracting date part
+      if (!groupedByDate[dateKey]) {
+        groupedByDate[dateKey] = {
+          date: dateKey,
+          maxPondLevel: entry.pondLevel,
+          minPondLevel: entry.pondLevel,
+          sumPondLevel: entry.pondLevel,
+          count: 1
+        };
+      } else {
+        // Update max, min, and avg if a new record is found for the same date
+        groupedByDate[dateKey].maxPondLevel = Math.max(groupedByDate[dateKey].maxPondLevel, entry.pondLevel);
+        groupedByDate[dateKey].minPondLevel = Math.min(groupedByDate[dateKey].minPondLevel, entry.pondLevel);
+        groupedByDate[dateKey].sumPondLevel += entry.pondLevel;
+        groupedByDate[dateKey].count++;
+      }
+    });
+
+    // Generate result array with null values for days without records
+    const result = [];
+    const daysInRange = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(sevenDaysAgo);
+      date.setDate(sevenDaysAgo.getDate() + index);
+      return date.toISOString().split('T')[0];
+    });
+
+    daysInRange.forEach(dateKey => {
+      if (groupedByDate[dateKey]) {
+        const record = groupedByDate[dateKey];
+        const avgPondLevel = record.sumPondLevel / record.count;
+        result.push({
+          date: record.date,
+          maxPondLevel: record.maxPondLevel,
+          minPondLevel: record.minPondLevel,
+          avgPondLevel: avgPondLevel
+        });
+      } else {
+        result.push({
+          date: dateKey,
+          maxPondLevel: null,
+          minPondLevel: null,
+          avgPondLevel: null
+        });
+      }
+    });
+
+    return { records: result };
+
+  } catch (error) {
+    console.error("Error:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+
+
+
+
+
 
 module.exports = {
   createSalientFeature,
@@ -126,5 +204,6 @@ module.exports = {
   getLastDataLmdHrDamOverviewPos,
   getLastDataLmdHrDamOverviewDish,
   getLastDataLmdDamSpareAdvm,
-  lmdHrRightAdvmReport
+  lmdHrRightAdvmReport,
+  sevenDayReport
 };

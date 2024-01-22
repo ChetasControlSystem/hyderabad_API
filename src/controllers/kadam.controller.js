@@ -46,7 +46,7 @@ async function kadamMongoDBData(data) {
                 D14: row.D14,
                 D15: row.D15,
                 D16: row.D16,
-                liveCapacIty: row.D17,
+                liveCapacity: row.D17,
                 grossStorage: row.D18,
                 catchmentArea: row.D19,
                 contourArea: row.D20,

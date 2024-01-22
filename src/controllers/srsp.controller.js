@@ -47,7 +47,7 @@ async function handleMongoDBData(data) {
         hrfDownstreamDischarge: row.D14,
         hrlDownstreamLevel: row.D15,
         hrlDownstreamDischarge: row.D16,
-        liveCapacIty: row.D17,
+        liveCapacity: row.D17,
         grossStorage: row.D18,
         catchmentArea: row.D19,
         contourArea: row.D20,
