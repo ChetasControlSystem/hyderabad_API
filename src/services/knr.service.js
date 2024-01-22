@@ -89,6 +89,112 @@ const getLastDataKadamDamSpareAdvm = async () => {
   }
 }
 
+const sevenDayReport = async () => {
+  try {
+    const currentDate = new Date();
+    const sevenDaysAgo = new Date(currentDate);
+    sevenDaysAgo.setDate(currentDate.getDate() - 7);
+
+    const pondLevelSevenDayReport = await KNR_POND_LEVEL_OVERVIEW.find({
+      dateTime: { $gte: sevenDaysAgo, $lte: currentDate }
+    });
+
+    const groupedByDate = {};
+    pondLevelSevenDayReport.forEach(entry => {
+      const dateKey = entry.dateTime.toISOString().split('T')[0];
+      if (!groupedByDate[dateKey]) {
+        groupedByDate[dateKey] = {
+          date: dateKey,
+          maxPondLevel: entry.pondLevel,
+          minPondLevel: entry.pondLevel,
+          sumPondLevel: entry.pondLevel,
+          count: 1,
+          maxInflow1Level: entry.inflow1Level,
+          minInflow1Level: entry.inflow1Level,
+          sumInflow1Level: entry.inflow1Level,
+          maxInflow2Level: entry.inflow2Level,
+          minInflow2Level: entry.inflow2Level,
+          sumInflow2Level: entry.inflow2Level,
+          maxInflow3Level: entry.inflow3Level,
+          minInflow3Level: entry.inflow3Level,
+          sumInflow3Level: entry.inflow3Level,
+        };
+      } else {
+        groupedByDate[dateKey].maxPondLevel = Math.max(groupedByDate[dateKey].maxPondLevel, entry.pondLevel);
+        groupedByDate[dateKey].minPondLevel = Math.min(groupedByDate[dateKey].minPondLevel, entry.pondLevel);
+        groupedByDate[dateKey].sumPondLevel += entry.pondLevel;
+        groupedByDate[dateKey].count++;
+
+        groupedByDate[dateKey].maxInflow1Level = Math.max(groupedByDate[dateKey].maxInflow1Level, entry.inflow1Level);
+        groupedByDate[dateKey].minInflow1Level = Math.min(groupedByDate[dateKey].minInflow1Level, entry.inflow1Level);
+        groupedByDate[dateKey].sumInflow1Level += entry.inflow1Level;
+
+        groupedByDate[dateKey].maxInflow2Level = Math.max(groupedByDate[dateKey].maxInflow2Level, entry.inflow2Level);
+        groupedByDate[dateKey].minInflow2Level = Math.min(groupedByDate[dateKey].minInflow2Level, entry.inflow2Level);
+        groupedByDate[dateKey].sumInflow2Level += entry.inflow2Level;
+
+        groupedByDate[dateKey].maxInflow3Level = Math.max(groupedByDate[dateKey].maxInflow3Level, entry.inflow3Level);
+        groupedByDate[dateKey].minInflow3Level = Math.min(groupedByDate[dateKey].minInflow3Level, entry.inflow3Level);
+        groupedByDate[dateKey].sumInflow3Level += entry.inflow3Level;
+      }
+    });
+
+    const result = [];
+    const daysInRange = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(sevenDaysAgo);
+      date.setDate(sevenDaysAgo.getDate() + index);
+      return date.toISOString().split('T')[0];
+    });
+
+    daysInRange.forEach(dateKey => {
+      if (groupedByDate[dateKey]) {
+        const record = groupedByDate[dateKey];
+        const avgPondLevel = record.sumPondLevel / record.count;
+        const avgInflow1Level = record.sumInflow1Level / record.count;
+        const avgInflow2Level = record.sumInflow2Level / record.count;
+        const avgInflow3Level = record.sumInflow3Level / record.count;
+
+        result.push({
+          date: record.date,
+          maxPondLevel: record.maxPondLevel,
+          minPondLevel: record.minPondLevel,
+          avgPondLevel: avgPondLevel,
+          maxInflow1Level: record.maxInflow1Level,
+          minInflow1Level: record.minInflow1Level,
+          avgInflow1Level: avgInflow1Level,
+          maxInflow2Level: record.maxInflow2Level,
+          minInflow2Level: record.minInflow2Level,
+          avgInflow2Level: avgInflow2Level,
+          maxInflow3Level: record.maxInflow3Level,
+          minInflow3Level: record.minInflow3Level,
+          avgInflow3Level: avgInflow3Level,
+        });
+      } else {
+        result.push({
+          date: dateKey,
+          maxPondLevel: "",
+          minPondLevel: "",
+          avgPondLevel: "",
+          maxInflow1Level: "",
+          minInflow1Level: "",
+          avgInflow1Level: "",
+          maxInflow2Level: "",
+          minInflow2Level: "",
+          avgInflow2Level: "",
+          maxInflow3Level: "",
+          minInflow3Level: "",
+          avgInflow3Level: "",
+        });
+      }
+    });
+
+    return { records: result };
+
+  } catch (error) {
+    console.error("Error:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
 
 module.exports = {
   createSalientFeature,
@@ -98,5 +204,6 @@ module.exports = {
   getLastDataKadamHrDamOverviewDish,
   getLastDataKadamHrDamOverviewPos,
   getLastDataKadamDamPondLevelOverview,
-  getLastDataKadamDamSpareAdvm
+  getLastDataKadamDamSpareAdvm,
+  sevenDayReport
 };

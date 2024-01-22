@@ -3,16 +3,15 @@ const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const moment = require('moment');
 
-const SPLO = require('../models/SRSP_POND_LEVEL_OVERVIEW')
-const SSDOP = require("../models/SRSP_SSD_DAM_OVERVIEW_POS")
-const SHDOP = require("../models/SRSP_HR_DAM_OVERVIEW_POS")
-const SDOD = require("../models/SRSP_SSD_DAM_OVERVIEW_DICH")
-const SHKA = require("../models/SRSP_HR_KAKATIYA_ADVM")
-const SHDOD = require("../models/SRSP_HR_DAM_OVERVIEW_DICH")
+const SPLO = require('../models/SRSP_POND_LEVEL_OVERVIEW');
+const SSDOP = require('../models/SRSP_SSD_DAM_OVERVIEW_POS');
+const SHDOP = require('../models/SRSP_HR_DAM_OVERVIEW_POS');
+const SDOD = require('../models/SRSP_SSD_DAM_OVERVIEW_DICH');
+const SHKA = require('../models/SRSP_HR_KAKATIYA_ADVM');
+const SHDOD = require('../models/SRSP_HR_DAM_OVERVIEW_DICH');
 
 async function handleMongoDBData(data) {
   try {
-
     const srspPondLevel = data.srspPondLevel;
     const srspSsdDamOverviewPosition = data.srspSsdDamOverviewPosition;
     const srspHrDamOverviewPosition = data.srspHrDamOverviewPosition;
@@ -20,8 +19,7 @@ async function handleMongoDBData(data) {
     const srspHrSsdAdvm = data.srspHrSsdAdvm;
     const srspHrDamOverviewDischarge = data.srspHrDamOverviewDischarge;
 
-    const mappedData = srspPondLevel.map(row => {
-
+    const mappedData = srspPondLevel.map((row) => {
       const dateTime = moment(row.DateTime);
       return {
         date: dateTime.format('YYYY-MM-DD'),
@@ -73,10 +71,10 @@ async function handleMongoDBData(data) {
         D40: row.D40,
         D41: row.D41,
         D42: row.D42,
-      }
+      };
     });
 
-    const mappedData1 = srspSsdDamOverviewPosition.map(row => {
+    const mappedData1 = srspSsdDamOverviewPosition.map((row) => {
       const dateTime = moment(row.DateTime);
       return {
         date: dateTime.format('YYYY-MM-DD'),
@@ -128,11 +126,10 @@ async function handleMongoDBData(data) {
         gate40Position: row.D40,
         gate41Position: row.D41,
         gate42Position: row.D42,
+      };
+    });
 
-      }
-    })
-
-    const mappedData2 = srspHrDamOverviewPosition.map(row => {
+    const mappedData2 = srspHrDamOverviewPosition.map((row) => {
       const dateTime = moment(row.DateTime);
       return {
         date: dateTime.format('YYYY-MM-DD'),
@@ -184,10 +181,10 @@ async function handleMongoDBData(data) {
         D40: row.D40,
         D41: row.D41,
         D42: row.D42,
-      }
-    })
+      };
+    });
 
-    const mappedData3 = srspSsdDamOverviewDischarge.map(row => {
+    const mappedData3 = srspSsdDamOverviewDischarge.map((row) => {
       const dateTime = moment(row.DateTime);
       return {
         date: dateTime.format('YYYY-MM-DD'),
@@ -239,10 +236,10 @@ async function handleMongoDBData(data) {
         gate40Discharge: row.D40,
         gate41Discharge: row.D41,
         gate42Discharge: row.D42,
-      }
-    })
+      };
+    });
 
-    const mappedData4 = srspHrSsdAdvm.map(row => {
+    const mappedData4 = srspHrSsdAdvm.map((row) => {
       const dateTime = moment(row.DateTime);
       return {
         date: dateTime.format('YYYY-MM-DD'),
@@ -294,10 +291,10 @@ async function handleMongoDBData(data) {
         D40: row.D40,
         D41: row.D41,
         D42: row.D42,
-      }
-    })
+      };
+    });
 
-    const mappedData5 = srspHrDamOverviewDischarge.map(row => {
+    const mappedData5 = srspHrDamOverviewDischarge.map((row) => {
       const dateTime = moment(row.DateTime);
       return {
         date: dateTime.format('YYYY-MM-DD'),
@@ -349,8 +346,8 @@ async function handleMongoDBData(data) {
         D40: row.D40,
         D41: row.D41,
         D42: row.D42,
-      }
-    })
+      };
+    });
 
     const pondLevelLastData = await SPLO.find().sort({ dateTime: -1 }).limit(1);
     const ssdDamOverviewLastData = await SSDOP.find().sort({ dateTime: -1 }).limit(1);
@@ -362,13 +359,14 @@ async function handleMongoDBData(data) {
     if (pondLevelLastData.length) {
       const LastDate = new Date(pondLevelLastData[0].dateTime);
       const newArray = srspPondLevel
-        .map(datetimeString => {
+        .map((datetimeString) => {
           const datetime = new Date(datetimeString.DateTime);
           if (datetime > LastDate) {
             return datetimeString;
           }
           return null;
-        }).filter(item => item !== null);
+        })
+        .filter((item) => item !== null);
 
       await SPLO.insertMany(newArray);
     } else {
@@ -378,17 +376,17 @@ async function handleMongoDBData(data) {
     if (ssdDamOverviewLastData.length) {
       const LastDate1 = new Date(ssdDamOverviewLastData[0].dateTime);
       const newArray = srspSsdDamOverviewPosition
-        .map(datetimeString => {
+        .map((datetimeString) => {
           const datetime = new Date(datetimeString.DateTime);
           if (datetime > LastDate1) {
             console.log(`${datetime} is later than ${LastDate1}`);
             return datetimeString;
           }
           return null;
-        }).filter(item => item !== null);
+        })
+        .filter((item) => item !== null);
 
       await SSDOP.insertMany(newArray);
-
     } else {
       await SSDOP.insertMany(mappedData1);
     }
@@ -396,17 +394,17 @@ async function handleMongoDBData(data) {
     if (hrDamOverviewLastData.length) {
       const LastDate1 = new Date(hrDamOverviewLastData[0].dateTime);
       const newArray = srspHrDamOverviewPosition
-        .map(datetimeString => {
+        .map((datetimeString) => {
           const datetime = new Date(datetimeString.DateTime);
           if (datetime > LastDate1) {
             console.log(`${datetime} is later than ${LastDate1}`);
             return datetimeString;
           }
           return null;
-        }).filter(item => item !== null);
+        })
+        .filter((item) => item !== null);
 
       await SHDOP.insertMany(newArray);
-
     } else {
       await SHDOP.insertMany(mappedData2);
     }
@@ -414,17 +412,17 @@ async function handleMongoDBData(data) {
     if (ssdDamOverviewDischargeLastData.length) {
       const LastDate1 = new Date(ssdDamOverviewDischargeLastData[0].dateTime);
       const newArray = srspSsdDamOverviewDischarge
-        .map(datetimeString => {
+        .map((datetimeString) => {
           const datetime = new Date(datetimeString.DateTime);
           if (datetime > LastDate1) {
             console.log(`${datetime} is later than ${LastDate1}`);
             return datetimeString;
           }
           return null;
-        }).filter(item => item !== null);
+        })
+        .filter((item) => item !== null);
 
       await SDOD.insertMany(newArray);
-
     } else {
       await SDOD.insertMany(mappedData3);
     }
@@ -432,17 +430,17 @@ async function handleMongoDBData(data) {
     if (hrKakatiyaAdvm.length) {
       const LastDate1 = new Date(hrKakatiyaAdvm[0].dateTime);
       const newArray = srspHrSsdAdvm
-        .map(datetimeString => {
+        .map((datetimeString) => {
           const datetime = new Date(datetimeString.DateTime);
           if (datetime > LastDate1) {
             console.log(`${datetime} is later than ${LastDate1}`);
             return datetimeString;
           }
           return null;
-        }).filter(item => item !== null);
+        })
+        .filter((item) => item !== null);
 
       await SHKA.insertMany(newArray);
-
     } else {
       await SHKA.insertMany(mappedData4);
     }
@@ -450,27 +448,25 @@ async function handleMongoDBData(data) {
     if (hrDamOverviewDischarge.length) {
       const LastDate1 = new Date(hrDamOverviewDischarge[0].dateTime);
       const newArray = srspHrDamOverviewDischarge
-        .map(datetimeString => {
+        .map((datetimeString) => {
           const datetime = new Date(datetimeString.DateTime);
           if (datetime > LastDate1) {
             console.log(`${datetime} is later than ${LastDate1}`);
             return datetimeString;
           }
           return null;
-        }).filter(item => item !== null);
+        })
+        .filter((item) => item !== null);
 
       await SHDOD.insertMany(newArray);
-
     } else {
       await SHDOD.insertMany(mappedData5);
     }
-
   } catch (error) {
     console.error('Error handling MongoDB data:', error);
     throw error;
   }
 }
-
 
 const createSalientFeature = catchAsync(async (req, res) => {
   const createSalientFeature = await srspService.createSalientFeature(req.body);
@@ -480,10 +476,9 @@ const createSalientFeature = catchAsync(async (req, res) => {
 const getSalientFeature = catchAsync(async (req, res) => {
   const getSalientFeature = await srspService.getSalientFeature();
   res.send(getSalientFeature);
-})
+});
 
 const srspDamOverview = catchAsync(async (req, res) => {
-
   const getLastDataSrspDamPondLevelOverview = await srspService.getLastDataSrspDamPondLevelOverview();
   const getLastDataSrspDamOverviewPos = await srspService.getLastDataSrspDamOverviewPos();
   const getLastDataSrspDamOverviewDish = await srspService.getLastDataSrspDamOverviewDish();
@@ -499,14 +494,23 @@ const srspDamOverview = catchAsync(async (req, res) => {
   };
 
   res.json(combinedData);
-
-
-})
+});
 
 const getLastDataSrspDamSpareAdvm = catchAsync(async (req, res) => {
   const getLastDataLmdDamSpareAdvm = await srspService.getLastDataSrspDamSpareAdvm();
   res.send(getLastDataLmdDamSpareAdvm);
-})
+});
 
+const sevenDayReport = catchAsync(async (req, res) => {
+  const sevenDayReport = await srspService.sevenDayReport();
+  res.send(sevenDayReport);
+});
 
-module.exports = { handleMongoDBData, createSalientFeature, getSalientFeature, srspDamOverview, getLastDataSrspDamSpareAdvm }
+module.exports = {
+  handleMongoDBData,
+  createSalientFeature,
+  getSalientFeature,
+  srspDamOverview,
+  getLastDataSrspDamSpareAdvm,
+  sevenDayReport
+};

@@ -503,10 +503,16 @@ const getLastDataKadamDamSpareAdvm = catchAsync(async (req, res) => {
     res.send(getLastDataKadamDamSpareAdvm);
 })
 
+const sevenDayReport = catchAsync(async (req, res) => {
+    const sevenDayReport = await knrService.sevenDayReport();
+    res.send(sevenDayReport);
+  });
+
 module.exports = {
     kadamMongoDBData,
     createSalientFeature,
     getSalientFeature,
     kadamDamOverview,
-    getLastDataKadamDamSpareAdvm
+    getLastDataKadamDamSpareAdvm,
+    sevenDayReport
 };

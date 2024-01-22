@@ -205,8 +205,10 @@ const SanjaySsdDamOverviewPos = mongoose.Schema(
   }
 );
 
+const SDO = mongoose.model('Sanjay_Ssd_Dam_Overview_Position', SanjaySsdDamOverviewPos);
 
-module.exports = mongoose.model('Sanjay_Ssd_Dam_Overview_Position', SanjaySsdDamOverviewPos);
+module.exports = SDO;
+
 
 
 

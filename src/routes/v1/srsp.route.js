@@ -10,5 +10,8 @@ router.get('/get-salientfeature', auth(), srspController.getSalientFeature);
 router.get('/srsp-overview', auth(), srspController.srspDamOverview);
 router.get('/overview-advm', auth(), srspController.getLastDataSrspDamSpareAdvm);
 
+router.get('/sevenDayReport', auth(), srspController.sevenDayReport);
+
+
 
 module.exports = router;
