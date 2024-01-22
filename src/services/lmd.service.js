@@ -204,18 +204,18 @@ const sevenDayReport = async () => {
       } else {
         result.push({
           date: dateKey,
-          maxPondLevel: null,
-          minPondLevel: null,
-          avgPondLevel: null,
-          maxInflow1Level: null,
-          minInflow1Level: null,
-          avgInflow1Level: null,
-          maxInflow2Level: null,
-          minInflow2Level: null,
-          avgInflow2Level: null,
-          maxInflow3Level: null,
-          minInflow3Level: null,
-          avgInflow3Level: null
+          maxPondLevel: "",
+          minPondLevel: "",
+          avgPondLevel: "",
+          maxInflow1Level: "",
+          minInflow1Level: "",
+          avgInflow1Level: "",
+          maxInflow2Level: "",
+          minInflow2Level: "",
+          avgInflow2Level: "",
+          maxInflow3Level: "",
+          minInflow3Level: "",
+          avgInflow3Level: ""
         });
       }
     });
