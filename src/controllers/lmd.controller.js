@@ -358,29 +358,27 @@ async function lmdMongoDBData(data) {
 
     if (lmdHrRightAdnm.length) {
       const LastDate = new Date(lmdHrRightAdnm[0].dateTime);
-      const newArray = lmdHrSsdAdvm
+      const newArray = mappedData
         .map((datetimeString) => {
-          const datetime = new Date(datetimeString.DateTime);
+          const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
-            console.log(`${datetime} is later than ${LastDate}`);
             return datetimeString;
           }
           return null;
         })
         .filter((item) => item !== null);
 
-      await LHRA.insertMany(newArray); 
+      await LHRA.insertMany(newArray);
     } else {
       await LHRA.insertMany(mappedData);
     }
 
     if (lmdPondLevelOverview.length) {
       const LastDate = new Date(lmdPondLevelOverview[0].dateTime);
-      const newArray = lmdPondLevel
+      const newArray = mappedData1
         .map((datetimeString) => {
-          const datetime = new Date(datetimeString.DateTime);
+          const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
-            console.log(`${datetime} is later than ${LastDate}`);
             return datetimeString;
           }
           return null;
@@ -394,11 +392,10 @@ async function lmdMongoDBData(data) {
 
     if (lmdDamOverviewPos.length) {
       const LastDate = new Date(lmdDamOverviewPos[0].dateTime);
-      const newArray = lmdDamOverviewPosition
+      const newArray = mappedData2
         .map((datetimeString) => {
-          const datetime = new Date(datetimeString.DateTime);
+          const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
-            console.log(`${datetime} is later than ${LastDate}`);
             return datetimeString;
           }
           return null;
@@ -412,11 +409,10 @@ async function lmdMongoDBData(data) {
 
     if (lmdDamOverviewDis.length) {
       const LastDate = new Date(lmdDamOverviewDis[0].dateTime);
-      const newArray = lmdDamOverviewDischarge
+      const newArray = mappedData3
         .map((datetimeString) => {
-          const datetime = new Date(datetimeString.DateTime);
+          const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
-            console.log(`${datetime} is later than ${LastDate}`);
             return datetimeString;
           }
           return null;
@@ -430,11 +426,10 @@ async function lmdMongoDBData(data) {
 
     if (lmdHrDamOverviewPos.length) {
       const LastDate = new Date(lmdHrDamOverviewPos[0].dateTime);
-      const newArray = lmdHrDamOverviewPosition
+      const newArray = mappedData4
         .map((datetimeString) => {
-          const datetime = new Date(datetimeString.DateTime);
+          const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
-            console.log(`${datetime} is later than ${LastDate}`);
             return datetimeString;
           }
           return null;
@@ -448,11 +443,10 @@ async function lmdMongoDBData(data) {
 
     if (lmdHrDamOverviewDis.length) {
       const LastDate = new Date(lmdHrDamOverviewDis[0].dateTime);
-      const newArray = lmdHrDamOverviewDischarge
+      const newArray = mappedData5
         .map((datetimeString) => {
-          const datetime = new Date(datetimeString.DateTime);
+          const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
-            console.log(`${datetime} is later than ${LastDate}`);
             return datetimeString;
           }
           return null;
@@ -505,7 +499,7 @@ const getLastDataLmdDamSpareAdvm = catchAsync(async (req, res) => {
 const lmdHrRightAdvmReport = catchAsync(async (req, res) => {
   let { startDate, endDate } = req.query;
 
-  if(!startDate && !endDate){
+  if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
   }
 
@@ -528,5 +522,5 @@ module.exports = {
   lmdDamOverview,
   getLastDataLmdDamSpareAdvm,
   lmdHrRightAdvmReport,
-  sevenDayReport
+  sevenDayReport,
 };

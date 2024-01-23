@@ -77,7 +77,7 @@ async function LMDDAM() {
     const lmdHrDamOverviewPosition = await sql.query`SELECT * FROM HR_DAM_OVERVIEW_POS`;
     const lmdHrDamOverviewDischarge = await sql.query`SELECT * FROM HR_DAM_OVERVIEW_DICH`;
     const lmdHrSsdAdvm = await sql.query`SELECT * FROM HR_LMD_ADVM`;
-
+    
     return {
        lmdPondLevel: lmdPondLevel.recordset,
        lmdDamOverviewPosition: lmdDamOverviewPosition.recordset,

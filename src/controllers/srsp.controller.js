@@ -358,9 +358,9 @@ async function handleMongoDBData(data) {
 
     if (pondLevelLastData.length) {
       const LastDate = new Date(pondLevelLastData[0].dateTime);
-      const newArray = srspPondLevel
+      const newArray = mappedData
         .map((datetimeString) => {
-          const datetime = new Date(datetimeString.DateTime);
+          const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
             return datetimeString;
           }
@@ -375,11 +375,10 @@ async function handleMongoDBData(data) {
 
     if (ssdDamOverviewLastData.length) {
       const LastDate1 = new Date(ssdDamOverviewLastData[0].dateTime);
-      const newArray = srspSsdDamOverviewPosition
+      const newArray = mappedData1
         .map((datetimeString) => {
-          const datetime = new Date(datetimeString.DateTime);
+          const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate1) {
-            console.log(`${datetime} is later than ${LastDate1}`);
             return datetimeString;
           }
           return null;
@@ -393,11 +392,10 @@ async function handleMongoDBData(data) {
 
     if (hrDamOverviewLastData.length) {
       const LastDate1 = new Date(hrDamOverviewLastData[0].dateTime);
-      const newArray = srspHrDamOverviewPosition
+      const newArray = mappedData2
         .map((datetimeString) => {
-          const datetime = new Date(datetimeString.DateTime);
+          const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate1) {
-            console.log(`${datetime} is later than ${LastDate1}`);
             return datetimeString;
           }
           return null;
@@ -411,11 +409,10 @@ async function handleMongoDBData(data) {
 
     if (ssdDamOverviewDischargeLastData.length) {
       const LastDate1 = new Date(ssdDamOverviewDischargeLastData[0].dateTime);
-      const newArray = srspSsdDamOverviewDischarge
+      const newArray = mappedData3
         .map((datetimeString) => {
-          const datetime = new Date(datetimeString.DateTime);
+          const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate1) {
-            console.log(`${datetime} is later than ${LastDate1}`);
             return datetimeString;
           }
           return null;
@@ -429,11 +426,10 @@ async function handleMongoDBData(data) {
 
     if (hrKakatiyaAdvm.length) {
       const LastDate1 = new Date(hrKakatiyaAdvm[0].dateTime);
-      const newArray = srspHrSsdAdvm
+      const newArray = mappedData4
         .map((datetimeString) => {
-          const datetime = new Date(datetimeString.DateTime);
+          const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate1) {
-            console.log(`${datetime} is later than ${LastDate1}`);
             return datetimeString;
           }
           return null;
@@ -447,11 +443,10 @@ async function handleMongoDBData(data) {
 
     if (hrDamOverviewDischarge.length) {
       const LastDate1 = new Date(hrDamOverviewDischarge[0].dateTime);
-      const newArray = srspHrDamOverviewDischarge
+      const newArray = mappedData5
         .map((datetimeString) => {
-          const datetime = new Date(datetimeString.DateTime);
+          const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate1) {
-            console.log(`${datetime} is later than ${LastDate1}`);
             return datetimeString;
           }
           return null;
@@ -512,5 +507,5 @@ module.exports = {
   getSalientFeature,
   srspDamOverview,
   getLastDataSrspDamSpareAdvm,
-  sevenDayReport
+  sevenDayReport,
 };
