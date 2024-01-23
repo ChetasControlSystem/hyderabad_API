@@ -32,7 +32,7 @@ const getLastDataKadamDamPondLevelOverview = async () => {
   try {
     const getLastDataKadamDamPondLevelOverview = await KNR_POND_LEVEL_OVERVIEW.findOne()
       .select(
-        'pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge'
+        'pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge inflow1Level inflow2Level inflow3Level inflow1Discharge inflow2Discharge inflow3Discharge damOuflowLevel damOuflowDischarge hrrDownstreamLevel hrrDownstreamDischarge'
       )
       .sort({ dateTime: -1 });
     console.log(getLastDataKadamDamPondLevelOverview);

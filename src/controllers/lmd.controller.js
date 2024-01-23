@@ -369,7 +369,7 @@ async function lmdMongoDBData(data) {
         })
         .filter((item) => item !== null);
 
-      await LHRA.insertMany(newArray);
+      await LHRA.insertMany(newArray); 
     } else {
       await LHRA.insertMany(mappedData);
     }
