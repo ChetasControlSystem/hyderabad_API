@@ -220,7 +220,7 @@ const sevenDayReport = async () => {
       }
     });
 
-    return { records: result };
+    return result 
 
   } catch (error) {
     console.error("Error:", error);

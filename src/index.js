@@ -16,30 +16,27 @@ async function startServer() {
     const kadanData = await KADAM()
     const lmd = await LMDDAM()
 
-    // Connect to MongoDB and handle data
 
-    // Define the cron job to run every 5 minutes
-// const cronJob = new cron.CronJob('*/1 * * * *', async () => {
-//   try {
-//     // Call the function to handle MongoDB data directly
+const cronJob = new cron.CronJob('*/1 * * * *', async () => {
+  try {
+   
 
-//     await handleMongoDBData(result);
-//     await lmdMongoDBData(lmd);
-//     await kadamMongoDBData(kadanData);
-
-//     console.log('Cron job executed successfully.');
-//   } catch (error) {
-//     console.error('Error in cron job:', error);
-//   }
-// });
-
-// // Start the cron job
-// cronJob.start();
-
-  
     await handleMongoDBData(result);
     await lmdMongoDBData(lmd);
     await kadamMongoDBData(kadanData);
+
+    console.log('Cron job executed successfully.');
+  } catch (error) {
+    console.error('Error in cron job:', error);
+  }
+});
+
+cronJob.start();
+
+  
+    // await handleMongoDBData(result);
+    // await lmdMongoDBData(lmd);
+    // await kadamMongoDBData(kadanData);
 
     // Start the Express server
     const server = await app.listen(config.port);
