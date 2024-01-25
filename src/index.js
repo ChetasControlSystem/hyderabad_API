@@ -12,9 +12,9 @@ const { kadamMongoDBData} = require("../src/controllers/kadam.controller")
 async function startServer() {
   try {
     // Connect to SQL Server and fetch data
-    const result = await SRSPDAM();
-    const kadanData = await KADAM()
-    const lmd = await LMDDAM()
+    // const result = await SRSPDAM();
+    // const kadanData = await KADAM()
+    // const lmd = await LMDDAM()
 
 
 // const cronJob = new cron.CronJob('*/1 * * * *', async () => {
@@ -34,9 +34,9 @@ async function startServer() {
 // cronJob.start();
 
   
-    await handleMongoDBData(result);
-    await lmdMongoDBData(lmd);
-    await kadamMongoDBData(kadanData);
+    // await handleMongoDBData(result);
+    // await lmdMongoDBData(lmd);
+    // await kadamMongoDBData(kadanData);
 
     // Start the Express server
     const server = await app.listen(config.port);

@@ -45,9 +45,8 @@ const getLoginUserPermission = async (user) =>{
   }
 }
 
-const updatePermission = async (id, updateBody, user) => {
+const updatePermission = async (id, user, updateBody) => {
   try {
-
     if(user.role === "admin"){
     const checkPermission = await Permission.findById(id);
 
@@ -87,27 +86,21 @@ const deletePermission = async (id, user) => {
 
 }
 
-const addUserPermission = async (userId, permissionId, user) => {
+const addUserPermission = async (permissionId, user, updateBody) => {
   try {
-
     if(user.role === "admin"){
-    const checkUser = await User.findById(userId);
-    if (!checkUser) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-    }
+   
+      const updatePermission = await Permission.findByIdAndUpdate(
+        permissionId,
+        { $addToSet: { roleName: updateBody.roleName } },
+        { new: true }
+      );
 
-    // Update the user's permissions (permission is an array)
-    const updateUser = await User.findByIdAndUpdate(
-      userId,
-      { $addToSet: { permission: permissionId } }, // Use $addToSet to avoid duplicate permissions
-      { new: true }
-    );
-
-    if (!updateUser) {
+    if (!updatePermission) {
       throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to update user permissions');
     }
 
-    return updateUser;
+    return updatePermission;
   } else {
     return 'You are not authorized to access this data';
   }
@@ -120,12 +113,14 @@ const getUserPermission = async (userId, user) => {
   try {
 
     if(user.role === "admin"){
-    const checkUser = await User.findById(userId).populate("permission", "name -_id")
+    const checkUser = await User.findById(userId)
     if (!checkUser) {
       throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
     }
 
-    return checkUser
+    const showPermission = await Permission.find({roleName : {$in : checkUser.role}}).select("name")
+
+    return showPermission
   } else {
     return 'You are not authorized to access this data';
   }
@@ -134,30 +129,24 @@ const getUserPermission = async (userId, user) => {
   }
 }
 
-const deleteUserPermission = async (userId, permissionIds, user) => {
+const deleteUserPermission = async ( permissionId, user, updateBody) => {
   try {
-
+    
     if(user.role === "admin"){
-    const checkUser = await User.findById(userId);
 
-    if (!checkUser) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-    }
+      const checkPermission = await Permission.findById(permissionId)
 
-    const permissionIdsArray = Array.isArray(permissionIds) ? permissionIds : [permissionIds];
-    const hasPermission = permissionIdsArray.some(id => checkUser.permission.includes(id));
+      if(!checkPermission){
+      throw new ApiError(httpStatus.NOT_FOUND, 'Permission not found');
+      }
 
-    if (!hasPermission) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'Permission not found for this user');
-    }
+      const removePermission = await Permission.findByIdAndUpdate(
+        permissionId,
+        { $pull: { roleName: { $in: updateBody.roleName } } },
+        { new: true }
+      );
 
-    const updateUser = await User.findByIdAndUpdate(
-      userId,
-      { $pull: { permission: { $in: permissionIdsArray } } },
-      { new: true }
-    );
-
-    return updateUser;
+    return removePermission;
   } else {
     return 'You are not authorized to access this data';
   }

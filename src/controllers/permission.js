@@ -9,6 +9,8 @@ const createPermission = catchAsync(async (req, res) => {
 });
 
 const getPermission = catchAsync(async (req, res) => {
+  console.log(req.user, "++++++++++++111111111111111");
+
   const result = await permissionService.getPermission(req.user);
   res.json(result);
 });
@@ -19,7 +21,7 @@ const getLoginUserPermission = catchAsync(async (req, res) => {
 });
 
 const updatePermission = catchAsync(async (req, res) => {
-  const updatePermission = await permissionService.updatePermission(req.params.id, req.body, req.user)
+  const updatePermission = await permissionService.updatePermission(req.params.id, req.user,  req.body)
   res.json(updatePermission);
 })
 
@@ -29,7 +31,7 @@ const deletePermission = catchAsync(async (req, res) => {
 })
 
 const addUserPermission = catchAsync(async (req ,res) =>{
-  const addPermission = await permissionService.addUserPermission(req.params.userId, req.body.permissionId, req.user)
+  const addPermission = await permissionService.addUserPermission(req.params.permissionId, req.user, req.body)
   res.json(addPermission)
 }) 
 
@@ -39,7 +41,7 @@ const getUserPermission = catchAsync(async (req, res) =>{
 })
 
 const deleteUserPermission = catchAsync(async (req, res)=>{
-  const deletePermission = await permissionService.deleteUserPermission(req.params.userId, req.body.permissionId, req.user)
+  const deletePermission = await permissionService.deleteUserPermission(req.params.permissionId, req.user, req.body,)
   res.json(deletePermission)
 })
 
