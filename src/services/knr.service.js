@@ -9,6 +9,7 @@ const {
   KNR_HR_DAM_OVERVIEW_POS,
   KNR_POND_LEVEL_OVERVIEW,
   KNR_SPARE_ADVM,
+  Permission
 } = require('../models');
 
 const createSalientFeature = async (userBody) => {
@@ -19,93 +20,92 @@ const createSalientFeature = async (userBody) => {
   }
 };
 
-const getSalientFeature = async () => {
+const getSalientFeature = async (user) => {
   try {
+    const checkPermission = await Permission.findOne({ name: 'kadamSalientFeatures' });
+
+    if ( user.role === 'admin' || user.role === 'kadamSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role)) ) {
+    
     const showOneSalientFeature = await KNRS.findOne();
     return showOneSalientFeature;
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const getLastDataKadamDamPondLevelOverview = async () => {
+const getLastDataKadamDamOverview = async (user) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'kadamSalientFeatures' });
+
+    if ( user.role === 'admin' || user.role === 'kadamSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role)) ) {
+    
     const getLastDataKadamDamPondLevelOverview = await KNR_POND_LEVEL_OVERVIEW.findOne()
       .select(
         'pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge inflow1Level inflow2Level inflow3Level inflow1Discharge inflow2Discharge inflow3Discharge damOuflowLevel damOuflowDischarge hrrDownstreamLevel hrrDownstreamDischarge'
       )
       .sort({ dateTime: -1 });
-    console.log(getLastDataKadamDamPondLevelOverview);
-    return getLastDataKadamDamPondLevelOverview;
-  } catch (error) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const getLastDataKadamDamOverviewPos = async () => {
-  try {
     const getLastDataKadamDamOverviewPos = await KNR_DAM_OVERVIEW_POS.findOne()
       .select(
         'gate1Position gate2Position gate3Position gate4Position gate5Position gate6Position gate7Position gate8Position gate9Position gate10Position gate11Position gate12Position gate13Position gate14Position gate15Position gate16Position gate17Position gate18Position'
       )
       .sort({ dateTime: -1 });
-    return getLastDataKadamDamOverviewPos;
-  } catch (error) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const getLastDataKadamDamOverviewDish = async () => {
-  try {
     const getLastDataKadamDamOverviewDish = await KNR_DAM_OVERVIEW_DICH.findOne()
       .select(
         'gate1Discharge gate2Discharge gate3Discharge gate4Discharge gate5Discharge gate6Discharge gate7Discharge gate8Discharge gate9Discharge gate10Discharge gate11Discharge gate12Discharge gate13Discharge gate14Discharge gate15Discharge gate16Discharge gate17Discharge gate18Discharge'
       )
       .sort({ dateTime: -1 });
-    return getLastDataKadamDamOverviewDish;
-  } catch (error) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const getLastDataKadamHrDamOverviewPos = async () => {
-  try {
     const getLastDataKadamHrDamOverviewPos = await KNR_HR_DAM_OVERVIEW_POS.findOne()
       .select('hrklManGate1Position hrklManGate2Position hrklManGate3Position hrklManGate4Position hrklManGate5Position')
       .sort({ dateTime: -1 });
-    return getLastDataKadamHrDamOverviewPos;
-  } catch (error) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const getLastDataKadamHrDamOverviewDish = async () => {
-  try {
     const getLastDataKadamHrDamOverviewDish = await KNR_HR_DAM_OVERVIEW_DICH.findOne()
       .select(
         'hrklManGate1Discharge hrklManGate2Discharge hrklManGate3Discharge hrklManGate4Discharge hrklManGate5Discharge'
       )
       .sort({ dateTime: -1 });
-    return getLastDataKadamHrDamOverviewDish;
+    return {
+      getLastDataKadamHrDamOverviewDish,
+      getLastDataKadamHrDamOverviewPos,
+      getLastDataKadamDamOverviewDish,
+      getLastDataKadamDamOverviewPos,
+      getLastDataKadamDamPondLevelOverview
+    }
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const getLastDataKadamDamSpareAdvm = async () => {
+const getLastDataKadamDamSpareAdvm = async (user) => {
   try {
+    const checkPermission = await Permission.findOne({ name: 'kadamSalientFeatures' });
+
+    if ( user.role === 'admin' || user.role === 'kadamSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role)) ) {
+    
     const getLastDataKadamDamSpareAdvm = await KNR_SPARE_ADVM.findOne().sort({ dateTime: -1 });
     return getLastDataKadamDamSpareAdvm;
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const sevenDayReport = async () => {
+const sevenDayReport = async (user) => {
   try {
+    const checkPermission = await Permission.findOne({ name: 'kadamSalientFeatures' });
+
+    if ( user.role === 'admin' || user.role === 'kadamSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role)) ) {
+    
     const currentDate = new Date();
     const sevenDaysAgo = new Date(currentDate);
-    sevenDaysAgo.setDate(currentDate.getDate() - 7);
+    sevenDaysAgo.setDate(currentDate.getDate() - 6);
 
     const pondLevelSevenDayReport = await KNR_POND_LEVEL_OVERVIEW.find({
       dateTime: { $gte: sevenDaysAgo, $lte: currentDate },
@@ -201,6 +201,9 @@ const sevenDayReport = async () => {
     });
 
     return result;
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -210,11 +213,7 @@ const sevenDayReport = async () => {
 module.exports = {
   createSalientFeature,
   getSalientFeature,
-  getLastDataKadamDamOverviewDish,
-  getLastDataKadamDamOverviewPos,
-  getLastDataKadamHrDamOverviewDish,
-  getLastDataKadamHrDamOverviewPos,
-  getLastDataKadamDamPondLevelOverview,
+  getLastDataKadamDamOverview,
   getLastDataKadamDamSpareAdvm,
   sevenDayReport,
 };

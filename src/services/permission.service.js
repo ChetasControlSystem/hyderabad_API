@@ -8,12 +8,12 @@ const ApiError = require('../utils/ApiError');
 const createPermission = async (userBody, user) => {
   try {
 
-    const requestingUser = await User.findById(user);
-    // if (!requestingUser || requestingUser.role !== 'admin') {
-    //   throw new ApiError(httpStatus.FORBIDDEN, 'Access forbidden. User does not have admin role.');
-    // }
+    if(user.role === "admin"){
+      return Permission.create(userBody);
+    } else {
+      return 'You are not authorized to access this data';
+    }
 
-    return Permission.create(userBody);
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
@@ -23,13 +23,12 @@ const createPermission = async (userBody, user) => {
 const getPermission = async (user) => {
   try {
 
-    const requestingUser = await User.findById(user);
-    if (!requestingUser || requestingUser.role !== 'admin') {
-      throw new ApiError(httpStatus.FORBIDDEN, 'Access forbidden. User does not have admin role.');
+    if(user.role === "admin"){
+      const permission = await Permission.find().select("name");
+      return permission;
+    } else {
+      return 'You are not authorized to access this data';
     }
-
-    const permission = await Permission.find().select("name");
-    return permission;
 
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -37,14 +36,19 @@ const getPermission = async (user) => {
 
 };
 
+const getLoginUserPermission = async (user) =>{
+  try {
+      const permission = await Permission.find({roleName : {$in :user.role}}).select("name");
+      return permission;
+  } catch (error) {
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+}
+
 const updatePermission = async (id, updateBody, user) => {
   try {
 
-    const requestingUser = await User.findById(user);
-    if (!requestingUser || requestingUser.role !== 'admin') {
-      throw new ApiError(httpStatus.FORBIDDEN, 'Access forbidden. User does not have admin role.');
-    }
-
+    if(user.role === "admin"){
     const checkPermission = await Permission.findById(id);
 
     if (!checkPermission) {
@@ -53,7 +57,9 @@ const updatePermission = async (id, updateBody, user) => {
 
     const updatePermission = await Permission.findByIdAndUpdate(id, { $set: { name: updateBody.name } }, { new: true })
     return updatePermission
-
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
@@ -63,11 +69,7 @@ const updatePermission = async (id, updateBody, user) => {
 const deletePermission = async (id, user) => {
   try {
 
-    const requestingUser = await User.findById(user);
-    if (!requestingUser || requestingUser.role !== 'admin') {
-      throw new ApiError(httpStatus.FORBIDDEN, 'Access forbidden. User does not have admin role.');
-    }
-
+    if(user.role === "admin"){
     const checkPermission = await Permission.findById(id);
 
     if (!checkPermission) {
@@ -76,7 +78,9 @@ const deletePermission = async (id, user) => {
 
     await checkPermission.remove();
     return checkPermission;
-
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
@@ -86,11 +90,7 @@ const deletePermission = async (id, user) => {
 const addUserPermission = async (userId, permissionId, user) => {
   try {
 
-    const requestingUser = await User.findById(user);
-    if (!requestingUser || requestingUser.role !== 'admin') {
-      throw new ApiError(httpStatus.FORBIDDEN, 'Access forbidden. User does not have admin role.');
-    }
-
+    if(user.role === "admin"){
     const checkUser = await User.findById(userId);
     if (!checkUser) {
       throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -108,6 +108,9 @@ const addUserPermission = async (userId, permissionId, user) => {
     }
 
     return updateUser;
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
@@ -116,18 +119,16 @@ const addUserPermission = async (userId, permissionId, user) => {
 const getUserPermission = async (userId, user) => {
   try {
 
-    const requestingUser = await User.findById(user);
-    if (!requestingUser || requestingUser.role !== 'admin') {
-      throw new ApiError(httpStatus.FORBIDDEN, 'Access forbidden. User does not have admin role.');
-    }
-
+    if(user.role === "admin"){
     const checkUser = await User.findById(userId).populate("permission", "name -_id")
     if (!checkUser) {
       throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
     }
 
     return checkUser
-
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
@@ -136,11 +137,7 @@ const getUserPermission = async (userId, user) => {
 const deleteUserPermission = async (userId, permissionIds, user) => {
   try {
 
-    const requestingUser = await User.findById(user);
-    if (!requestingUser || requestingUser.role !== 'admin') {
-      throw new ApiError(httpStatus.FORBIDDEN, 'Access forbidden. User does not have admin role.');
-    }
-
+    if(user.role === "admin"){
     const checkUser = await User.findById(userId);
 
     if (!checkUser) {
@@ -161,6 +158,9 @@ const deleteUserPermission = async (userId, permissionIds, user) => {
     );
 
     return updateUser;
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
@@ -174,5 +174,6 @@ module.exports = {
   deletePermission,
   addUserPermission,
   getUserPermission,
-  deleteUserPermission
+  deleteUserPermission,
+  getLoginUserPermission
 };

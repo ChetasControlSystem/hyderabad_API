@@ -463,40 +463,27 @@ async function kadamMongoDBData(data) {
 }
 
 const createSalientFeature = catchAsync(async (req, res) => {
-  const createSalientFeature = await knrService.createSalientFeature(req.body);
+  const createSalientFeature = await knrService.createSalientFeature(req.body, req.user);
   res.status(httpStatus.CREATED).send(createSalientFeature);
 });
 
 const getSalientFeature = catchAsync(async (req, res) => {
-  const getSalientFeature = await knrService.getSalientFeature();
+  const getSalientFeature = await knrService.getSalientFeature(req.user);
   res.send(getSalientFeature);
 });
 
 const kadamDamOverview = catchAsync(async (req, res) => {
-  const getLastDataKadamDamPondLevelOverview = await knrService.getLastDataKadamDamPondLevelOverview();
-  const getLastDataKadamDamOverviewPos = await knrService.getLastDataKadamDamOverviewPos();
-  const getLastDataKadamDamOverviewDish = await knrService.getLastDataKadamDamOverviewDish();
-  const getLastDataKadamHrDamOverviewPos = await knrService.getLastDataKadamHrDamOverviewPos();
-  const getLastDataKadamHrDamOverviewDish = await knrService.getLastDataKadamHrDamOverviewDish();
-
-  const combinedData = {
-    getLastDataKadamDamPondLevelOverview,
-    getLastDataKadamDamOverviewPos,
-    getLastDataKadamDamOverviewDish,
-    getLastDataKadamHrDamOverviewPos,
-    getLastDataKadamHrDamOverviewDish,
-  };
-
-  res.json(combinedData);
+  const getLastDataKadamDamOverview = await knrService.getLastDataKadamDamOverview(req.user);
+  res.json(getLastDataKadamDamOverview);
 });
 
 const getLastDataKadamDamSpareAdvm = catchAsync(async (req, res) => {
-  const getLastDataKadamDamSpareAdvm = await knrService.getLastDataKadamDamSpareAdvm();
+  const getLastDataKadamDamSpareAdvm = await knrService.getLastDataKadamDamSpareAdvm(req.user);
   res.send(getLastDataKadamDamSpareAdvm);
 });
 
 const sevenDayReport = catchAsync(async (req, res) => {
-  const sevenDayReport = await knrService.sevenDayReport();
+  const sevenDayReport = await knrService.sevenDayReport(req.user);
   res.send(sevenDayReport);
 });
 

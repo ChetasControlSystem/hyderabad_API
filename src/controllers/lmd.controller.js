@@ -463,36 +463,22 @@ async function lmdMongoDBData(data) {
 }
 
 const createSalientFeature = catchAsync(async (req, res) => {
-  const createSalientFeature = await lmdService.createSalientFeature(req.body);
-
+  const createSalientFeature = await lmdService.createSalientFeature(req.body, req.user);
   res.status(httpStatus.CREATED).send(createSalientFeature);
 });
 
 const getSalientFeature = catchAsync(async (req, res) => {
-  const getSalientFeature = await lmdService.getSalientFeature();
+  const getSalientFeature = await lmdService.getSalientFeature(req.user);
   res.send(getSalientFeature);
 });
 
 const lmdDamOverview = catchAsync(async (req, res) => {
-  const getLastDataLmdDamPondLevelOverview = await lmdService.getLastDataLmdDamPondLevelOverview();
-  const getLastDataLmdDamOverviewPos = await lmdService.getLastDataLmdDamOverviewPos();
-  const getLastDataLmdDamOverviewDish = await lmdService.getLastDataLmdDamOverviewDish();
-  const getLastDataLmdHrDamOverviewPos = await lmdService.getLastDataLmdHrDamOverviewPos();
-  const getLastDataLmdHrDamOverviewDish = await lmdService.getLastDataLmdHrDamOverviewDish();
-
-  const combinedData = {
-    getLastDataLmdDamPondLevelOverview,
-    getLastDataLmdDamOverviewPos,
-    getLastDataLmdDamOverviewDish,
-    getLastDataLmdHrDamOverviewPos,
-    getLastDataLmdHrDamOverviewDish,
-  };
-
-  res.json(combinedData);
+  const getLastDataLmdDamOverview = await lmdService.getLastDataLmdDamOverview(req.user);
+  res.json(getLastDataLmdDamOverview);
 });
 
 const getLastDataLmdDamSpareAdvm = catchAsync(async (req, res) => {
-  const getLastDataLmdDamSpareAdvm = await lmdService.getLastDataLmdDamSpareAdvm();
+  const getLastDataLmdDamSpareAdvm = await lmdService.getLastDataLmdDamSpareAdvm(req.user);
   res.send(getLastDataLmdDamSpareAdvm);
 });
 
@@ -506,12 +492,12 @@ const lmdHrRightAdvmReport = catchAsync(async (req, res) => {
   if (startDate === '' || endDate === '') {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
-  const lmdHrRightAdvmReport = await lmdService.lmdHrRightAdvmReport(startDate, endDate);
+  const lmdHrRightAdvmReport = await lmdService.lmdHrRightAdvmReport(startDate, endDate, req.user);
   res.send(lmdHrRightAdvmReport);
 });
 
 const sevenDayReport = catchAsync(async (req, res) => {
-  const sevenDayReport = await lmdService.sevenDayReport();
+  const sevenDayReport = await lmdService.sevenDayReport(req.user);
   res.send(sevenDayReport);
 });
 

@@ -17,26 +17,26 @@ async function startServer() {
     const lmd = await LMDDAM()
 
 
-const cronJob = new cron.CronJob('*/1 * * * *', async () => {
-  try {
+// const cronJob = new cron.CronJob('*/1 * * * *', async () => {
+//   try {
    
 
+//     await handleMongoDBData(result);
+//     await lmdMongoDBData(lmd);
+//     await kadamMongoDBData(kadanData);
+
+//     console.log('Cron job executed successfully.');
+//   } catch (error) {
+//     console.error('Error in cron job:', error);
+//   }
+// });
+
+// cronJob.start();
+
+  
     await handleMongoDBData(result);
     await lmdMongoDBData(lmd);
     await kadamMongoDBData(kadanData);
-
-    console.log('Cron job executed successfully.');
-  } catch (error) {
-    console.error('Error in cron job:', error);
-  }
-});
-
-cronJob.start();
-
-  
-    // await handleMongoDBData(result);
-    // await lmdMongoDBData(lmd);
-    // await kadamMongoDBData(kadanData);
 
     // Start the Express server
     const server = await app.listen(config.port);

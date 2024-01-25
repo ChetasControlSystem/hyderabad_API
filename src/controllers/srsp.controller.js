@@ -469,35 +469,22 @@ const createSalientFeature = catchAsync(async (req, res) => {
 });
 
 const getSalientFeature = catchAsync(async (req, res) => {
-  const getSalientFeature = await srspService.getSalientFeature();
-  res.send(getSalientFeature);
+  const getSalientFeature = await srspService.getSalientFeature(req.user);
+  res.json(getSalientFeature);
 });
 
 const srspDamOverview = catchAsync(async (req, res) => {
-  const getLastDataSrspDamPondLevelOverview = await srspService.getLastDataSrspDamPondLevelOverview();
-  const getLastDataSrspDamOverviewPos = await srspService.getLastDataSrspDamOverviewPos();
-  const getLastDataSrspDamOverviewDish = await srspService.getLastDataSrspDamOverviewDish();
-  const getLastDataSrspHrDamOverviewPos = await srspService.getLastDataSrspHrDamOverviewPos();
-  const getLastDataSrspHrDamOverviewDish = await srspService.getLastDataSrspHrDamOverviewDish();
-
-  const combinedData = {
-    getLastDataSrspDamPondLevelOverview,
-    getLastDataSrspDamOverviewPos,
-    getLastDataSrspDamOverviewDish,
-    getLastDataSrspHrDamOverviewPos,
-    getLastDataSrspHrDamOverviewDish,
-  };
-
-  res.json(combinedData);
+  const getLastDataSrspDamOverview = await srspService.getLastDataSrspDamOverview(req.user);
+  res.json(getLastDataSrspDamOverview);
 });
 
 const getLastDataSrspDamSpareAdvm = catchAsync(async (req, res) => {
-  const getLastDataLmdDamSpareAdvm = await srspService.getLastDataSrspDamSpareAdvm();
+  const getLastDataLmdDamSpareAdvm = await srspService.getLastDataSrspDamSpareAdvm(req.user);
   res.send(getLastDataLmdDamSpareAdvm);
 });
 
 const sevenDayReport = catchAsync(async (req, res) => {
-  const sevenDayReport = await srspService.sevenDayReport();
+  const sevenDayReport = await srspService.sevenDayReport(req.user);
   res.send(sevenDayReport);
 });
 

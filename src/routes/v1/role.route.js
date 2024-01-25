@@ -5,6 +5,7 @@ const auth = require('../../middlewares/auth');
 const router = express.Router();
 
 router.post('/create-role', auth(), roleController.createRole);
+router.get('/get-role', auth(), roleController.getRole);
 
 
 

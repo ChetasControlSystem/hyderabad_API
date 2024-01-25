@@ -8,8 +8,14 @@ const createRole = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).json(role);
 });
 
+const getRole = catchAsync(async (req, res) => {
+  const getRole = await roleService.getRole();
+  res.json(getRole)
+})
+
 
 
 module.exports = {
-    createRole
+    createRole,
+    getRole
 };

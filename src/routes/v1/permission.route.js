@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post('/create-permission', auth(), permissionController.createPermission);
 router.get('/get-permission', auth(), permissionController.getPermission);
+router.get('/get-login-user-permission', auth(), permissionController.getLoginUserPermission);
 router.put('/update-permission/:id',  permissionController.updatePermission);
 router.delete('/delete-permission/:id',  permissionController.deletePermission);
 

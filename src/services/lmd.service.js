@@ -7,6 +7,7 @@ const {
   LMD_HR_DAM_OVERVIEW_DICH,
   LMD_DAM_OVERVIEW_POS,
   LMD_DAM_OVERVIEW_DICH,
+  Permission
 } = require('../models');
 
 const ApiError = require('../utils/ApiError');
@@ -19,80 +20,76 @@ const createSalientFeature = async (userBody) => {
   }
 };
 
-const getSalientFeature = async () => {
+const getSalientFeature = async (user) => {
   try {
+    const checkPermission = await Permission.findOne({ name: 'lmdSalientFeatures' });
+
+    if ( user.role === 'admin' || user.role === 'lmdSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role)) ) {
+    
     const showOneSalientFeature = await LMDS.findOne();
     return showOneSalientFeature;
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const getLastDataLmdDamPondLevelOverview = async () => {
+const getLastDataLmdDamOverview = async (user) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'lmdDamOverview' });
+
+    if ( user.role === 'admin' || user.role === 'lmdSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role)) ) {
+    
     const getLastDataLmdDamPondLevelOverview = await LMD_POND_LEVEL_OVERVIEW.findOne()
       .select(
         'pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge inflow1Level inflow2Level inflow3Level inflow1Discharge inflow2Discharge inflow3Discharge damDownstreamLevel damDownstreamDischarge hrrDownstreamLevel hrrDownstreamDischarge'
       )
       .sort({ dateTime: -1 });
-    return getLastDataLmdDamPondLevelOverview;
-  } catch (error) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const getLastDataLmdDamOverviewPos = async () => {
-  try {
     const getLastDataLmdDamOverviewPos = await LMD_DAM_OVERVIEW_POS.findOne()
       .select(
         'gate1Position gate2Position gate3Position gate4Position gate5Position gate6Position gate7Position gate8Position gate9Position gate10Position gate11Position gate12Position gate13Position gate14Position gate15Position gate16Position gate17Position gate18Position gate19Position gate20Position'
       )
       .sort({ dateTime: -1 });
-    return getLastDataLmdDamOverviewPos;
-  } catch (error) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const getLastDataLmdDamOverviewDish = async () => {
-  try {
     const getLastDataLmdDamOverviewDish = await LMD_DAM_OVERVIEW_DICH.findOne()
       .select(
         'gate1Discharge gate2Discharge gate3Discharge gate4Discharge gate5Discharge gate6Discharge gate7Discharge gate8Discharge gate9Discharge gate10Discharge gate11Discharge gate12Discharge gate13Discharge gate14Discharge gate15Discharge gate16Discharge gate17Discharge gate18Discharge  gate19Discharge gate20Discharge'
       )
       .sort({ dateTime: -1 });
-    return getLastDataLmdDamOverviewDish;
-  } catch (error) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const getLastDataLmdHrDamOverviewPos = async () => {
-  try {
     const getLastDataLmdHrDamOverviewPos = await LMD_HR_DAM_OVERVIEW_POS.findOne()
       .select('hrrGate1Position hrrGate2Position')
       .sort({ dateTime: -1 });
-    return getLastDataLmdHrDamOverviewPos;
-  } catch (error) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const getLastDataLmdHrDamOverviewDish = async () => {
-  try {
     const getLastDataLmdHrDamOverviewDish = await LMD_HR_DAM_OVERVIEW_DICH.findOne()
       .select('hrrGate1Discharge hrrGate2Discharge')
       .sort({ dateTime: -1 });
-    return getLastDataLmdHrDamOverviewDish;
+    return {
+      getLastDataLmdHrDamOverviewDish,
+      getLastDataLmdHrDamOverviewPos,
+      getLastDataLmdDamOverviewDish,
+      getLastDataLmdDamOverviewPos,
+      getLastDataLmdDamPondLevelOverview
+    }
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const getLastDataLmdDamSpareAdvm = async () => {
+const getLastDataLmdDamSpareAdvm = async (user) => {
   try {
+    const checkPermission = await Permission.findOne({ name: 'lmdDamOverview' });
+
+    if ( user.role === 'admin' || user.role === 'lmdSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role)) ) {
+    
     const getLastDataLmdDamSpareAdvm = await LMD_HR_RIGHT_ADVM.findOne().sort({ dateTime: -1 });
     return getLastDataLmdDamSpareAdvm;
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
@@ -110,7 +107,7 @@ const lmdHrRightAdvmReport = async (startDate, endDate) => {
     // console.log(lmdHrRightAdvmReport.length);
 
 
-    const lmdHrRightAdvmReport= await LMD_HR_RIGHT_ADVM.createIndexes({dateTime : 1})
+    const lmdHrRightAdvmReport = await LMD_HR_RIGHT_ADVM.createIndexes({ dateTime: 1 })
     return lmdHrRightAdvmReport;
   } catch (error) {
     console.error("Error:", error);
@@ -118,11 +115,16 @@ const lmdHrRightAdvmReport = async (startDate, endDate) => {
   }
 };
 
-const sevenDayReport = async () => {
+const sevenDayReport = async (user) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'lmdReport' });
+
+    if ( user.role === 'admin' || user.role === 'lmdSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role)) ) {
+    
     const currentDate = new Date();
     const sevenDaysAgo = new Date(currentDate);
-    sevenDaysAgo.setDate(currentDate.getDate() - 7);
+    sevenDaysAgo.setDate(currentDate.getDate() - 6);
 
     const pondLevelSevenDayReport = await LMD_POND_LEVEL_OVERVIEW.find({
       dateTime: { $gte: sevenDaysAgo, $lte: currentDate }
@@ -153,18 +155,18 @@ const sevenDayReport = async () => {
         groupedByDate[dateKey].minPondLevel = Math.min(groupedByDate[dateKey].minPondLevel, entry.pondLevel);
         groupedByDate[dateKey].sumPondLevel += entry.pondLevel;
         groupedByDate[dateKey].count++;
-        
-     
+
+
         groupedByDate[dateKey].maxInflow1Level = Math.max(groupedByDate[dateKey].maxInflow1Level, entry.inflow1Level);
         groupedByDate[dateKey].minInflow1Level = Math.min(groupedByDate[dateKey].minInflow1Level, entry.inflow1Level);
         groupedByDate[dateKey].sumInflow1Level += entry.inflow1Level;
 
-      
+
         groupedByDate[dateKey].maxInflow2Level = Math.max(groupedByDate[dateKey].maxInflow2Level, entry.inflow2Level);
         groupedByDate[dateKey].minInflow2Level = Math.min(groupedByDate[dateKey].minInflow2Level, entry.inflow2Level);
         groupedByDate[dateKey].sumInflow2Level += entry.inflow2Level;
 
-       
+
         groupedByDate[dateKey].maxInflow3Level = Math.max(groupedByDate[dateKey].maxInflow3Level, entry.inflow3Level);
         groupedByDate[dateKey].minInflow3Level = Math.min(groupedByDate[dateKey].minInflow3Level, entry.inflow3Level);
         groupedByDate[dateKey].sumInflow3Level += entry.inflow3Level;
@@ -220,7 +222,10 @@ const sevenDayReport = async () => {
       }
     });
 
-    return result 
+    return result
+  } else {
+    return 'You are not authorized to access this data';
+  }
 
   } catch (error) {
     console.error("Error:", error);
@@ -235,11 +240,7 @@ const sevenDayReport = async () => {
 module.exports = {
   createSalientFeature,
   getSalientFeature,
-  getLastDataLmdDamPondLevelOverview,
-  getLastDataLmdDamOverviewPos,
-  getLastDataLmdDamOverviewDish,
-  getLastDataLmdHrDamOverviewPos,
-  getLastDataLmdHrDamOverviewDish,
+  getLastDataLmdDamOverview,
   getLastDataLmdDamSpareAdvm,
   lmdHrRightAdvmReport,
   sevenDayReport
