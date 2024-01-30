@@ -95,25 +95,70 @@ const getLastDataLmdDamSpareAdvm = async (user) => {
   }
 };
 
-const lmdHrRightAdvmReport = async (startDate, endDate) => {
+const lmdHrRightAdvmReport = async (startDate, endDate, intervalMinutes) => {
   try {
-    // const lmdHrRightAdvmReport = await LMD_HR_RIGHT_ADVM.find({
-    //   dateTime: {
-    //     $gte: new Date(new Date(startDate).setHours(00, 00, 00)),
-    //     $lt: new Date(new Date(endDate).setHours(23, 59, 59))
-    //   },
-    // });
+    const pipeline = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            time: "$time",
+            year: "$year",
+            month: "$month",
+            week: "$week",
+            hrrFlowRate: "$hrrFlowRate",
+            hrrTotalizer: "$hrrTotalizer",
+            interval: {
+              $toDate: {
+                $subtract: [
+                  { $toLong: "$dateTime" },
+                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
+                ],
+              },
+            },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: "$_id.interval",
+          count: 1,
+          time: "$_id.time",
+          year: "$_id.year",
+          month: "$_id.month",
+          week: "$_id.week",
+          hrrFlowRate: "$_id.hrrFlowRate",
+          hrrTotalizer: "$_id.hrrTotalizer",
+        },
+      },
+      {
+        $sort:{
+          dateTime : -1
+        }
+      },
+    ];
 
-    // console.log(lmdHrRightAdvmReport.length);
+    const lmdHrRightAdvmReport = await LMD_HR_RIGHT_ADVM.aggregate(pipeline);
 
+    console.log(lmdHrRightAdvmReport.length);
 
-    const lmdHrRightAdvmReport = await LMD_HR_RIGHT_ADVM.createIndexes({ dateTime: 1 })
     return lmdHrRightAdvmReport;
   } catch (error) {
     console.error("Error:", error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
+
+
 
 const sevenDayReport = async (user) => {
   try {

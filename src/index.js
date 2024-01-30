@@ -12,26 +12,26 @@ const { kadamMongoDBData} = require("../src/controllers/kadam.controller")
 async function startServer() {
   try {
     // Connect to SQL Server and fetch data
-    // const result = await SRSPDAM();
-    // const kadanData = await KADAM()
-    // const lmd = await LMDDAM()
+    const result = await SRSPDAM();
+    const kadanData = await KADAM()
+    const lmd = await LMDDAM()
 
 
-// const cronJob = new cron.CronJob('*/1 * * * *', async () => {
-//   try {
+const cronJob = new cron.CronJob('*/1 * * * *', async () => {
+  try {
    
 
-//     await handleMongoDBData(result);
-//     await lmdMongoDBData(lmd);
-//     await kadamMongoDBData(kadanData);
+    await handleMongoDBData(result);
+    await lmdMongoDBData(lmd);
+    await kadamMongoDBData(kadanData);
 
-//     console.log('Cron job executed successfully.');
-//   } catch (error) {
-//     console.error('Error in cron job:', error);
-//   }
-// });
+    console.log('Cron job executed successfully.');
+  } catch (error) {
+    console.error('Error in cron job:', error);
+  }
+});
 
-// cronJob.start();
+cronJob.start();
 
   
     // await handleMongoDBData(result);

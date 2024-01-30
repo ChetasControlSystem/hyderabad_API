@@ -483,7 +483,7 @@ const getLastDataLmdDamSpareAdvm = catchAsync(async (req, res) => {
 });
 
 const lmdHrRightAdvmReport = catchAsync(async (req, res) => {
-  let { startDate, endDate } = req.query;
+  let { startDate, endDate, intervalMinutes} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -492,7 +492,9 @@ const lmdHrRightAdvmReport = catchAsync(async (req, res) => {
   if (startDate === '' || endDate === '') {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
-  const lmdHrRightAdvmReport = await lmdService.lmdHrRightAdvmReport(startDate, endDate, req.user);
+
+  const lmdHrRightAdvmReport = await lmdService.lmdHrRightAdvmReport(startDate, endDate, intervalMinutes, req.user);
+
   res.send(lmdHrRightAdvmReport);
 });
 
