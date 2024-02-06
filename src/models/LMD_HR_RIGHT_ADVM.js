@@ -173,7 +173,8 @@ const lmdHrDamRightAdvm = mongoose.Schema(
         },
         dateTime: {
             type: Date,
-            require: true
+            require: true,
+            index : true
         },
         date: {
             type: String,
@@ -205,7 +206,7 @@ const lmdHrDamRightAdvm = mongoose.Schema(
     }
 );
 
-
+lmdHrDamRightAdvm.index({dateTime : 1})
 const SDO = mongoose.model('lmd_Hr_Dam_Right_Advm', lmdHrDamRightAdvm);
 
 module.exports = SDO;

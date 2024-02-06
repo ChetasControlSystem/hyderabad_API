@@ -174,7 +174,8 @@ const knrDamOverviewDischargeSchema  = mongoose.Schema(
     },
     dateTime:{
         type: Date,
-        require : true
+        require : true,
+        index : true
     },
     date: {
         type: String,
@@ -221,6 +222,7 @@ const knrDamOverviewDischargeSchema  = mongoose.Schema(
 //   });
 
 
+knrDamOverviewDischargeSchema.index({dateTime : 1})
 const SDO = mongoose.model('knr_Dam_Overview_Discharge', knrDamOverviewDischargeSchema);
 
 module.exports = SDO;

@@ -482,7 +482,7 @@ const getLastDataLmdDamSpareAdvm = catchAsync(async (req, res) => {
   res.send(getLastDataLmdDamSpareAdvm);
 });
 
-const lmdHrRightAdvmReport = catchAsync(async (req, res) => {
+const lmdDischargeGateReport = catchAsync(async (req, res) => {
   let { startDate, endDate, intervalMinutes} = req.query;
 
   if (!startDate && !endDate) {
@@ -493,10 +493,95 @@ const lmdHrRightAdvmReport = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const lmdHrRightAdvmReport = await lmdService.lmdHrRightAdvmReport(startDate, endDate, intervalMinutes, req.user);
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
 
-  res.send(lmdHrRightAdvmReport);
+  const lmdDischargeGateReport = await lmdService.lmdDischargeGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(lmdDischargeGateReport);
 });
+
+const lmdOpeningGateReport = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const lmdOpeningGateReport = await lmdService.lmdOpeningGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(lmdOpeningGateReport);
+});
+
+const lmdPondlevelGateReport = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+    const currentPage = parseInt(req.query.currentPage) || 1;
+    const perPage = parseInt(req.query.perPage) || 10;
+    let startIndex = (currentPage - 1) * perPage;
+
+  const lmdPondlevelGateReport = await lmdService.lmdPondlevelGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(lmdPondlevelGateReport);
+});
+
+const lmdGateParameterOverviewReport = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+    const currentPage = parseInt(req.query.currentPage) || 1;
+    const perPage = parseInt(req.query.perPage) || 10;
+    let startIndex = (currentPage - 1) * perPage;
+
+  const lmdGateParameterOverviewReport = await lmdService.lmdGateParameterOverviewReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(lmdGateParameterOverviewReport);
+});
+
+const lmdHrGateReport = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+    const currentPage = parseInt(req.query.currentPage) || 1;
+    const perPage = parseInt(req.query.perPage) || 10;
+    let startIndex = (currentPage - 1) * perPage;
+
+  const lmdGateParameterOverviewReport = await lmdService.lmdGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(lmdGateParameterOverviewReport);
+});
+
 
 const sevenDayReport = catchAsync(async (req, res) => {
   const sevenDayReport = await lmdService.sevenDayReport(req.user);
@@ -509,6 +594,10 @@ module.exports = {
   getSalientFeature,
   lmdDamOverview,
   getLastDataLmdDamSpareAdvm,
-  lmdHrRightAdvmReport,
+  lmdDischargeGateReport,
+  lmdOpeningGateReport,
+  lmdPondlevelGateReport,
+  lmdGateParameterOverviewReport,
+  lmdHrGateReport,
   sevenDayReport,
 };

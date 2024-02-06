@@ -174,7 +174,8 @@ const SanjayDamPondLevel = mongoose.Schema(
         },
         dateTime: {
             type: Date,
-            require: true
+            require: true,
+            index : true
         },
         date: {
             type: String,
@@ -217,7 +218,7 @@ const SanjayDamPondLevel = mongoose.Schema(
 //     next();
 // });
 
-
+SanjayDamPondLevel.index({dateTime : 1})
 const SDO = mongoose.model('Sanjay_Dam_Pond_Level_Overview', SanjayDamPondLevel);
 
 module.exports = SDO;

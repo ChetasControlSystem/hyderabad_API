@@ -174,7 +174,8 @@ const SanjayHrDamOverviewPos = mongoose.Schema(
         },
         dateTime: {
             type: Date,
-            require: true
+            require: true,
+            index : true
         },
         date: {
             type: String,
@@ -217,7 +218,7 @@ const SanjayHrDamOverviewPos = mongoose.Schema(
 //     next();
 // });
 
-
+SanjayHrDamOverviewPos.index({dateTime : 1})
 const SDO = mongoose.model('Sanjay_Hr_Dam_Overview_Position', SanjayHrDamOverviewPos);
 
 module.exports = SDO;

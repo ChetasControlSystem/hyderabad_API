@@ -173,7 +173,8 @@ const LmdDamOverviewDischarge = mongoose.Schema(
     },
     dateTime:{
         type: Date,
-        require : true
+        require : true,
+        index: true
     },
     date: {
         type: String,
@@ -205,7 +206,7 @@ const LmdDamOverviewDischarge = mongoose.Schema(
   }
 );
 
-
+LmdDamOverviewDischarge.index({ dateTime: 1 });
 const SDO = mongoose.model('Lmd_Dam_Overview_Discharge', LmdDamOverviewDischarge);
 
 module.exports = SDO;

@@ -177,7 +177,8 @@ const lmdHrDamPondLevel = mongoose.Schema(
         },
         dateTime: {
             type: Date,
-            require: true
+            require: true,
+            index : true
         },
         date: {
             type: String,
@@ -209,7 +210,7 @@ const lmdHrDamPondLevel = mongoose.Schema(
     }
 );
 
-
+lmdHrDamPondLevel.index({dateTime : 1})
 const SDO = mongoose.model('lmd_Hr_Dam_Pond_Level_overview', lmdHrDamPondLevel);
 
 module.exports = SDO;

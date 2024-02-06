@@ -173,7 +173,8 @@ const KnrHrDamOverviewPosition = mongoose.Schema(
     },
     dateTime:{
         type: Date,
-        require : true
+        require : true,
+        index : true
     },
     date: {
         type: String,
@@ -205,7 +206,7 @@ const KnrHrDamOverviewPosition = mongoose.Schema(
   }
 );
 
-
+KnrHrDamOverviewPosition.index({dateTime : 1})
 const SDO = mongoose.model('Knr_Hr_Dam_Overview_Position', KnrHrDamOverviewPosition);
 
 module.exports = SDO;

@@ -173,7 +173,8 @@ const KnrSpareAdvm = mongoose.Schema(
     },
     dateTime:{
         type: Date,
-        require : true
+        require : true,
+        index : true
     },
     date: {
         type: String,
@@ -205,7 +206,7 @@ const KnrSpareAdvm = mongoose.Schema(
   }
 );
 
-
+KnrSpareAdvm.index({dateTime : true})
 const SDO = mongoose.model('Knr_Spare_Advm', KnrSpareAdvm);
 
 module.exports = SDO;

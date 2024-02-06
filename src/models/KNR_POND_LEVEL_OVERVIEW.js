@@ -173,7 +173,8 @@ const knrPondLevelOverview = mongoose.Schema(
         },
         dateTime: {
             type: Date,
-            require: true
+            require: true,
+            index : true
         },
         date: {
             type: String,
@@ -205,6 +206,7 @@ const knrPondLevelOverview = mongoose.Schema(
     }
 );
 
+knrPondLevelOverview.index({dateTime : true})
 const SDO = mongoose.model('knr_Pond_Level_Overview', knrPondLevelOverview);
 
 module.exports = SDO;

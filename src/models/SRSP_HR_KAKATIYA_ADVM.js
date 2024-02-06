@@ -173,7 +173,8 @@ const SanjayHrKakatiyaAdvm = mongoose.Schema(
         },
         dateTime: {
             type: Date,
-            require: true
+            require: true,
+            index : true
         },
         date: {
             type: String,
@@ -205,7 +206,7 @@ const SanjayHrKakatiyaAdvm = mongoose.Schema(
     }
 );
 
-
+SanjayHrKakatiyaAdvm.index({dateTime : 1})
 const SDO = mongoose.model('Sanjay_Hr_kakatiya_Advm', SanjayHrKakatiyaAdvm);
 
 module.exports = SDO;

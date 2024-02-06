@@ -173,7 +173,8 @@ const lmdHrDamOverview = mongoose.Schema(
         },
         dateTime: {
             type: Date,
-            require: true
+            require: true,
+            index : true
         },
         date: {
             type: String,
@@ -205,7 +206,7 @@ const lmdHrDamOverview = mongoose.Schema(
     }
 );
 
-
+lmdHrDamOverview.index({dateTime : 1})
 const SDO = mongoose.model('lmd_Hr_Dam_Overview_Position', lmdHrDamOverview);
 
 module.exports = SDO;

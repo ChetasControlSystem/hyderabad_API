@@ -173,6 +173,7 @@ const SanjaySsdDamOverviewPos = mongoose.Schema(
     },
     dateTime:{
         type: Date,
+        index : true
         
     },
     date: {
@@ -205,6 +206,7 @@ const SanjaySsdDamOverviewPos = mongoose.Schema(
   }
 );
 
+SanjaySsdDamOverviewPos.index({dateTime : 1})
 const SDO = mongoose.model('Sanjay_Ssd_Dam_Overview_Position', SanjaySsdDamOverviewPos);
 
 module.exports = SDO;

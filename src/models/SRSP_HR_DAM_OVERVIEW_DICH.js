@@ -174,7 +174,8 @@ const SanjayHrDamOverviewDich = mongoose.Schema(
         },
         dateTime: {
             type: Date,
-            require: true
+            require: true,
+            index : true
         },
         date: {
             type: String,
@@ -217,7 +218,7 @@ const SanjayHrDamOverviewDich = mongoose.Schema(
 //     next();
 // });
 
-
+SanjayHrDamOverviewDich.index({dateTime : 1})
 const SDO = mongoose.model('Sanjay_Hr_Dam_Overview_Discharge', SanjayHrDamOverviewDich);
 
 module.exports = SDO;
