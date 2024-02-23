@@ -499,7 +499,7 @@ const lmdDischargeGateReport = catchAsync(async (req, res) => {
 
   const lmdDischargeGateReport = await lmdService.lmdDischargeGateReport(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
 
-//  return res.json(lmdDischargeGateReport);
+ return res.json(lmdDischargeGateReport);
 
 });
 

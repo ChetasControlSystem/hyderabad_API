@@ -1,22 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Demo test</title>
     <style>
         table {
             border-collapse: collapse;
-            width: 100%; /* Set width to 100% to fit on A4 page */
+            width: 100%;
+            /* Set width to 100% to fit on A4 page */
         }
 
-        table, th, td {
+        table,
+        th,
+        td {
             border: 1px solid black;
         }
 
-        .header-container {
+
+        .header-container img {
+            height: 200px;
+            margin: 30px 10px; /* Add margin to both left and right sides */
+        }
+
+  .header-container {
             text-align: center;
             position: relative;
-            margin-top: 30px; /* Add top margin */
-            margin-bottom: 30px; /* Add bottom margin */
+            margin-top: 30px;
+            /* Add top margin */
+            margin-bottom: 30px;
+            /* Add bottom margin */
             border-top: 1px solid black;
             border-left: 1px solid black;
             border-right: 1px solid black;
@@ -24,31 +36,36 @@
         }
 
         .header-container .img-container {
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-        .header-container img {
-            height: 5%; /* Adjust the height */
-            margin-right: 150px; /* Add some spacing to the right of the image */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .header-container h1 {
-            display: inline-block; /* Display h1 as inline block */
-            vertical-align: middle; /* Align h1 vertically in the middle */
+            display: inline-block;
+            /* Display h1 as inline block */
+            vertical-align: middle;
+            /* Align h1 vertically in the middle */
         }
 
-        th, td {
-            text-align: center; /* Center-align content in cells */
-            padding: 8px; /* Add padding for better readability */
+        th,
+        td {
+            text-align: center;
+            /* Center-align content in cells */
+            padding: 8px;
+            /* Add padding for better readability */
         }
 
-        td:first-child, th:first-child {
-            min-width: 120px; /* Set minimum width for the Date-time column */
+        td:first-child,
+        th:first-child {
+            min-width: 120px;
+            /* Set minimum width for the Date-time column */
         }
 
-        th:nth-child(2), td:nth-child(2) {
-            width: 8%; /* Adjust width for Gate 1 column */
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 8%;
+            /* Adjust width for Gate 1 column */
         }
 
         /* Add similar styles for columns 3 to 20 */
@@ -56,39 +73,52 @@
         .page-break {
             page-break-before: always;
         }
+        .img-size {
+            width: 100px;
+            height: 100px;
+        }
     </style>
 </head>
+
 <body>
     <div class="header-container">
         <div class="img-container">
-            <img src="http://192.168.1.106:3002/assets/logo2.jpeg" alt="Placeholder Image">
+            <img src="http://192.168.1.106:3002/assets/logo2.jpeg" class="img-size" alt="Placeholder Image">
+            <img src="https://www.chetascontrol.com/images/ind2.jpg" class="img-size" alt="Placeholder Image">
         </div>
         <h1>LMD Dam Gate 1 to 20 Discharge Report</h1>
     </div>
-    
+
     <table>
         <thead>
             <tr>
                 <th>Date-time</th>
-                <% for (let gate = 1; gate <= 20; gate++) { %>
-                    <th>Gate <%= gate %><br/></th>
-                <% } %>
+                <% for (let gate=1; gate <=20; gate++) { %>
+                    <th>Gate <%= gate %><br /></th>
+                    <% } %>
             </tr>
         </thead>
         <tbody>
-            <% lmdDischargeGateReport1.forEach((item, index) => { %>
+            <% lmdDischargeGateReport1.forEach((item, index)=> { %>
                 <tr>
-                    <td><%= new Date(item.dateTime).toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/(\d+)\/(\d+)\/(\d+),/g, '$3-$1-$2T') %></td>
-                    <% for (let gate = 1; gate <= 20; gate++) { %>
-                        <td><%= item[`gate${gate}Discharge`] %></td>
-                    <% } %>
+                    <td>
+                        <%= new Date(item.dateTime).toLocaleString('en-US', { year: 'numeric' , month: '2-digit' ,
+                            day: '2-digit' , hour: '2-digit' , minute: '2-digit'
+                            }).replace(/(\d+)\/(\d+)\/(\d+),/g, '$3-$1-$2T' ) %>
+                    </td>
+                    <% for (let gate=1; gate <=20; gate++) { %>
+                        <td>
+                            <%= item[`gate${gate}Discharge`] %>
+                        </td>
+                        <% } %>
                 </tr>
-                <% if (index === 19) { return; } %>
-            <% }) %>
+                <% if (index===19) { return; } %>
+                    <% }) %>
         </tbody>
     </table>
 
     <!-- <div class="page-break"></div> -->
-  
+
 </body>
+
 </html>
