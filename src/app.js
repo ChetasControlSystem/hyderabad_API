@@ -20,6 +20,8 @@ if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
 }
+app.set('view engine', 'ejs');
+
 
 // set security HTTP headers
 app.use(helmet());

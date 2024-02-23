@@ -12,14 +12,14 @@ const SHDOD = require('../models/SRSP_HR_DAM_OVERVIEW_DICH');
 
 async function handleMongoDBData(data) {
   try {
-    const srspPondLevel = data.srspPondLevel;
-    const srspSsdDamOverviewPosition = data.srspSsdDamOverviewPosition;
-    const srspHrDamOverviewPosition = data.srspHrDamOverviewPosition;
-    const srspSsdDamOverviewDischarge = data.srspSsdDamOverviewDischarge;
-    const srspHrSsdAdvm = data.srspHrSsdAdvm;
-    const srspHrDamOverviewDischarge = data.srspHrDamOverviewDischarge;
+    const srspPondLevel = data?.srspPondLevel;
+    const srspSsdDamOverviewPosition = data?.srspSsdDamOverviewPosition;
+    const srspHrDamOverviewPosition = data?.srspHrDamOverviewPosition;
+    const srspSsdDamOverviewDischarge = data?.srspSsdDamOverviewDischarge;
+    const srspHrSsdAdvm = data?.srspHrSsdAdvm;
+    const srspHrDamOverviewDischarge = data?.srspHrDamOverviewDischarge;
 
-    const mappedData = srspPondLevel.map((row) => {
+    const mappedData = srspPondLevel?.map((row) => {
       const dateTime = moment(row.DateTime);
       return {
         date: dateTime.format('YYYY-MM-DD'),
@@ -74,7 +74,7 @@ async function handleMongoDBData(data) {
       };
     });
 
-    const mappedData1 = srspSsdDamOverviewPosition.map((row) => {
+    const mappedData1 = srspSsdDamOverviewPosition?.map((row) => {
       const dateTime = moment(row.DateTime);
       return {
         date: dateTime.format('YYYY-MM-DD'),
@@ -129,7 +129,7 @@ async function handleMongoDBData(data) {
       };
     });
 
-    const mappedData2 = srspHrDamOverviewPosition.map((row) => {
+    const mappedData2 = srspHrDamOverviewPosition?.map((row) => {
       const dateTime = moment(row.DateTime);
       return {
         date: dateTime.format('YYYY-MM-DD'),
@@ -184,7 +184,7 @@ async function handleMongoDBData(data) {
       };
     });
 
-    const mappedData3 = srspSsdDamOverviewDischarge.map((row) => {
+    const mappedData3 = srspSsdDamOverviewDischarge?.map((row) => {
       const dateTime = moment(row.DateTime);
       return {
         date: dateTime.format('YYYY-MM-DD'),
@@ -239,7 +239,7 @@ async function handleMongoDBData(data) {
       };
     });
 
-    const mappedData4 = srspHrSsdAdvm.map((row) => {
+    const mappedData4 = srspHrSsdAdvm?.map((row) => {
       const dateTime = moment(row.DateTime);
       return {
         date: dateTime.format('YYYY-MM-DD'),
@@ -294,7 +294,7 @@ async function handleMongoDBData(data) {
       };
     });
 
-    const mappedData5 = srspHrDamOverviewDischarge.map((row) => {
+    const mappedData5 = srspHrDamOverviewDischarge?.map((row) => {
       const dateTime = moment(row.DateTime);
       return {
         date: dateTime.format('YYYY-MM-DD'),
@@ -358,8 +358,7 @@ async function handleMongoDBData(data) {
 
     if (pondLevelLastData.length) {
       const LastDate = new Date(pondLevelLastData[0].dateTime);
-      const newArray = mappedData
-        .map((datetimeString) => {
+      const newArray = mappedData?.map((datetimeString) => {
           const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
             return datetimeString;
@@ -376,7 +375,7 @@ async function handleMongoDBData(data) {
     if (ssdDamOverviewLastData.length) {
       const LastDate1 = new Date(ssdDamOverviewLastData[0].dateTime);
       const newArray = mappedData1
-        .map((datetimeString) => {
+        ?.map((datetimeString) => {
           const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate1) {
             return datetimeString;
@@ -393,7 +392,7 @@ async function handleMongoDBData(data) {
     if (hrDamOverviewLastData.length) {
       const LastDate1 = new Date(hrDamOverviewLastData[0].dateTime);
       const newArray = mappedData2
-        .map((datetimeString) => {
+        ?.map((datetimeString) => {
           const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate1) {
             return datetimeString;
@@ -410,7 +409,7 @@ async function handleMongoDBData(data) {
     if (ssdDamOverviewDischargeLastData.length) {
       const LastDate1 = new Date(ssdDamOverviewDischargeLastData[0].dateTime);
       const newArray = mappedData3
-        .map((datetimeString) => {
+        ?.map((datetimeString) => {
           const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate1) {
             return datetimeString;
@@ -427,7 +426,7 @@ async function handleMongoDBData(data) {
     if (hrKakatiyaAdvm.length) {
       const LastDate1 = new Date(hrKakatiyaAdvm[0].dateTime);
       const newArray = mappedData4
-        .map((datetimeString) => {
+        ?.map((datetimeString) => {
           const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate1) {
             return datetimeString;
@@ -444,7 +443,7 @@ async function handleMongoDBData(data) {
     if (hrDamOverviewDischarge.length) {
       const LastDate1 = new Date(hrDamOverviewDischarge[0].dateTime);
       const newArray = mappedData5
-        .map((datetimeString) => {
+        ?.map((datetimeString) => {
           const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate1) {
             return datetimeString;
@@ -483,6 +482,146 @@ const getLastDataSrspDamSpareAdvm = catchAsync(async (req, res) => {
   res.send(getLastDataLmdDamSpareAdvm);
 });
 
+const srspDischargeGate1TO21Report = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const srspDischargeGate1TO21Report = await srspService.srspDischargeGate1TO21Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(srspDischargeGate1TO21Report);
+});
+
+const srspDischargeGate22TO42Report = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const srspDischargeGate22TO42Report = await srspService.srspDischargeGate22TO42Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(srspDischargeGate22TO42Report);
+});
+
+const srspOpeningGate1TO21Report = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const srspOpeningGate1TO21Report = await srspService.srspOpeningGate1TO21Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(srspOpeningGate1TO21Report);
+});
+
+const srspOpeningGate22TO42Report = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const srspOpeningGate22TO42Report = await srspService.srspOpeningGate22TO42Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(srspOpeningGate22TO42Report);
+});
+
+const srspInflowOutflowPondLevelReport = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const srspInflowOutflowPondLevelReport = await srspService.srspInflowOutflowPondLevelReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(srspInflowOutflowPondLevelReport);
+});
+
+const srspParameterOverviewReport = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const srspParameterOverviewReport = await srspService.srspParameterOverviewReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(srspParameterOverviewReport);
+});
+
+const srspHrDamGateReport = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const srspHrDamGateReport = await srspService.srspHrDamGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(srspHrDamGateReport);
+});
+
 const sevenDayReport = catchAsync(async (req, res) => {
   const sevenDayReport = await srspService.sevenDayReport(req.user);
   res.send(sevenDayReport);
@@ -494,5 +633,12 @@ module.exports = {
   getSalientFeature,
   srspDamOverview,
   getLastDataSrspDamSpareAdvm,
+  srspDischargeGate1TO21Report,
+  srspDischargeGate22TO42Report,
+  srspOpeningGate1TO21Report,
+  srspOpeningGate22TO42Report,
+  srspInflowOutflowPondLevelReport,
+  srspParameterOverviewReport,
+  srspHrDamGateReport,
   sevenDayReport,
 };

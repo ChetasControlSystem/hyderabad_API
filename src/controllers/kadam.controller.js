@@ -487,11 +487,116 @@ const sevenDayReport = catchAsync(async (req, res) => {
   res.send(sevenDayReport);
 });
 
+const kadamOpeningGate1To18Report = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const kadamOpeningGate1To18Report = await knrService.kadamOpeningGate1To18Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(kadamOpeningGate1To18Report);
+});
+
+const kadamDishchargeGate1To18Report = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const kadamDishchargeGate1To18Report = await knrService.kadamDishchargeGate1To18Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(kadamDishchargeGate1To18Report);
+});
+
+const kadamInflowOutflowPondLevelReport = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const kadamInflowOutflowPondLevelReport = await knrService.kadamInflowOutflowPondLevelReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(kadamInflowOutflowPondLevelReport);
+});
+
+const kadamGateParameterOverviewReport = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const kadamGateParameterOverviewReport = await knrService.kadamGateParameterOverviewReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(kadamGateParameterOverviewReport);
+});
+
+const kadamHrDamGateReport = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const kadamHrDamGateReport = await knrService.kadamHrDamGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+
+  res.json(kadamHrDamGateReport);
+});
+
 module.exports = {
   kadamMongoDBData,
   createSalientFeature,
   getSalientFeature,
   kadamDamOverview,
   getLastDataKadamDamSpareAdvm,
+  kadamOpeningGate1To18Report,
+  kadamDishchargeGate1To18Report,
+  kadamInflowOutflowPondLevelReport,
+  kadamGateParameterOverviewReport,
+  kadamHrDamGateReport,
   sevenDayReport,
 };

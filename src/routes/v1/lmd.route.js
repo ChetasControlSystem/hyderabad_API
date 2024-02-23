@@ -10,7 +10,7 @@ router.get('/get-salientfeature', auth(), lmdController.getSalientFeature);
 router.get('/lmd-overview', auth(), lmdController.lmdDamOverview);
 router.get('/overview-advm', auth(), lmdController.getLastDataLmdDamSpareAdvm);
 
-router.get('/lmd-1to20-dis-gatereport', auth(), lmdController.lmdDischargeGateReport);
+router.get('/lmd-1to20-dis-gatereport', lmdController.lmdDischargeGateReport);
 router.get('/lmd-1to20-opn-gatereport', auth(), lmdController.lmdOpeningGateReport);
 router.get('/lmd-pondlevel-report', auth(), lmdController.lmdPondlevelGateReport);
 router.get('/lmd-parameter-overview-report', auth(), lmdController.lmdGateParameterOverviewReport);

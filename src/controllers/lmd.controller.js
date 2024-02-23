@@ -483,7 +483,7 @@ const getLastDataLmdDamSpareAdvm = catchAsync(async (req, res) => {
 });
 
 const lmdDischargeGateReport = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes} = req.query;
+  let { startDate, endDate, intervalMinutes, exportToExcel } = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -497,9 +497,10 @@ const lmdDischargeGateReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const lmdDischargeGateReport = await lmdService.lmdDischargeGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+  const lmdDischargeGateReport = await lmdService.lmdDischargeGateReport(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
 
-  res.json(lmdDischargeGateReport);
+//  return res.json(lmdDischargeGateReport);
+
 });
 
 const lmdOpeningGateReport = catchAsync(async (req, res) => {
