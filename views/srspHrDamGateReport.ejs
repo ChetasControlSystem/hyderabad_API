@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Demo test</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        font-size: 12px; /* Set the font size for all table elements */
+      }
+
+      .header-container img {
+        height: 200px;
+        margin: 30px 10px;
+      }
+
+      @page {
+        margin-top: 10px;
+      }
+
+      .header-container {
+        text-align: center;
+        position: relative;
+        margin-bottom: 30px;
+        border: 1px solid black;
+        page-break-inside: avoid;
+      }
+
+      .header-container .img-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-container h1 {
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      th,
+      td {
+        text-align: center;
+        padding: 8px;
+      }
+
+      .page-break {
+        page-break-before: always;
+      }
+
+      .img-size {
+        width: 100px;
+        height: 100px;
+      }
+
+      .page-container {
+        page-break-before: always;
+      }
+    </style>
+  </head>
+  <body>
+    <% for (let pageIndex = 0; pageIndex < Math.ceil(mergedDataWithoutPagination.length / 17); pageIndex++) { %>
+    <div class="header-container">
+      <div class="img-container">
+        <img src="http://142.168.1.106:3002/assets/logo2.jpeg" class="img-size" alt="Placeholder Image" />
+        <img src="https://www.chetascontrol.com/images/ind2.jpg" class="img-size" alt="Placeholder Image" />
+      </div>
+      <h1>SRSP HR canal Gate Report</h1>
+    </div>
+
+    <table>
+      <thead>
+        <% const canalHeaders = [
+          { canal: "KAKATIYA CANAAL", gates: 4 },
+          { canal: "SARASWATI CANAAL", gates: 2 },
+          { canal: "FLOOD FLOW CANAAL", gates: 6 },
+          { canal: "LAKSHMI CANAAL", gates: 2 },
+        ]; %>
+      
+        <tr>
+          <% canalHeaders.forEach(canalData => { %>
+            <th colspan="<%= canalData.gates * 2 + 2 %>"><%= canalData.canal %></th>
+          <% }); %>
+        </tr>
+      
+        <tr>
+          <th>Date-time</th>
+          <% canalHeaders.forEach(canalData => {
+            for (let gateIndex = 1; gateIndex <= canalData.gates; gateIndex++) { %>
+              <th>Gete <%= gateIndex %> Opening (Feet)</th>
+              <th>Gate <%= gateIndex %> Discharge (C/S)</th>
+            <% }
+            // Total Discharge(C/S) header after each set of gates for a canal
+            %>
+            <th>Total Discharge(C/S)</th>
+          <% }); %>
+        </tr>
+      </thead>
+      
+      
+      
+      
+      
+           
+      <tbody>
+        <% for (let i = pageIndex * 17; i < (pageIndex + 1) * 17 && i < mergedDataWithoutPagination.length; i++) { %>
+        <tr>
+          <td>
+            <%= new Date(mergedDataWithoutPagination[i].dateTime).toLocaleString('en-US', { year: 'numeric', month:
+            '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/(\d+)\/(\d+)\/(\d+),/g, '$3-$1-$2T' )
+            %>
+          </td>
+          <td><%= mergedDataWithoutPagination[i].hrkGate1Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrkGate1Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].hrkGate2Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrkGate2Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].hrkGate3Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrkGate3Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].hrkGate4Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrkGate4Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].kakatiyaTotalDischarge %></td>
+
+          <td><%= mergedDataWithoutPagination[i].hrsGate1Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrsGate1Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].hrsGate2Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrsGate2Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].saraswatiTotalDischarge %></td>
+
+          <td><%= mergedDataWithoutPagination[i].hrfGate1Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrfGate1Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].hrfGate2Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrfGate2Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].hrfGate3Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrfGate3Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].hrfGate4Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrfGate4Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].hrfGate5Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrfGate5Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].hrfGate6Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrfGate6Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].floodFlowTotalDischarge %></td>
+
+          <td><%= mergedDataWithoutPagination[i].hrlManGate1Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrlManGate1Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].hrlManGate2Position %></td>
+          <td><%= mergedDataWithoutPagination[i].hrlManGate2Discharge %></td>
+          <td><%= mergedDataWithoutPagination[i].lakshmiGateTotalDischarge %></td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+    <% } %>
+  </body>
+</html>

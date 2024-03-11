@@ -1,13 +1,19 @@
 const httpStatus = require('http-status');
 const ExcelJS = require('exceljs');
 const fastCsv = require('fast-csv');
-const PDFDocument = require("pdfkit");
-const blobStream = require("blob-stream");
-const Docx = require("docx");
+const PDFDocument = require('pdfkit');
+const blobStream = require('blob-stream');
+const Docx = require('docx');
+const { Footer, Header, Packer, Paragraph } = Docx;
+// const htmlToDocx = require('html-docx-js');
+const docxtemplater = require('docxtemplater');
+const JSZip = require('jszip');
 const puppeteer = require('puppeteer');
-const path = require("path")
+const path = require('path');
 const ejs = require('ejs');
 const fs = require('fs');
+const mammoth = require('mammoth');
+const pdf = require('html-pdf');
 
 const {
   LMDS,
@@ -17,7 +23,7 @@ const {
   LMD_HR_DAM_OVERVIEW_DICH,
   LMD_DAM_OVERVIEW_POS,
   LMD_DAM_OVERVIEW_DICH,
-  Permission
+  Permission,
 } = require('../models');
 
 const ApiError = require('../utils/ApiError');
@@ -34,8 +40,11 @@ const getSalientFeature = async (user) => {
   try {
     const checkPermission = await Permission.findOne({ name: 'lmdSalientFeatures' });
 
-    if (user.role === 'admin' || user.role === 'lmdSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
-
+    if (
+      user.role === 'admin' ||
+      user.role === 'lmdSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
       const showOneSalientFeature = await LMDS.findOne();
       return showOneSalientFeature;
     } else {
@@ -48,11 +57,13 @@ const getSalientFeature = async (user) => {
 
 const getLastDataLmdDamOverview = async (user) => {
   try {
-
     const checkPermission = await Permission.findOne({ name: 'lmdDamOverview' });
 
-    if (user.role === 'admin' || user.role === 'lmdSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
-
+    if (
+      user.role === 'admin' ||
+      user.role === 'lmdSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
       const getLastDataLmdDamPondLevelOverview = await LMD_POND_LEVEL_OVERVIEW.findOne()
         .select(
           'pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge inflow1Level inflow2Level inflow3Level inflow1Discharge inflow2Discharge inflow3Discharge damDownstreamLevel damDownstreamDischarge hrrDownstreamLevel hrrDownstreamDischarge'
@@ -79,8 +90,8 @@ const getLastDataLmdDamOverview = async (user) => {
         getLastDataLmdHrDamOverviewPos,
         getLastDataLmdDamOverviewDish,
         getLastDataLmdDamOverviewPos,
-        getLastDataLmdDamPondLevelOverview
-      }
+        getLastDataLmdDamPondLevelOverview,
+      };
     } else {
       return 'You are not authorized to access this data';
     }
@@ -93,8 +104,11 @@ const getLastDataLmdDamSpareAdvm = async (user) => {
   try {
     const checkPermission = await Permission.findOne({ name: 'lmdDamOverview' });
 
-    if (user.role === 'admin' || user.role === 'lmdSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
-
+    if (
+      user.role === 'admin' ||
+      user.role === 'lmdSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
       const getLastDataLmdDamSpareAdvm = await LMD_HR_RIGHT_ADVM.findOne().sort({ dateTime: -1 });
       return getLastDataLmdDamSpareAdvm;
     } else {
@@ -105,9 +119,18 @@ const getLastDataLmdDamSpareAdvm = async (user) => {
   }
 };
 
-const lmdDischargeGateReport = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+const lmdDischargeGateReport = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  exportToExcel,
+  currentPage,
+  perPage,
+  startIndex,
+  res,
+  req
+) => {
   try {
-
     const pipeline = [
       {
         $match: {
@@ -122,39 +145,36 @@ const lmdDischargeGateReport = async (startDate, endDate, intervalMinutes, expor
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          gate1Discharge: { $first: "$gate1Discharge" },
-          gate2Discharge: { $first: "$gate2Discharge" },
-          gate3Discharge: { $first: "$gate3Discharge" },
-          gate4Discharge: { $first: "$gate4Discharge" },
-          gate5Discharge: { $first: "$gate5Discharge" },
-          gate6Discharge: { $first: "$gate6Discharge" },
-          gate7Discharge: { $first: "$gate7Discharge" },
-          gate8Discharge: { $first: "$gate8Discharge" },
-          gate9Discharge: { $first: "$gate9Discharge" },
-          gate10Discharge: { $first: "$gate10Discharge" },
-          gate11Discharge: { $first: "$gate11Discharge" },
-          gate12Discharge: { $first: "$gate12Discharge" },
-          gate13Discharge: { $first: "$gate13Discharge" },
-          gate14Discharge: { $first: "$gate14Discharge" },
-          gate15Discharge: { $first: "$gate15Discharge" },
-          gate16Discharge: { $first: "$gate16Discharge" },
-          gate17Discharge: { $first: "$gate17Discharge" },
-          gate18Discharge: { $first: "$gate18Discharge" },
-          gate19Discharge: { $first: "$gate19Discharge" },
-          gate20Discharge: { $first: "$gate20Discharge" },
+          gate1Discharge: { $first: '$gate1Discharge' },
+          gate2Discharge: { $first: '$gate2Discharge' },
+          gate3Discharge: { $first: '$gate3Discharge' },
+          gate4Discharge: { $first: '$gate4Discharge' },
+          gate5Discharge: { $first: '$gate5Discharge' },
+          gate6Discharge: { $first: '$gate6Discharge' },
+          gate7Discharge: { $first: '$gate7Discharge' },
+          gate8Discharge: { $first: '$gate8Discharge' },
+          gate9Discharge: { $first: '$gate9Discharge' },
+          gate10Discharge: { $first: '$gate10Discharge' },
+          gate11Discharge: { $first: '$gate11Discharge' },
+          gate12Discharge: { $first: '$gate12Discharge' },
+          gate13Discharge: { $first: '$gate13Discharge' },
+          gate14Discharge: { $first: '$gate14Discharge' },
+          gate15Discharge: { $first: '$gate15Discharge' },
+          gate16Discharge: { $first: '$gate16Discharge' },
+          gate17Discharge: { $first: '$gate17Discharge' },
+          gate18Discharge: { $first: '$gate18Discharge' },
+          gate19Discharge: { $first: '$gate19Discharge' },
+          gate20Discharge: { $first: '$gate20Discharge' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           gate1Discharge: 1,
           gate2Discharge: 1,
           gate3Discharge: 1,
@@ -175,18 +195,17 @@ const lmdDischargeGateReport = async (startDate, endDate, intervalMinutes, expor
           gate18Discharge: 1,
           gate19Discharge: 1,
           gate20Discharge: 1,
-
         },
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
       {
         $facet: {
           data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
+          totalCount: [{ $count: 'count' }],
         },
       },
     ];
@@ -205,39 +224,36 @@ const lmdDischargeGateReport = async (startDate, endDate, intervalMinutes, expor
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          gate1Discharge: { $first: "$gate1Discharge" },
-          gate2Discharge: { $first: "$gate2Discharge" },
-          gate3Discharge: { $first: "$gate3Discharge" },
-          gate4Discharge: { $first: "$gate4Discharge" },
-          gate5Discharge: { $first: "$gate5Discharge" },
-          gate6Discharge: { $first: "$gate6Discharge" },
-          gate7Discharge: { $first: "$gate7Discharge" },
-          gate8Discharge: { $first: "$gate8Discharge" },
-          gate9Discharge: { $first: "$gate9Discharge" },
-          gate10Discharge: { $first: "$gate10Discharge" },
-          gate11Discharge: { $first: "$gate11Discharge" },
-          gate12Discharge: { $first: "$gate12Discharge" },
-          gate13Discharge: { $first: "$gate13Discharge" },
-          gate14Discharge: { $first: "$gate14Discharge" },
-          gate15Discharge: { $first: "$gate15Discharge" },
-          gate16Discharge: { $first: "$gate16Discharge" },
-          gate17Discharge: { $first: "$gate17Discharge" },
-          gate18Discharge: { $first: "$gate18Discharge" },
-          gate19Discharge: { $first: "$gate19Discharge" },
-          gate20Discharge: { $first: "$gate20Discharge" },
+          gate1Discharge: { $first: '$gate1Discharge' },
+          gate2Discharge: { $first: '$gate2Discharge' },
+          gate3Discharge: { $first: '$gate3Discharge' },
+          gate4Discharge: { $first: '$gate4Discharge' },
+          gate5Discharge: { $first: '$gate5Discharge' },
+          gate6Discharge: { $first: '$gate6Discharge' },
+          gate7Discharge: { $first: '$gate7Discharge' },
+          gate8Discharge: { $first: '$gate8Discharge' },
+          gate9Discharge: { $first: '$gate9Discharge' },
+          gate10Discharge: { $first: '$gate10Discharge' },
+          gate11Discharge: { $first: '$gate11Discharge' },
+          gate12Discharge: { $first: '$gate12Discharge' },
+          gate13Discharge: { $first: '$gate13Discharge' },
+          gate14Discharge: { $first: '$gate14Discharge' },
+          gate15Discharge: { $first: '$gate15Discharge' },
+          gate16Discharge: { $first: '$gate16Discharge' },
+          gate17Discharge: { $first: '$gate17Discharge' },
+          gate18Discharge: { $first: '$gate18Discharge' },
+          gate19Discharge: { $first: '$gate19Discharge' },
+          gate20Discharge: { $first: '$gate20Discharge' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           gate1Discharge: 1,
           gate2Discharge: 1,
           gate3Discharge: 1,
@@ -258,13 +274,12 @@ const lmdDischargeGateReport = async (startDate, endDate, intervalMinutes, expor
           gate18Discharge: 1,
           gate19Discharge: 1,
           gate20Discharge: 1,
-
         },
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
     ];
 
@@ -272,72 +287,55 @@ const lmdDischargeGateReport = async (startDate, endDate, intervalMinutes, expor
     const lmdDischargeGateReport1 = await LMD_DAM_OVERVIEW_DICH.aggregate(pipeline1);
 
     if (exportToExcel == 1) {
-      console.log("aaaaaaaaaaaaaaaaa");
       const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet("LMD Discharge Gate Report")
+      const worksheet = workbook.addWorksheet('LMD Discharge Gate Report');
 
-      const headers = [
-        'DateTime',
-        'Gate 1 Discharge',
-        'Gate 2 Discharge',
-        'Gate 3 Discharge',
-        'Gate 4 Discharge',
-        'Gate 5 Discharge',
-        'Gate 6 Discharge',
-        'Gate 7 Discharge',
-        'Gate 8 Discharge',
-        'Gate 9 Discharge',
-        'Gate 10 Discharge',
-        'Gate 11 Discharge',
-        'Gate 12 Discharge',
-        'Gate 13 Discharge',
-        'Gate 14 Discharge',
-        'Gate 15 Discharge',
-        'Gate 16 Discharge',
-        'Gate 17 Discharge',
-        'Gate 18 Discharge',
-        'Gate 19 Discharge',
-        'Gate 20 Discharge',
-      ];
+      const addImageToWorksheet = (imagePath, colRange) => {
+        const imageId = workbook.addImage({
+          filename: imagePath,
+          extension: 'png',
+          dimensions: { height: 100, width: 100 },
+        });
 
+        worksheet.addImage(imageId, {
+          tl: { col: colRange[0], row: 4 },
+          br: { col: colRange[1], row: 12 },
+          editAs: 'oneCell',
+        });
+      };
+
+      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [3, 6]);
+      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [15, 18]);
+
+      worksheet.getCell('I9').value = 'LMD DAM Gate 1 To 20 Discharge Report';
+
+      const headers = ['DateTime', ...Array.from({ length: 20 }, (_, i) => `Gate ${i + 1} \n (Cusecs)`)];
+      worksheet.addRow([]);
       worksheet.addRow(headers);
+
       lmdDischargeGateReport1.forEach((row) => {
-        const rowData = [
-          row.dateTime,
-          row.gate1Discharge,
-          row.gate2Discharge,
-          row.gate3Discharge,
-          row.gate4Discharge,
-          row.gate5Discharge,
-          row.gate6Discharge,
-          row.gate7Discharge,
-          row.gate8Discharge,
-          row.gate9Discharge,
-          row.gate10Discharge,
-          row.gate11Discharge,
-          row.gate12Discharge,
-          row.gate13Discharge,
-          row.gate14Discharge,
-          row.gate15Discharge,
-          row.gate16Discharge,
-          row.gate17Discharge,
-          row.gate18Discharge,
-          row.gate19Discharge,
-          row.gate20Discharge,
-        ];
+        const rowData = [row.dateTime, ...Array.from({ length: 20 }, (_, i) => row[`gate${i + 1}Discharge`])];
         worksheet.addRow(rowData);
       });
 
-      worksheet.getRow(1).eachCell((cell) => {
-        cell.font = { bold: true };
-      })
+      const dateTimeColumn = worksheet.getColumn(1);
+      dateTimeColumn.width = 20;
+      dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
+      worksheet.getRow(15).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      worksheet.mergeCells('B4:T8');
+      worksheet.mergeCells('B10:T13');
+      worksheet.mergeCells('B9:H9');
+      worksheet.mergeCells('M9:T9');
+ 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=LMD_Discharge_Gate_Report.xlsx');
-      await workbook.xlsx.write(res)
-
+      await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
-      console.log("bbbbbbbbbbbbbbb");
+      console.log('bbbbbbbbbbbbbbb');
 
       const csvStream = fastCsv.format({ headers: true });
 
@@ -373,91 +371,215 @@ const lmdDischargeGateReport = async (startDate, endDate, intervalMinutes, expor
 
       csvStream.pipe(res);
       csvStream.end();
-
     } else if (exportToExcel == 3) {
       try {
-        console.log("cccccccccccccccccccc");
+        //   const doc = new Docx.Document({
+        //     sections: [
+        //         {
+        //             properties: {},
+        //             children: [
+        //                 new Docx.Paragraph({
+        //                     children: [new Docx.TextRun(" Discharge Gate Report")],
+        //                 }),
+
+        //                 new Docx.Table({
+        //                   width: { size: 110, type: Docx.WidthType.PERCENTAGE },
+        //                     rows: [
+        //                         // Table header
+        //                         new Docx.TableRow({
+        //                             children: [
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 1")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 2")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 3")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 4")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 5")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 6")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 7")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 8")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 9")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 10")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 11")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 12")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 13")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 14")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 15")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 16")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 17")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 18")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 19")] }),
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 20")] }),
+        //                             ],
+        //                         }),
+
+        //                         // Table rows
+        //                         ...lmdDischargeGateReport1.map((item) => {
+        //                           const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
+        //                             return new Docx.TableRow({
+        //                                 children: [
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)],width: { size: 20, type: Docx.WidthType.PERCENTAGE } }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate1Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate2Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate3Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate4Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate5Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate6Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate7Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate8Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate9Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate10Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate11Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate12Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate13Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate14Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate15Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate16Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate17Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate18Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate19Discharge.toString())] }),
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate20Discharge.toString())] }),
+        //                                 ],
+        //                             });
+        //                         }),
+        //                     ],
+        //                 }),
+        //             ],
+        //         },
+        //     ],
+        // });
+
+        //         const doc = new Docx.Document({
+        //     sections: [
+        //         {
+        //             properties: {},
+        //             children: [
+        //                 new Docx.Paragraph({
+        //                     children: [new Docx.TextRun(" Discharge Gate Report")],
+        //                 }),
+
+        //                 new Docx.Table({
+        //                     width: { size: "200%", type: Docx.WidthType.AUTO },
+        //                     // width : {size : "100%", type: Docx.WidthType.PERCENTAGE},
+        //                     rows: [
+        //                         // Table header
+        //                         new Docx.TableRow({
+        //                             children: [
+        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
+        //                                 // Adjust the width for each gate column
+        //                                 ...Array.from({ length: 20 }, (_, i) => new Docx.TableCell({ children: [new Docx.Paragraph(`Gate ${i + 1}`)]})),
+        //                             ],
+        //                         }),
+
+        //                         // Table rows
+        //                         ...lmdDischargeGateReport1.map((item) => {
+        //                             const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
+        //                             return new Docx.TableRow({
+        //                                 children: [
+        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)] }),
+        //                                     // Include each gate discharge value
+        //                                     ...Array.from({ length: 20 }, (_, i) => new Docx.TableCell({ children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toString())] })),
+        //                                 ],
+        //                             });
+        //                         }),
+        //                     ],
+        //                 }),
+        //             ],
+        //         },
+        //     ],
+        // });
 
         const doc = new Docx.Document({
           sections: [
             {
-              properties: {},
               children: [
                 new Docx.Paragraph({
-                  children: [new Docx.TextRun(" Discharge Gate Report")],
+                  children: [new Docx.TextRun(' Discharge Gate Report')],
                 }),
 
-                ...lmdDischargeGateReport1.map((item) => {
-                  const formattedDate = new Date(item.dateTime).toISOString().replace('Z', '');
-                  return new Docx.Paragraph({
-                    children: [
-                      new Docx.TextRun("DateTime: " + formattedDate),
-                      new Docx.TextRun("\ngate1Discharge: " + item.gate1Discharge),
-                      new Docx.TextRun("\ngate2Discharge: " + item.gate2Discharge),
-                      new Docx.TextRun("\ngate3Discharge: " + item.gate3Discharge),
-                      new Docx.TextRun("\ngate4Discharge: " + item.gate4Discharge),
-                      new Docx.TextRun("\ngate5Discharge: " + item.gate5Discharge),
-                      new Docx.TextRun("\ngate6Discharge: " + item.gate6Discharge),
-                      new Docx.TextRun("\ngate7Discharge: " + item.gate7Discharge),
-                      new Docx.TextRun("\ngate8Discharge: " + item.gate8Discharge),
-                      new Docx.TextRun("\ngate9Discharge: " + item.gate9Discharge),
-                      new Docx.TextRun("\ngate10Discharge: " + item.gate10Discharge),
-                      new Docx.TextRun("\ngate11Discharge: " + item.gate11Discharge),
-                      new Docx.TextRun("\ngate12Discharge: " + item.gate12Discharge),
-                      new Docx.TextRun("\ngate13Discharge: " + item.gate13Discharge),
-                      new Docx.TextRun("\ngate14Discharge: " + item.gate14Discharge),
-                      new Docx.TextRun("\ngate15Discharge: " + item.gate15Discharge),
-                      new Docx.TextRun("\ngate16Discharge: " + item.gate16Discharge),
-                      new Docx.TextRun("\ngate17Discharge: " + item.gate17Discharge),
-                      new Docx.TextRun("\ngate18Discharge: " + item.gate18Discharge),
-                      new Docx.TextRun("\ngate19Discharge: " + item.gate19Discharge),
-                      new Docx.TextRun("\ngate20Discharge: " + item.gate20Discharge),
-                    ],
-                  });
+                new Docx.Table({
+                  width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+                  rows: [
+                    // Table header
+                    new Docx.TableRow({
+                      children: [
+                        new Docx.TableCell({
+                          children: [new Docx.Paragraph('Date Time')],
+                          width: { size: 200, type: Docx.WidthType.PERCENTAGE },
+                        }), // Adjusted width for Date Time column
+                        // Adjust the width for each gate column
+                        ...Array.from(
+                          { length: 20 },
+                          (_, i) =>
+                            new Docx.TableCell({
+                              children: [new Docx.Paragraph(`Gate ${i + 1}`)],
+                              width: { size: 1, type: Docx.WidthType.PERCENTAGE },
+                            })
+                        ),
+                      ],
+                    }),
+
+                    // Table rows
+                    ...lmdDischargeGateReport1.map((item) => {
+                      const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                      return new Docx.TableRow({
+                        children: [
+                          new Docx.TableCell({
+                            children: [new Docx.Paragraph(formattedDate)],
+                            width: { size: 10, type: Docx.WidthType.PERCENTAGE },
+                          }),
+                          // Include each gate discharge value
+                          ...Array.from(
+                            { length: 20 },
+                            (_, i) =>
+                              new Docx.TableCell({
+                                children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toString())],
+                                width: { size: 10, type: Docx.WidthType.PERCENTAGE },
+                              })
+                          ),
+                        ],
+                      });
+                    }),
+                  ],
                 }),
               ],
             },
           ],
         });
-
-        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-        res.setHeader("Content-Disposition", "attachment; filename=LMD_Discharge_Gate_Report.docx");
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        res.setHeader('Content-Disposition', 'attachment; filename=LMD_Discharge_Gate_Report.docx');
 
         // Stream the Word document to the response
         const buffer = await Docx.Packer.toBuffer(doc);
         res.end(buffer);
       } catch (error) {
-        console.error("Error:", error);
-        res.status(500).send("Internal Server Error");
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
       }
-
     } else if (exportToExcel == 4) {
       try {
-        
-        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/profile.ejs'), {
+        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/lmdDischargeGate.ejs'), {
           lmdDischargeGateReport1: lmdDischargeGateReport1,
         });
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
- 
-      await page.setContent(dynamicHtml);
 
-      const pdfBuffer = await page.pdf({ format: 'Letter' });
+        await page.setContent(dynamicHtml);
 
-      // Close browser
-      await browser.close();
+        const pdfBuffer = await page.pdf({ format: 'Letter' });
 
-      res.setHeader('Content-Disposition', 'attachment; filename=output.pdf');
-      res.setHeader('Content-Type', 'application/pdf');
-      res.send(pdfBuffer);
+        // Close browser
+        await browser.close();
 
+        res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Gate_1_To_20__Discharge_Report.pdf');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(pdfBuffer);
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
     } else {
-      console.log("eeeeeeeeeeeeeeeeeeeeee");
-      let totalCount = lmdDischargeGateReport[0]?.totalCount[0].count
+      console.log('eeeeeeeeeeeeeeeeeeeeee');
+      let totalCount = lmdDischargeGateReport[0]?.totalCount[0]?.count;
       const totalPage = Math.ceil(totalCount / perPage);
 
       return {
@@ -465,17 +587,26 @@ const lmdDischargeGateReport = async (startDate, endDate, intervalMinutes, expor
         currentPage,
         perPage,
         totalCount,
-        totalPage
+        totalPage,
       };
     }
-
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const lmdOpeningGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex) => {
+const lmdOpeningGateReport = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  exportToExcel,
+  currentPage,
+  perPage,
+  startIndex,
+  res,
+  req
+) => {
   try {
     const pipeline = [
       {
@@ -491,39 +622,36 @@ const lmdOpeningGateReport = async (startDate, endDate, intervalMinutes, current
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          gate1Position: { $first: "$gate1Position" },
-          gate2Position: { $first: "$gate2Position" },
-          gate3Position: { $first: "$gate3Position" },
-          gate4Position: { $first: "$gate4Position" },
-          gate5Position: { $first: "$gate5Position" },
-          gate6Position: { $first: "$gate6Position" },
-          gate7Position: { $first: "$gate7Position" },
-          gate8Position: { $first: "$gate8Position" },
-          gate9Position: { $first: "$gate9Position" },
-          gate10Position: { $first: "$gate10Position" },
-          gate11Position: { $first: "$gate11Position" },
-          gate12Position: { $first: "$gate12Position" },
-          gate13Position: { $first: "$gate13Position" },
-          gate14Position: { $first: "$gate14Position" },
-          gate15Position: { $first: "$gate15Position" },
-          gate16Position: { $first: "$gate16Position" },
-          gate17Position: { $first: "$gate17Position" },
-          gate18Position: { $first: "$gate18Position" },
-          gate19Position: { $first: "$gate19Position" },
-          gate20Position: { $first: "$gate20Position" },
+          gate1Position: { $first: '$gate1Position' },
+          gate2Position: { $first: '$gate2Position' },
+          gate3Position: { $first: '$gate3Position' },
+          gate4Position: { $first: '$gate4Position' },
+          gate5Position: { $first: '$gate5Position' },
+          gate6Position: { $first: '$gate6Position' },
+          gate7Position: { $first: '$gate7Position' },
+          gate8Position: { $first: '$gate8Position' },
+          gate9Position: { $first: '$gate9Position' },
+          gate10Position: { $first: '$gate10Position' },
+          gate11Position: { $first: '$gate11Position' },
+          gate12Position: { $first: '$gate12Position' },
+          gate13Position: { $first: '$gate13Position' },
+          gate14Position: { $first: '$gate14Position' },
+          gate15Position: { $first: '$gate15Position' },
+          gate16Position: { $first: '$gate16Position' },
+          gate17Position: { $first: '$gate17Position' },
+          gate18Position: { $first: '$gate18Position' },
+          gate19Position: { $first: '$gate19Position' },
+          gate20Position: { $first: '$gate20Position' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           gate1Position: 1,
           gate2Position: 1,
           gate3Position: 1,
@@ -544,42 +672,200 @@ const lmdOpeningGateReport = async (startDate, endDate, intervalMinutes, current
           gate18Position: 1,
           gate19Position: 1,
           gate20Position: 1,
-
         },
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
       {
         $facet: {
           data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ];
+
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          gate1Position: { $first: '$gate1Position' },
+          gate2Position: { $first: '$gate2Position' },
+          gate3Position: { $first: '$gate3Position' },
+          gate4Position: { $first: '$gate4Position' },
+          gate5Position: { $first: '$gate5Position' },
+          gate6Position: { $first: '$gate6Position' },
+          gate7Position: { $first: '$gate7Position' },
+          gate8Position: { $first: '$gate8Position' },
+          gate9Position: { $first: '$gate9Position' },
+          gate10Position: { $first: '$gate10Position' },
+          gate11Position: { $first: '$gate11Position' },
+          gate12Position: { $first: '$gate12Position' },
+          gate13Position: { $first: '$gate13Position' },
+          gate14Position: { $first: '$gate14Position' },
+          gate15Position: { $first: '$gate15Position' },
+          gate16Position: { $first: '$gate16Position' },
+          gate17Position: { $first: '$gate17Position' },
+          gate18Position: { $first: '$gate18Position' },
+          gate19Position: { $first: '$gate19Position' },
+          gate20Position: { $first: '$gate20Position' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          gate1Position: 1,
+          gate2Position: 1,
+          gate3Position: 1,
+          gate4Position: 1,
+          gate5Position: 1,
+          gate6Position: 1,
+          gate7Position: 1,
+          gate8Position: 1,
+          gate9Position: 1,
+          gate10Position: 1,
+          gate11Position: 1,
+          gate12Position: 1,
+          gate13Position: 1,
+          gate14Position: 1,
+          gate15Position: 1,
+          gate16Position: 1,
+          gate17Position: 1,
+          gate18Position: 1,
+          gate19Position: 1,
+          gate20Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
         },
       },
     ];
 
     const lmdOpeningGateReport = await LMD_DAM_OVERVIEW_POS.aggregate(pipeline);
+    const lmdOpeningGateReportWithoutPagination = await LMD_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
 
-    let totalCount = lmdOpeningGateReport[0]?.totalCount[0].count
-    const totalPage = Math.ceil(totalCount / perPage);
+    if (exportToExcel == 1) {
+      console.log('aaaaaaaaaaaaaaaaa');
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('LMD Position Gate Report');
 
-    return {
-      data: lmdOpeningGateReport[0]?.data,
-      currentPage,
-      perPage,
-      totalCount,
-      totalPage
-    };
+      const addImageToWorksheet = (imagePath, colRange) => {
+        const imageId = workbook.addImage({
+          filename: imagePath,
+          extension: 'png',
+          dimensions: { height: 100, width: 100 },
+        });
+
+        worksheet.addImage(imageId, {
+          tl: { col: colRange[0], row: 4 },
+          br: { col: colRange[1], row: 12 },
+          editAs: 'oneCell',
+        });
+      };
+
+      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [3, 6]);
+      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [15, 18]);
+
+      worksheet.getCell('I9').value = 'LMD DAM Gate 1 To 20 Position Report';
+
+      const headers = ['DateTime', ...Array.from({ length: 20 }, (_, i) => `Gate ${i + 1} \n (Feet)`)];
+      worksheet.addRow([]);
+      worksheet.addRow(headers);
+
+      lmdOpeningGateReportWithoutPagination.forEach((row) => {
+        const rowData = [row.dateTime, ...Array.from({ length: 20 }, (_, i) => row[`gate${i + 1}Position`])];
+        worksheet.addRow(rowData);
+      });
+
+      const dateTimeColumn = worksheet.getColumn(1);
+      dateTimeColumn.width = 20;
+      dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
+
+      worksheet.getRow(15).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      worksheet.mergeCells('B4:T8');
+      worksheet.mergeCells('B10:T13');
+      worksheet.mergeCells('B9:H9');
+      worksheet.mergeCells('M9:T9');
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Opening_Gate_Report.xlsx');
+
+      await workbook.xlsx.write(res);
+    } else if (exportToExcel == 2) {
+    } else if (exportToExcel == 3) {
+    } else if (exportToExcel == 4) {
+      try {
+        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/lmdOpeningGate.ejs'), {
+          lmdOpeningGateReportWithoutPagination: lmdOpeningGateReportWithoutPagination,
+        });
+
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+        await page.setContent(dynamicHtml);
+
+        const pdfBuffer = await page.pdf({ format: 'Letter' });
+
+        // Close browser
+        await browser.close();
+
+        res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Gate_1_To_20__Opening_Report.pdf');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(pdfBuffer);
+      } catch (error) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+      }
+    } else {
+      let totalCount = lmdOpeningGateReport[0]?.totalCount[0].count;
+      const totalPage = Math.ceil(totalCount / perPage);
+
+      return {
+        data: lmdOpeningGateReport[0]?.data,
+        currentPage,
+        perPage,
+        totalCount,
+        totalPage,
+      };
+    }
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const lmdPondlevelGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex) => {
-
+const lmdPondlevelGateReport = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  exportToExcel,
+  currentPage,
+  perPage,
+  startIndex,
+  res,
+  req
+) => {
   try {
     const pipeline = [
       {
@@ -595,28 +881,25 @@ const lmdPondlevelGateReport = async (startDate, endDate, intervalMinutes, curre
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          inflow1Level: { $first: "$inflow1Level" },
-          inflow2Level: { $first: "$inflow2Level" },
-          inflow3Level: { $first: "$inflow3Level" },
-          inflow1Discharge: { $first: "$inflow1Discharge" },
-          inflow2Discharge: { $first: "$inflow2Discharge" },
-          inflow3Discharge: { $first: "$inflow3Discharge" },
-          damDownstreamLevel: { $first: "$damDownstreamLevel" },
-          damDownstreamDischarge: { $first: "$damDownstreamDischarge" },
-          pondLevel: { $first: "$pondLevel" }
+          inflow1Level: { $first: '$inflow1Level' },
+          inflow2Level: { $first: '$inflow2Level' },
+          inflow3Level: { $first: '$inflow3Level' },
+          inflow1Discharge: { $first: '$inflow1Discharge' },
+          inflow2Discharge: { $first: '$inflow2Discharge' },
+          inflow3Discharge: { $first: '$inflow3Discharge' },
+          damDownstreamLevel: { $first: '$damDownstreamLevel' },
+          damDownstreamDischarge: { $first: '$damDownstreamDischarge' },
+          pondLevel: { $first: '$pondLevel' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           inflow1Level: 1,
           inflow2Level: 1,
           inflow3Level: 1,
@@ -625,43 +908,210 @@ const lmdPondlevelGateReport = async (startDate, endDate, intervalMinutes, curre
           inflow3Discharge: 1,
           damDownstreamLevel: 1,
           damDownstreamDischarge: 1,
-          pondLevel: 1
+          pondLevel: 1,
         },
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
       {
         $facet: {
           data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ];
+
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          inflow1Level: { $first: '$inflow1Level' },
+          inflow2Level: { $first: '$inflow2Level' },
+          inflow3Level: { $first: '$inflow3Level' },
+          inflow1Discharge: { $first: '$inflow1Discharge' },
+          inflow2Discharge: { $first: '$inflow2Discharge' },
+          inflow3Discharge: { $first: '$inflow3Discharge' },
+          damDownstreamLevel: { $first: '$damDownstreamLevel' },
+          damDownstreamDischarge: { $first: '$damDownstreamDischarge' },
+          pondLevel: { $first: '$pondLevel' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          inflow1Level: 1,
+          inflow2Level: 1,
+          inflow3Level: 1,
+          inflow1Discharge: 1,
+          inflow2Discharge: 1,
+          inflow3Discharge: 1,
+          damDownstreamLevel: 1,
+          damDownstreamDischarge: 1,
+          pondLevel: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
         },
       },
     ];
 
     const lmdPondlevelGateReports = await LMD_POND_LEVEL_OVERVIEW.aggregate(pipeline);
+    const lmdPondlevelGateReportsWithoutPagination = await LMD_POND_LEVEL_OVERVIEW.aggregate(pipelineWithoutPagination);
 
-    let totalCount = lmdPondlevelGateReports[0]?.totalCount[0].count
-    const totalPage = Math.ceil(totalCount / perPage);
+    if (exportToExcel == 1) {
+      console.log('aaaaaaaaaaaaaaaaa');
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('LMD Dam Inflow Outflow PondLevel Report');
 
-    return {
-      data: lmdPondlevelGateReports[0]?.data,
-      currentPage,
-      perPage,
-      totalCount,
-      totalPage
-    };
+      const addImageToWorksheet = (imagePath, colRange) => {
+        const imageId = workbook.addImage({
+          filename: imagePath,
+          extension: 'png',
+          dimensions: { height: 100, width: 100 },
+        });
 
+        worksheet.addImage(imageId, {
+          tl: { col: colRange[0], row: 4 },
+          br: { col: colRange[1], row: 12 },
+          editAs: 'oneCell',
+        });
+      };
+
+      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [3, 6]);
+      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
+
+      worksheet.getCell('I9').value = 'LMD Dam Inflow Outflow PondLevel Report';
+      // worksheet.mergeCells('B9:T9');
+
+      const headers = [
+        'DateTime',
+        'Gagillapur\n Inflow Level\n (Feet)',
+        'Gagillapur\n Inflow Discharge\n (Cusecs)',
+        'Potour Inflow Level\n (Feet)',
+        'Potour Inflow\n Discharge\n (Cusecs)',
+        'Chintakunta LEVEL\n (Feet)',
+        'Chintakunta DICH\n (Cusecs)',
+        'Alugunuru Level\n (Feet)',
+        'Alugunuru Discharge\n (Cusecs)',
+        'Pond Level\n (Feet)',
+      ];
+      worksheet.addRow([]);
+      worksheet.addRow(headers);
+
+      lmdPondlevelGateReportsWithoutPagination.forEach((row) => {
+        const rowData = [
+          row.dateTime,
+          row.inflow1Level,
+          row.inflow1Discharge,
+          row.inflow2Level,
+          row.inflow2Discharge,
+          row.inflow3Level,
+          row.inflow3Discharge,
+          row.damDownstreamLevel,
+          row.damDownstreamDischarge,
+          row.pondLevel,
+        ];
+        worksheet.addRow(rowData);
+      });
+
+      const dateTimeColumn = worksheet.getColumn(1);
+      dateTimeColumn.width = 20;
+      dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
+      worksheet.getRow(3).height = 20;
+
+      worksheet.getRow(15).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+
+      // worksheet.getRow(15).eachCell((cell) => {
+      //   cell.font = { bold: true };
+      // });
+ 
+      worksheet.getCell('B3').font = { bold: true };
+
+      worksheet.mergeCells('B4:T13');
+      // worksheet.mergeCells('B10:T13');
+      // worksheet.mergeCells('B9:H9');
+      // worksheet.mergeCells('M9:T9');
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Inflow_Outflow_PondLevel_Report.xlsx');
+
+      await workbook.xlsx.write(res);
+    } else if (exportToExcel == 2) {
+    } else if (exportToExcel == 3) {
+    } else if (exportToExcel == 4) {
+      try {
+        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/lmdInflowOutflowPondLevel.ejs'), {
+          lmdPondlevelGateReportsWithoutPagination: lmdPondlevelGateReportsWithoutPagination,
+        });
+
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+        await page.setContent(dynamicHtml);
+
+        const pdfBuffer = await page.pdf({ format: 'Letter' });
+
+        // Close browser
+        await browser.close();
+
+        res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Inflow_Outflow_PondLevel_Report.pdf');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(pdfBuffer);
+      } catch (error) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+      }
+    } else {
+      let totalCount = lmdPondlevelGateReports[0]?.totalCount[0].count;
+      const totalPage = Math.ceil(totalCount / perPage);
+
+      return {
+        data: lmdPondlevelGateReports[0]?.data,
+        currentPage,
+        perPage,
+        totalCount,
+        totalPage,
+      };
+    }
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const lmdGateParameterOverviewReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex) => {
-
+const lmdGateParameterOverviewReport = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  exportToExcel,
+  currentPage,
+  perPage,
+  startIndex,
+  res,
+  req
+) => {
   try {
     const pipeline = [
       {
@@ -677,33 +1127,28 @@ const lmdGateParameterOverviewReport = async (startDate, endDate, intervalMinute
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          pondLevel: { $first: "$pondLevel" },
-          liveCapacity: { $first: "$liveCapacity" },
-          grossStorage: { $first: "$grossStorage" },
-          fullReservoirLevel: { $first: "$fullReservoirLevel" },
-          contourArea: { $first: "$contourArea" },
-          catchmentArea: { $first: "$catchmentArea" },
-          ayacutArea: { $first: "$ayacutArea" },
-          filling: { $first: "$filling" },
-          instantaneousGateDischarge: { $first: "$instantaneousGateDischarge" },
-          instantaneousCanalDischarge: { $first: "$instantaneousCanalDischarge" },
-          totalDamDischarge: { $first: "$totalDamDischarge" },
-          cumulativeDamDischarge: { $first: "$cumulativeDamDischarge" },
-
-
+          pondLevel: { $first: '$pondLevel' },
+          liveCapacity: { $first: '$liveCapacity' },
+          grossStorage: { $first: '$grossStorage' },
+          fullReservoirLevel: { $first: '$fullReservoirLevel' },
+          contourArea: { $first: '$contourArea' },
+          catchmentArea: { $first: '$catchmentArea' },
+          ayacutArea: { $first: '$ayacutArea' },
+          filling: { $first: '$filling' },
+          instantaneousGateDischarge: { $first: '$instantaneousGateDischarge' },
+          instantaneousCanalDischarge: { $first: '$instantaneousCanalDischarge' },
+          totalDamDischarge: { $first: '$totalDamDischarge' },
+          cumulativeDamDischarge: { $first: '$cumulativeDamDischarge' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           pondLevel: 1,
           liveCapacity: 1,
           grossStorage: 1,
@@ -715,43 +1160,218 @@ const lmdGateParameterOverviewReport = async (startDate, endDate, intervalMinute
           instantaneousGateDischarge: 1,
           instantaneousCanalDischarge: 1,
           totalDamDischarge: 1,
-          cumulativeDamDischarge: 1
+          cumulativeDamDischarge: 1,
         },
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
       {
         $facet: {
           data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
+          totalCount: [{ $count: 'count' }],
         },
       },
     ];
 
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          pondLevel: { $first: '$pondLevel' },
+          liveCapacity: { $first: '$liveCapacity' },
+          grossStorage: { $first: '$grossStorage' },
+          fullReservoirLevel: { $first: '$fullReservoirLevel' },
+          contourArea: { $first: '$contourArea' },
+          catchmentArea: { $first: '$catchmentArea' },
+          ayacutArea: { $first: '$ayacutArea' },
+          filling: { $first: '$filling' },
+          instantaneousGateDischarge: { $first: '$instantaneousGateDischarge' },
+          instantaneousCanalDischarge: { $first: '$instantaneousCanalDischarge' },
+          totalDamDischarge: { $first: '$totalDamDischarge' },
+          cumulativeDamDischarge: { $first: '$cumulativeDamDischarge' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          pondLevel: 1,
+          liveCapacity: 1,
+          grossStorage: 1,
+          fullReservoirLevel: 1,
+          contourArea: 1,
+          catchmentArea: 1,
+          ayacutArea: 1,
+          filling: 1,
+          instantaneousGateDischarge: 1,
+          instantaneousCanalDischarge: 1,
+          totalDamDischarge: 1,
+          cumulativeDamDischarge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
     const lmdGateParameterOverviewReport = await LMD_POND_LEVEL_OVERVIEW.aggregate(pipeline);
+    const lmdGateParameterOverviewReportWithoutPagination = await LMD_POND_LEVEL_OVERVIEW.aggregate(
+      pipelineWithoutPagination
+    );
 
-    let totalCount = lmdGateParameterOverviewReport[0]?.totalCount[0].count
-    const totalPage = Math.ceil(totalCount / perPage);
+     if (exportToExcel == 1) {
+      console.log('aaaaaaaaaaaaaaaaa');
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('LMD Dam Paramete Overview Report');
 
-    return {
-      data: lmdGateParameterOverviewReport[0]?.data,
-      currentPage,
-      perPage,
-      totalCount,
-      totalPage
-    };
+      const addImageToWorksheet = (imagePath, colRange) => {
+        const imageId = workbook.addImage({
+          filename: imagePath,
+          extension: 'png',
+          dimensions: { height: 100, width: 100 },
+        });
 
+        worksheet.addImage(imageId, {
+          tl: { col: colRange[0], row: 4 },
+          br: { col: colRange[1], row: 12 },
+          editAs: 'oneCell',
+        });
+      };
+
+      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [3, 6]);
+      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
+
+      worksheet.getCell('I9').value = 'LMD Dam Paramete Overview Report';
+
+      const headers = [
+        'DateTime',
+        'Pond Level (Feet)',
+        'Live Capacity (MCFT)',
+        'Gross Storage (MCFT)',
+        'FullReserve Water (Feet)',
+        'Contour Area ( M.SqFt.)',
+        'Cathment Area (Sq.km)',
+        'Ayucut Area (Acres)',
+        'Filing Percentage (%)',
+        'Inst. Gate Discharge(Cusecs)',
+        'Inst. canal Discharge (Cusecs)',
+        'Total Dam Discharge (Cusecs)',
+        'Cumulative Dam Discharge (Cusecs)'
+      ];
+      worksheet.addRow([]);
+      worksheet.addRow(headers);
+
+      lmdGateParameterOverviewReportWithoutPagination.forEach((row) => {
+        const rowData = [
+          row.dateTime,
+          row.pondLevel,
+          row.liveCapacity,
+          row.grossStorage,
+          row.fullReservoirLevel,
+          row.contourArea,
+          row.catchmentArea,
+          row.ayacutArea,
+          row.filling,
+          row.instantaneousGateDischarge,
+          row.instantaneousCanalDischarge,
+          row.totalDamDischarge,
+          row.cumulativeDamDischarge,
+        ];
+        worksheet.addRow(rowData);
+      });
+
+      const dateTimeColumn = worksheet.getColumn(1);
+      dateTimeColumn.width = 20;
+      dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
+      worksheet.getRow(3).height = 20;
+
+      worksheet.getRow(15).eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.height ={size : 10}
+      });
+ 
+      worksheet.getCell('B3').font = { bold: true };
+
+      worksheet.mergeCells('B4:T13');
+      // worksheet.mergeCells('B10:T13');
+      // worksheet.mergeCells('B9:H9');
+      // worksheet.mergeCells('M9:T9');
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Parameter_Overview_Report.xlsx');
+
+      await workbook.xlsx.write(res);
+    }  else if (exportToExcel == 2){ 
+    } else if (exportToExcel == 3) {
+    } else if (exportToExcel == 4) {
+      try {
+        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/lmdParameterOverview.ejs'), {
+          lmdGateParameterOverviewReportWithoutPagination: lmdGateParameterOverviewReportWithoutPagination,
+        });
+
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+        await page.setContent(dynamicHtml);
+
+        const pdfBuffer = await page.pdf({ format: 'Letter' });
+
+        // Close browser
+        await browser.close();
+
+        res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Parameter_Overview_Report.pdf');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(pdfBuffer);
+      } catch (error) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+      }
+    } else {
+      let totalCount = lmdGateParameterOverviewReport[0]?.totalCount[0].count;
+      const totalPage = Math.ceil(totalCount / perPage);
+
+      return {
+        data: lmdGateParameterOverviewReport[0]?.data,
+        currentPage,
+        perPage,
+        totalCount,
+        totalPage,
+      };
+    }
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const lmdGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex) => {
-
+const lmdGateReport = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  exportToExcel,
+  currentPage,
+  perPage,
+  startIndex,
+  res,
+  req
+) => {
   try {
     const pipeline = [
       {
@@ -767,35 +1387,32 @@ const lmdGateReport = async (startDate, endDate, intervalMinutes, currentPage, p
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
 
-          hrrGate1Position: { $first: "$hrrGate1Position" },
-          hrrGate2Position: { $first: "$hrrGate2Position" }
+          hrrGate1Position: { $first: '$hrrGate1Position' },
+          hrrGate2Position: { $first: '$hrrGate2Position' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           hrrGate1Position: 1,
           hrrGate2Position: 1,
         },
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
       {
         $facet: {
           data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
+          totalCount: [{ $count: 'count' }],
         },
       },
     ];
@@ -814,46 +1431,124 @@ const lmdGateReport = async (startDate, endDate, intervalMinutes, currentPage, p
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
 
-          hrrGate1Discharge: { $first: "$hrrGate1Discharge" },
-          hrrGate2Discharge: { $first: "$hrrGate2Discharge" }
+          hrrGate1Discharge: { $first: '$hrrGate1Discharge' },
+          hrrGate2Discharge: { $first: '$hrrGate2Discharge' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           hrrGate1Discharge: 1,
           hrrGate2Discharge: 1,
         },
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
       {
         $facet: {
           data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ];
+
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+
+          hrrGate1Position: { $first: '$hrrGate1Position' },
+          hrrGate2Position: { $first: '$hrrGate2Position' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrrGate1Position: 1,
+          hrrGate2Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const pipeline1WithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+
+          hrrGate1Discharge: { $first: '$hrrGate1Discharge' },
+          hrrGate2Discharge: { $first: '$hrrGate2Discharge' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrrGate1Discharge: 1,
+          hrrGate2Discharge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
         },
       },
     ];
 
     const lmdGateReportPos = await LMD_HR_DAM_OVERVIEW_POS.aggregate(pipeline);
     const lmdGateReportDis = await LMD_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1);
+    const lmdGateReportPosWithoutPagination = await LMD_HR_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
+    const lmdGateReportDisWithoutPagination = await LMD_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1WithoutPagination);
 
     let posData = lmdGateReportPos[0]?.data || [];
     let disData = lmdGateReportDis[0]?.data || [];
+    let posDataWithoutPagination = lmdGateReportPosWithoutPagination || [];
+    let disDataWithoutPagination = lmdGateReportDisWithoutPagination || [];
 
     let minLength = Math.max(posData.length, disData.length);
+    let minLengthWithoutPagination = Math.max(posDataWithoutPagination.length, disDataWithoutPagination.length);
 
     // Merge data arrays based on index position
     let mergedData = Array.from({ length: minLength }, (_, index) => ({
@@ -861,47 +1556,148 @@ const lmdGateReport = async (startDate, endDate, intervalMinutes, currentPage, p
       hrrGate2Position: posData[index]?.hrrGate2Position || 0,
       hrrGate1Discharge: disData[index]?.hrrGate1Discharge || 0,
       hrrGate2Discharge: disData[index]?.hrrGate2Discharge || 0,
+      totalDischarge: disData[index]?.hrrGate1Discharge + disData[index]?.hrrGate2Discharge,
       dateTime: posData[index]?.dateTime || disData[index]?.dateTime || null,
     }));
 
+    let mergedDataWithoutPagination = Array.from({ length: minLengthWithoutPagination }, (_, index) => ({
+      hrrGate1Position: posDataWithoutPagination[index]?.hrrGate1Position || 0,
+      hrrGate2Position: posDataWithoutPagination[index]?.hrrGate2Position || 0,
+      hrrGate1Discharge: disDataWithoutPagination[index]?.hrrGate1Discharge || 0,
+      hrrGate2Discharge: disDataWithoutPagination[index]?.hrrGate2Discharge || 0,
+      totalDischarge: disDataWithoutPagination[index]?.hrrGate1Discharge + disDataWithoutPagination[index]?.hrrGate2Discharge,
+      dateTime: posDataWithoutPagination[index]?.dateTime || disDataWithoutPagination[index]?.dateTime || null,
+    }));
 
-    let totalCount = lmdGateReportPos[0]?.totalCount[0].count;
-    const totalPage = Math.ceil(totalCount / perPage);
+    if (exportToExcel == 1) {
+      console.log('aaaaaaaaaaaaaaaaa');
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('LMD HR Gate Report');
 
-    return {
-      data: mergedData,
-      currentPage,
-      perPage,
-      totalCount,
-      totalPage
-    };
+      const addImageToWorksheet = (imagePath, colRange) => {
+        const imageId = workbook.addImage({
+          filename: imagePath,
+          extension: 'png',
+          dimensions: { height: 100, width: 100 },
+        });
 
+        worksheet.addImage(imageId, {
+          tl: { col: colRange[0], row: 4 },
+          br: { col: colRange[1], row: 12 },
+          editAs: 'oneCell',
+        });
+      };
+
+      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [3, 6]);
+      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
+
+      worksheet.getCell('I9').value = 'LMD HR Gate Report';
+
+      const headers = [
+        'DateTime',
+        'Gate 1 Opening (Feet)',
+        'Gate 1 Discharge (C/S)',
+        'Gate 2 Opening (Feet)',
+        'Gate 2 Discharge (C/S)',
+        'Total Discharge (C/S)'
+      ];
+      worksheet.addRow([]);
+      worksheet.addRow(headers);
+
+      mergedDataWithoutPagination.forEach((row) => {
+        const rowData = [
+          row.dateTime,
+          row.hrrGate1Position,
+          row.hrrGate1Discharge,
+          row.hrrGate2Position,
+          row.hrrGate1Discharge,
+          row.totalDischarge,
+        ];
+        worksheet.addRow(rowData);
+      });
+
+      const dateTimeColumn = worksheet.getColumn(1);
+      dateTimeColumn.width = 20;
+      dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
+      worksheet.getRow(3).height = 20;
+
+      worksheet.getRow(15).eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.height ={size : 10}
+      });
+ 
+      worksheet.getCell('B3').font = { bold: true };
+
+      worksheet.mergeCells('B4:T13');
+      // worksheet.mergeCells('B10:T13');
+      // worksheet.mergeCells('B9:H9');
+      // worksheet.mergeCells('M9:T9');
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_HR_Gate_Report.xlsx');
+
+      await workbook.xlsx.write(res);
+    }  else if (exportToExcel == 2) {
+    } else if (exportToExcel == 3) {
+    } else if (exportToExcel == 4) {
+      try {
+        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/lmdHrGate.ejs'), {
+          mergedDataWithoutPagination: mergedDataWithoutPagination,
+        });
+
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+        await page.setContent(dynamicHtml);
+
+        const pdfBuffer = await page.pdf({ format: 'Letter' });
+
+        // Close browser
+        await browser.close();
+
+        res.setHeader('Content-Disposition', 'attachment; filename=LMD_HR_Gate__Report.pdf');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(pdfBuffer);
+      } catch (error) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+      }
+    } else {
+      let totalCount = lmdGateReportPos[0]?.totalCount[0].count;
+      const totalPage = Math.ceil(totalCount / perPage);
+
+      return {
+        data: mergedData,
+        currentPage,
+        perPage,
+        totalCount,
+        totalPage,
+      };
+    }
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-
-
-
 const sevenDayReport = async (user) => {
   try {
-
     const checkPermission = await Permission.findOne({ name: 'lmdReport' });
 
-    if (user.role === 'admin' || user.role === 'lmdSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
-
+    if (
+      user.role === 'admin' ||
+      user.role === 'lmdSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
       const currentDate = new Date();
       const sevenDaysAgo = new Date(currentDate);
       sevenDaysAgo.setDate(currentDate.getDate() - 6);
 
       const pondLevelSevenDayReport = await LMD_POND_LEVEL_OVERVIEW.find({
-        dateTime: { $gte: sevenDaysAgo, $lte: currentDate }
+        dateTime: { $gte: sevenDaysAgo, $lte: currentDate },
       });
 
       const groupedByDate = {};
-      pondLevelSevenDayReport.forEach(entry => {
+      pondLevelSevenDayReport.forEach((entry) => {
         const dateKey = entry.dateTime.toISOString().split('T')[0];
         if (!groupedByDate[dateKey]) {
           groupedByDate[dateKey] = {
@@ -926,16 +1722,13 @@ const sevenDayReport = async (user) => {
           groupedByDate[dateKey].sumPondLevel += entry.pondLevel;
           groupedByDate[dateKey].count++;
 
-
           groupedByDate[dateKey].maxInflow1Level = Math.max(groupedByDate[dateKey].maxInflow1Level, entry.inflow1Level);
           groupedByDate[dateKey].minInflow1Level = Math.min(groupedByDate[dateKey].minInflow1Level, entry.inflow1Level);
           groupedByDate[dateKey].sumInflow1Level += entry.inflow1Level;
 
-
           groupedByDate[dateKey].maxInflow2Level = Math.max(groupedByDate[dateKey].maxInflow2Level, entry.inflow2Level);
           groupedByDate[dateKey].minInflow2Level = Math.min(groupedByDate[dateKey].minInflow2Level, entry.inflow2Level);
           groupedByDate[dateKey].sumInflow2Level += entry.inflow2Level;
-
 
           groupedByDate[dateKey].maxInflow3Level = Math.max(groupedByDate[dateKey].maxInflow3Level, entry.inflow3Level);
           groupedByDate[dateKey].minInflow3Level = Math.min(groupedByDate[dateKey].minInflow3Level, entry.inflow3Level);
@@ -950,7 +1743,7 @@ const sevenDayReport = async (user) => {
         return date.toISOString().split('T')[0];
       });
 
-      daysInRange.forEach(dateKey => {
+      daysInRange.forEach((dateKey) => {
         if (groupedByDate[dateKey]) {
           const record = groupedByDate[dateKey];
           const avgPondLevel = record.sumPondLevel / record.count;
@@ -971,41 +1764,36 @@ const sevenDayReport = async (user) => {
             avgInflow2Level: avgInflow2Level,
             maxInflow3Level: record.maxInflow3Level,
             minInflow3Level: record.minInflow3Level,
-            avgInflow3Level: avgInflow3Level
+            avgInflow3Level: avgInflow3Level,
           });
         } else {
           result.push({
             date: dateKey,
-            maxPondLevel: "",
-            minPondLevel: "",
-            avgPondLevel: "",
-            maxInflow1Level: "",
-            minInflow1Level: "",
-            avgInflow1Level: "",
-            maxInflow2Level: "",
-            minInflow2Level: "",
-            avgInflow2Level: "",
-            maxInflow3Level: "",
-            minInflow3Level: "",
-            avgInflow3Level: ""
+            maxPondLevel: '',
+            minPondLevel: '',
+            avgPondLevel: '',
+            maxInflow1Level: '',
+            minInflow1Level: '',
+            avgInflow1Level: '',
+            maxInflow2Level: '',
+            minInflow2Level: '',
+            avgInflow2Level: '',
+            maxInflow3Level: '',
+            minInflow3Level: '',
+            avgInflow3Level: '',
           });
         }
       });
 
-      return result
+      return result;
     } else {
       return 'You are not authorized to access this data';
     }
-
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
-
-
-
-
 
 module.exports = {
   createSalientFeature,
@@ -1017,5 +1805,5 @@ module.exports = {
   lmdPondlevelGateReport,
   lmdGateParameterOverviewReport,
   lmdGateReport,
-  sevenDayReport
+  sevenDayReport,
 };

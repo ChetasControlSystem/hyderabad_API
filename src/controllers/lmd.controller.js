@@ -504,7 +504,7 @@ const lmdDischargeGateReport = catchAsync(async (req, res) => {
 });
 
 const lmdOpeningGateReport = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes} = req.query;
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -518,13 +518,13 @@ const lmdOpeningGateReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const lmdOpeningGateReport = await lmdService.lmdOpeningGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+  const lmdOpeningGateReport = await lmdService.lmdOpeningGateReport(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
 
   res.json(lmdOpeningGateReport);
 });
 
 const lmdPondlevelGateReport = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes} = req.query;
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -538,13 +538,13 @@ const lmdPondlevelGateReport = catchAsync(async (req, res) => {
     const perPage = parseInt(req.query.perPage) || 10;
     let startIndex = (currentPage - 1) * perPage;
 
-  const lmdPondlevelGateReport = await lmdService.lmdPondlevelGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+  const lmdPondlevelGateReport = await lmdService.lmdPondlevelGateReport(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
 
   res.json(lmdPondlevelGateReport);
 });
 
 const lmdGateParameterOverviewReport = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes} = req.query;
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -558,13 +558,13 @@ const lmdGateParameterOverviewReport = catchAsync(async (req, res) => {
     const perPage = parseInt(req.query.perPage) || 10;
     let startIndex = (currentPage - 1) * perPage;
 
-  const lmdGateParameterOverviewReport = await lmdService.lmdGateParameterOverviewReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+  const lmdGateParameterOverviewReport = await lmdService.lmdGateParameterOverviewReport(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex,  res, req, req.user);
 
   res.json(lmdGateParameterOverviewReport);
 });
 
 const lmdHrGateReport = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes} = req.query;
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -578,7 +578,7 @@ const lmdHrGateReport = catchAsync(async (req, res) => {
     const perPage = parseInt(req.query.perPage) || 10;
     let startIndex = (currentPage - 1) * perPage;
 
-  const lmdGateParameterOverviewReport = await lmdService.lmdGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+  const lmdGateParameterOverviewReport = await lmdService.lmdGateReport(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex,  res, req, req.user);
 
   res.json(lmdGateParameterOverviewReport);
 });

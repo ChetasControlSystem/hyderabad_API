@@ -35,8 +35,8 @@ async function kadamMongoDBData(data) {
         inflow1Discharge: row.D4,
         inflow2Discharge: row.D5,
         inflow3Discharge: row.D6,
-        damOuflowLevel: row.D7,
-        damOuflowDischarge: row.D8,
+        damOutflowLevel: row.D7,
+        damOutflowDischarge: row.D8,
         hrrDownstreamLevel: row.D9,
         hrrDownstreamDischarge: row.D10,
         D11: row.D11,
@@ -488,7 +488,7 @@ const sevenDayReport = catchAsync(async (req, res) => {
 });
 
 const kadamOpeningGate1To18Report = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes} = req.query;
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -502,13 +502,13 @@ const kadamOpeningGate1To18Report = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamOpeningGate1To18Report = await knrService.kadamOpeningGate1To18Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+  const kadamOpeningGate1To18Report = await knrService.kadamOpeningGate1To18Report(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
 
   res.json(kadamOpeningGate1To18Report);
 });
 
 const kadamDishchargeGate1To18Report = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes} = req.query;
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -522,13 +522,13 @@ const kadamDishchargeGate1To18Report = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamDishchargeGate1To18Report = await knrService.kadamDishchargeGate1To18Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+  const kadamDishchargeGate1To18Report = await knrService.kadamDishchargeGate1To18Report(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
 
   res.json(kadamDishchargeGate1To18Report);
 });
 
 const kadamInflowOutflowPondLevelReport = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes} = req.query;
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -542,13 +542,13 @@ const kadamInflowOutflowPondLevelReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamInflowOutflowPondLevelReport = await knrService.kadamInflowOutflowPondLevelReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+  const kadamInflowOutflowPondLevelReport = await knrService.kadamInflowOutflowPondLevelReport(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
 
   res.json(kadamInflowOutflowPondLevelReport);
 });
 
 const kadamGateParameterOverviewReport = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes} = req.query;
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -562,13 +562,13 @@ const kadamGateParameterOverviewReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamGateParameterOverviewReport = await knrService.kadamGateParameterOverviewReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+  const kadamGateParameterOverviewReport = await knrService.kadamGateParameterOverviewReport(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
 
   res.json(kadamGateParameterOverviewReport);
 });
 
 const kadamHrDamGateReport = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes} = req.query;
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -582,7 +582,7 @@ const kadamHrDamGateReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamHrDamGateReport = await knrService.kadamHrDamGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user);
+  const kadamHrDamGateReport = await knrService.kadamHrDamGateReport(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
 
   res.json(kadamHrDamGateReport);
 });

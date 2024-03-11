@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Demo test</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            /* Set width to 100% to fit on A4 page */
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+
+        .header-container img {
+            height: 200px;
+            margin: 30px 10px; /* Add margin to both left and right sides */
+        }
+
+        @page {
+        margin-top: 10px;
+      }
+
+  .header-container {
+    text-align: center;
+        position: relative;
+        margin-bottom: 30px;
+        border: 1px solid black;
+        page-break-inside: avoid;
+        }
+
+        .header-container .img-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-container h1 {
+            display: inline-block;
+            /* Display h1 as inline block */
+            vertical-align: middle;
+            /* Align h1 vertically in the middle */
+        }
+
+        th,
+        td {
+            text-align: center;
+            /* Center-align content in cells */
+            padding: 8px;
+            /* Add padding for better readability */
+        }
+
+        td:first-child,
+        th:first-child {
+            min-width: 120px;
+            /* Set minimum width for the Date-time column */
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 8%;
+            /* Adjust width for Gate 1 column */
+        }
+
+        /* Add similar styles for columns 3 to 20 */
+
+        .page-break {
+            page-break-before: always;
+        }
+        .img-size {
+            width: 100px;
+            height: 100px;
+        }
+
+        .page-container {
+            page-break-before: always;
+        }
+    </style>
+</head>
+
+<body>
+    <% for (let pageIndex = 0; pageIndex < Math.ceil(srspDischargeGate1TO21ReportWithoutPagination.length / 19); pageIndex++) { %>
+        <div class="header-container">
+            <div class="img-container">
+                <img src="http://192.168.1.106:3002/assets/logo2.jpeg" class="img-size" alt="Placeholder Image">
+                <img src="https://www.chetascontrol.com/images/ind2.jpg" class="img-size" alt="Placeholder Image">
+            </div>
+            <h1>SRSP Dam Gate 1 to 21 Discharge Report</h1>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date-time</th>
+                    <% for (let gate = 1; gate<= 21; gate++) { %>
+                        <th>Gate <%= gate %><br />(cus)</th>
+                    <% } %>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (let i = pageIndex * 19; i < (pageIndex + 1) * 19 && i < srspDischargeGate1TO21ReportWithoutPagination.length; i++) { %>
+                    <tr>
+                        <td>
+                            <%= new Date(srspDischargeGate1TO21ReportWithoutPagination[i].dateTime).toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }).replace(/(\d+)\/(\d+)\/(\d+),/g, '$3-$1-$2T' ) %>
+                        </td>
+                        <% for (let gate = 1; gate <= 21; gate++) { %>
+                            <td>
+                                <%= srspDischargeGate1TO21ReportWithoutPagination[i][`gate${gate}Discharge`].toFixed(0) %>
+                            </td>
+                        <% } %>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+
+        <!-- <div class="page-container"></div> -->
+    <% } %>
+
+</body>
+    </table>
+
+    <!-- <div class="page-break"></div> -->
+
+</body>
+
+</html>

@@ -10,13 +10,13 @@ router.get('/get-salientfeature', auth(), srspController.getSalientFeature);
 router.get('/srsp-overview', auth(), srspController.srspDamOverview);
 router.get('/overview-advm', auth(), srspController.getLastDataSrspDamSpareAdvm);
 
-router.get('/srsp-1to21-dis-gatereport', auth(), srspController.srspDischargeGate1TO21Report);
-router.get('/srsp-22to42-dis-gatereport', auth(), srspController.srspDischargeGate22TO42Report);
-router.get('/srsp-1to21-opn-gatereport', auth(), srspController.srspDischargeGate1TO21Report);
-router.get('/srsp-22to42-opn-gatereport', auth(), srspController.srspDischargeGate22TO42Report);
-router.get('/srsp-pondlevel-gatereport', auth(), srspController.srspInflowOutflowPondLevelReport);
-router.get('/srsp-parameter-overview-gatereport', auth(), srspController.srspParameterOverviewReport);
-router.get('/srsp-hr-dam-gatereport', auth(), srspController.srspHrDamGateReport);
+router.get('/srsp-1to21-dis-gatereport', srspController.srspDischargeGate1TO21Report);
+router.get('/srsp-22to42-dis-gatereport', srspController.srspDischargeGate22TO42Report);
+router.get('/srsp-1to21-opn-gatereport',  srspController.srspOpeningGate1TO21Report);
+router.get('/srsp-22to42-opn-gatereport',  srspController.srspOpeningGate22TO42Report);
+router.get('/srsp-pondlevel-gatereport',  srspController.srspInflowOutflowPondLevelReport);
+router.get('/srsp-parameter-overview-gatereport',  srspController.srspParameterOverviewReport);
+router.get('/srsp-hr-dam-gatereport', srspController.srspHrDamGateReport);
 
 router.get('/sevenDayReport', auth(), srspController.sevenDayReport);
 

@@ -11,11 +11,11 @@ router.get('/lmd-overview', auth(), lmdController.lmdDamOverview);
 router.get('/overview-advm', auth(), lmdController.getLastDataLmdDamSpareAdvm);
 
 router.get('/lmd-1to20-dis-gatereport', lmdController.lmdDischargeGateReport);
-router.get('/lmd-1to20-opn-gatereport', auth(), lmdController.lmdOpeningGateReport);
-router.get('/lmd-pondlevel-report', auth(), lmdController.lmdPondlevelGateReport);
-router.get('/lmd-parameter-overview-report', auth(), lmdController.lmdGateParameterOverviewReport);
-router.get('/lmd-hr-gate-report', auth(), lmdController.lmdHrGateReport);
-
+router.get('/lmd-1to20-opn-gatereport', lmdController.lmdOpeningGateReport);
+router.get('/lmd-pondlevel-report',lmdController.lmdPondlevelGateReport);
+router.get('/lmd-parameter-overview-report', lmdController.lmdGateParameterOverviewReport);
+router.get('/lmd-hr-gate-report', lmdController.lmdHrGateReport);
+ 
 router.get('/sevenDayReport', auth(), lmdController.sevenDayReport);
 
 
