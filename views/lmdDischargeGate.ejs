@@ -3,6 +3,8 @@
 
 <head>
     <title>Demo test</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         table {
             border-collapse: collapse;
@@ -84,29 +86,31 @@
         .page-container {
             page-break-before: always;
         }
+        .mt-40 {
+            margin-top: 100px;
+        }
     </style>
 </head>
 
 <body>
-    <% for (let pageIndex = 0; pageIndex < Math.ceil(lmdDischargeGateReport1.length / 18); pageIndex++) { %>
+    <% for (let pageIndex = 0; pageIndex < Math.ceil(lmdDischargeGateReport1.length / 20); pageIndex++) { %>
         <div class="header-container">
-            <div class="img-container">
-                <div class="row">
-                    <div class="col-md-2">
-                        <img src="http://192.168.1.106:3002/assets/logo2.jpeg" class="img-size" alt="Placeholder Image">
-                    </div>
-                    <div class="col-md-6">
-                        <h1>hello</h1>
-                    </div>
-                    <div class="col-md-2">
-                        <img src="https://www.chetascontrol.com/images/ind2.jpg" class="img-size" alt="Placeholder Image">
-                    </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <img src="http://192.168.1.106:3002/assets/logo2.jpeg" class="img-size" alt="Placeholder Image">
+                </div>
+                <div class="col-md-8 mt-40">
+                    <h1>LMD Dam Gate 1 to 20 Discharge Report</h1>
+                </div>
+                <div class="col-md-2">
+                    <img src="https://www.chetascontrol.com/images/ind2.jpg" class="img-size" alt="Placeholder Image">
                 </div>
             </div>
-            <h1>LMD Dam Gate 1 to 20 Discharge Report</h1>
+            <div class="img-container">
+            </div>
         </div>
 
-        <table>
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Date-time</th>
@@ -116,7 +120,7 @@
                 </tr>
             </thead>
             <tbody>
-                <% for (let i = pageIndex * 18; i < (pageIndex + 1) * 18 && i < lmdDischargeGateReport1.length; i++) { %>
+                <% for (let i = pageIndex * 20; i < (pageIndex + 1) * 20 && i < lmdDischargeGateReport1.length; i++) { %>
                     <tr>
                         <td>
                             <%= new Date(lmdDischargeGateReport1[i].dateTime).toLocaleString('en-US', {
@@ -139,11 +143,6 @@
 
         <!-- <div class="page-container"></div> -->
     <% } %>
-
-</body>
-    </table>
-
-    <!-- <div class="page-break"></div> -->
 
 </body>
 
