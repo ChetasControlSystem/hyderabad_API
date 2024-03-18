@@ -583,11 +583,96 @@ const lmdHrGateReport = catchAsync(async (req, res) => {
   res.json(lmdGateParameterOverviewReport);
 });
 
-
 const sevenDayReport = catchAsync(async (req, res) => {
   const sevenDayReport = await lmdService.sevenDayReport(req.user);
   res.send(sevenDayReport);
 });
+
+
+
+
+//without pagination 
+const lmdDischargeGateReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes } = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const lmdDischargeGateReport = await lmdService.lmdDischargeGateReportWp(startDate, endDate, intervalMinutes, res, req, req.user);
+  return res.json(lmdDischargeGateReport);
+
+});
+
+const lmdOpeningGateReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const lmdOpeningGateReport = await lmdService.lmdOpeningGateReportWp(startDate, endDate, intervalMinutes, res, req, req.user);
+
+  res.json(lmdOpeningGateReport);
+});
+
+const lmdPondlevelGateReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const lmdPondlevelGateReport = await lmdService.lmdPondlevelGateReportWP(startDate, endDate, intervalMinutes, res, req, req.user);
+
+  res.json(lmdPondlevelGateReport);
+});
+
+const lmdGateParameterOverviewReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const lmdGateParameterOverviewReport = await lmdService.lmdGateParameterOverviewReportWP(startDate, endDate, intervalMinutes, res, req, req.user);
+
+  res.json(lmdGateParameterOverviewReport);
+});
+
+const lmdHrGateReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const lmdHrGateReportWp = await lmdService.lmdGateReportWp(startDate, endDate, intervalMinutes,  res, req, req.user);
+
+  res.json(lmdHrGateReportWp);
+});
+
+
 
 module.exports = {
   lmdMongoDBData,
@@ -601,4 +686,11 @@ module.exports = {
   lmdGateParameterOverviewReport,
   lmdHrGateReport,
   sevenDayReport,
+
+  //without pagination 
+  lmdDischargeGateReportWp,
+  lmdOpeningGateReportWp,
+  lmdPondlevelGateReportWp,
+  lmdGateParameterOverviewReportWp,
+  lmdHrGateReportWp,
 };

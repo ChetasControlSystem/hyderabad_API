@@ -626,6 +626,121 @@ const sevenDayReport = catchAsync(async (req, res) => {
   res.send(sevenDayReport);
 });
 
+
+
+//Without pagination
+
+const srspDischargeGate1TO21ReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const srspDischargeGate1TO21Report = await srspService.srspDischargeGate1TO21ReportWp(startDate, endDate, intervalMinutes, res, req, req.user);
+
+  res.json(srspDischargeGate1TO21Report);
+});
+
+const srspDischargeGate22TO42ReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const srspDischargeGate22TO42Report = await srspService.srspDischargeGate22TO42ReportWp(startDate, endDate, intervalMinutes, res, req, req.user);
+  res.json(srspDischargeGate22TO42Report);
+});
+
+const srspOpeningGate1TO21ReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const srspOpeningGate1TO21Report = await srspService.srspOpeningGate1TO21ReportWp(startDate, endDate, intervalMinutes, res, req, req.user);
+
+  res.json(srspOpeningGate1TO21Report);
+});
+
+const srspOpeningGate22TO42ReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const srspOpeningGate22TO42Report = await srspService.srspOpeningGate22TO42ReportWp(startDate, endDate, intervalMinutes, res, req, req.user);
+
+  res.json(srspOpeningGate22TO42Report);
+});
+
+const srspInflowOutflowPondLevelReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const srspInflowOutflowPondLevelReport = await srspService.srspInflowOutflowPondLevelReportWp(startDate, endDate, intervalMinutes,  res, req, req.user);
+
+  res.json(srspInflowOutflowPondLevelReport);
+});
+
+const srspParameterOverviewReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const srspParameterOverviewReport = await srspService.srspParameterOverviewReportWp(startDate, endDate, intervalMinutes, res, req, req.user);
+
+  res.json(srspParameterOverviewReport);
+});
+
+const srspHrDamGateReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const srspHrDamGateReport = await srspService.srspHrDamGateReportWp(startDate, endDate, intervalMinutes, res, req, req.user);
+
+  res.json(srspHrDamGateReport);
+});
+
 module.exports = {
   handleMongoDBData,
   createSalientFeature,
@@ -640,4 +755,13 @@ module.exports = {
   srspParameterOverviewReport,
   srspHrDamGateReport,
   sevenDayReport,
+
+  //without pagination
+  srspDischargeGate1TO21ReportWp,
+  srspDischargeGate22TO42ReportWp,
+  srspOpeningGate1TO21ReportWp,
+  srspOpeningGate22TO42ReportWp,
+  srspInflowOutflowPondLevelReportWp,
+  srspParameterOverviewReportWp,
+  srspHrDamGateReportWp
 };

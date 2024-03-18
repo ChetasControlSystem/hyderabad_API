@@ -4,7 +4,7 @@ const fastCsv = require('fast-csv');
 const PDFDocument = require('pdfkit');
 const blobStream = require('blob-stream');
 const Docx = require('docx');
-const { Footer, Header, Packer, Paragraph } = Docx;
+// const { Footer, Header, Packer, Paragraph } = Docx;
 // const htmlToDocx = require('html-docx-js');
 const docxtemplater = require('docxtemplater');
 const JSZip = require('jszip');
@@ -330,7 +330,7 @@ const lmdDischargeGateReport = async (
       worksheet.mergeCells('B10:T13');
       worksheet.mergeCells('B9:H9');
       worksheet.mergeCells('M9:T9');
- 
+
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=LMD_Discharge_Gate_Report.xlsx');
       await workbook.xlsx.write(res);
@@ -373,177 +373,137 @@ const lmdDischargeGateReport = async (
       csvStream.end();
     } else if (exportToExcel == 3) {
       try {
-        //   const doc = new Docx.Document({
-        //     sections: [
-        //         {
-        //             properties: {},
-        //             children: [
-        //                 new Docx.Paragraph({
-        //                     children: [new Docx.TextRun(" Discharge Gate Report")],
-        //                 }),
 
-        //                 new Docx.Table({
-        //                   width: { size: 110, type: Docx.WidthType.PERCENTAGE },
-        //                     rows: [
-        //                         // Table header
-        //                         new Docx.TableRow({
-        //                             children: [
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 1")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 2")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 3")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 4")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 5")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 6")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 7")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 8")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 9")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 10")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 11")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 12")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 13")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 14")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 15")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 16")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 17")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 18")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 19")] }),
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Gate 20")] }),
-        //                             ],
-        //                         }),
+        const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+        const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
-        //                         // Table rows
-        //                         ...lmdDischargeGateReport1.map((item) => {
-        //                           const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
-        //                             return new Docx.TableRow({
-        //                                 children: [
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)],width: { size: 20, type: Docx.WidthType.PERCENTAGE } }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate1Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate2Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate3Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate4Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate5Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate6Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate7Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate8Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate9Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate10Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate11Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate12Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate13Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate14Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate15Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate16Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate17Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate18Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate19Discharge.toString())] }),
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(item.gate20Discharge.toString())] }),
-        //                                 ],
-        //                             });
-        //                         }),
-        //                     ],
-        //                 }),
-        //             ],
-        //         },
-        //     ],
-        // });
+        const itemsPerPage = 26; // Number of dates to print per page
+        const totalItems = lmdDischargeGateReport1.length; // Total number of dates
+        const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
 
-        //         const doc = new Docx.Document({
-        //     sections: [
-        //         {
-        //             properties: {},
-        //             children: [
-        //                 new Docx.Paragraph({
-        //                     children: [new Docx.TextRun(" Discharge Gate Report")],
-        //                 }),
+        const sections = [];
+        for (let page = 0; page < totalPages; page++) {
+          const startIndex = page * itemsPerPage;
+          const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+          const pageData = lmdDischargeGateReport1.slice(startIndex, endIndex);
 
-        //                 new Docx.Table({
-        //                     width: { size: "200%", type: Docx.WidthType.AUTO },
-        //                     // width : {size : "100%", type: Docx.WidthType.PERCENTAGE},
-        //                     rows: [
-        //                         // Table header
-        //                         new Docx.TableRow({
-        //                             children: [
-        //                                 new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
-        //                                 // Adjust the width for each gate column
-        //                                 ...Array.from({ length: 20 }, (_, i) => new Docx.TableCell({ children: [new Docx.Paragraph(`Gate ${i + 1}`)]})),
-        //                             ],
-        //                         }),
+          sections.push({
+            properties: {
+              page: {
+                margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+                size: {
+                  orientation: Docx.PageOrientation.PORTRAIT,
+                  width: 12240,
+                  height: 15840,
+                },
+              },
+            },
+            children: [
+              // Add your images and heading here at the top of every page
+              new Docx.Paragraph({
+                children: [
+                  // Left image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(logoImagePath),
+                    transformation: {
+                      width: 100,
+                      height: 100,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.LEFT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                  // Right image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(chetasImagePath),
+                    transformation: {
+                      width: 100,
+                      height: 100,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.RIGHT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                ],
+              }),
 
-        //                         // Table rows
-        //                         ...lmdDischargeGateReport1.map((item) => {
-        //                             const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
-        //                             return new Docx.TableRow({
-        //                                 children: [
-        //                                     new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)] }),
-        //                                     // Include each gate discharge value
-        //                                     ...Array.from({ length: 20 }, (_, i) => new Docx.TableCell({ children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toString())] })),
-        //                                 ],
-        //                             });
-        //                         }),
-        //                     ],
-        //                 }),
-        //             ],
-        //         },
-        //     ],
-        // });
+              // Heading
+              new Docx.Paragraph({
+                text: 'LMD Discharge Gate Report',
+                heading: Docx.HeadingLevel.HEADING_1,
+                alignment: Docx.AlignmentType.CENTER,
+              }),
 
-        const doc = new Docx.Document({
-          sections: [
-            {
-              children: [
-                new Docx.Paragraph({
-                  children: [new Docx.TextRun(' Discharge Gate Report')],
-                }),
+              // Table
+              new Docx.Table({
+                width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+                rows: [
+                  // Table header
+                  new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph('Date Time')],
+                        alignment: { horizontal: Docx.AlignmentType.CENTER },
+                        // Adjusted width for Date Time column
+                      }),
+                      // Adjust the width for each gate column
+                      ...Array.from(
+                        { length: 20 },
+                        (_, i) =>
+                          new Docx.TableCell({
+                            children: [new Docx.Paragraph(`Gate ${i + 1}`)],
+                            alignment: { horizontal: Docx.AlignmentType.CENTER },
+                            // Adjusted width for gate columns
+                          })
+                      ),
+                    ],
+                  }),
 
-                new Docx.Table({
-                  width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
-                  rows: [
-                    // Table header
-                    new Docx.TableRow({
+                  // Table rows
+                  ...pageData.map((item) => {
+                    const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                    return new Docx.TableRow({
                       children: [
                         new Docx.TableCell({
-                          children: [new Docx.Paragraph('Date Time')],
-                          width: { size: 200, type: Docx.WidthType.PERCENTAGE },
-                        }), // Adjusted width for Date Time column
-                        // Adjust the width for each gate column
+                          children: [new Docx.Paragraph(formattedDate)],
+                          alignment: { horizontal: Docx.AlignmentType.CENTER },
+                          // Adjusted width for Date Time column
+                        }),
+                        // Include each gate discharge value
                         ...Array.from(
                           { length: 20 },
                           (_, i) =>
                             new Docx.TableCell({
-                              children: [new Docx.Paragraph(`Gate ${i + 1}`)],
-                              width: { size: 1, type: Docx.WidthType.PERCENTAGE },
+                              children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toString())],
+                              alignment: { horizontal: Docx.AlignmentType.CENTER },
+                              // Adjusted width for gate columns
                             })
                         ),
                       ],
-                    }),
+                    });
+                  }),
+                ],
+              }),
+            ],
+          });
+        }
 
-                    // Table rows
-                    ...lmdDischargeGateReport1.map((item) => {
-                      const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
-                      return new Docx.TableRow({
-                        children: [
-                          new Docx.TableCell({
-                            children: [new Docx.Paragraph(formattedDate)],
-                            width: { size: 10, type: Docx.WidthType.PERCENTAGE },
-                          }),
-                          // Include each gate discharge value
-                          ...Array.from(
-                            { length: 20 },
-                            (_, i) =>
-                              new Docx.TableCell({
-                                children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toString())],
-                                width: { size: 10, type: Docx.WidthType.PERCENTAGE },
-                              })
-                          ),
-                        ],
-                      });
-                    }),
-                  ],
-                }),
-              ],
-            },
-          ],
+        const doc = new Docx.Document({
+          sections: sections,
         });
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         res.setHeader('Content-Disposition', 'attachment; filename=LMD_Discharge_Gate_Report.docx');
@@ -815,6 +775,145 @@ const lmdOpeningGateReport = async (
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
+
+      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+      const itemsPerPage = 26; // Number of dates to print per page
+      const totalItems = lmdOpeningGateReportWithoutPagination.length; // Total number of dates
+      const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = lmdOpeningGateReportWithoutPagination.slice(startIndex, endIndex);
+
+        console.log(pageData , "+++++++++++++++");
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(logoImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+            // Heading
+            new Docx.Paragraph({
+              text: 'LMD Opening Gate Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                    new Docx.TableCell({
+                      children: [new Docx.Paragraph('Date Time')],
+                      alignment: { horizontal: Docx.AlignmentType.CENTER },
+                      // Adjusted width for Date Time column
+                    }),
+                    // Adjust the width for each gate column
+                    ...Array.from(
+                      { length: 20 },
+                      (_, i) =>
+                        new Docx.TableCell({
+                          children: [new Docx.Paragraph(`Gate ${i + 1}`)],
+                          alignment: { horizontal: Docx.AlignmentType.CENTER },
+                          // Adjusted width for gate columns
+                        })
+                    ),
+                  ],
+                }),
+
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                  return new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph(formattedDate)],
+                        alignment: { horizontal: Docx.AlignmentType.CENTER },
+                        // Adjusted width for Date Time column
+                      }),
+                      // Include each gate Opening value
+                      ...Array.from(
+                        { length: 20 },
+                        (_, i) =>
+                          new Docx.TableCell({
+                            children: [new Docx.Paragraph(item[`gate${i + 1}Position`].toString())],
+                            alignment: { horizontal: Docx.AlignmentType.CENTER },
+                            // Adjusted width for gate columns
+                          })
+                      ),
+                    ],
+                  });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Opening_Gate_Report.docx');
+
+      // Stream the Word document to the response
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
+
     } else if (exportToExcel == 4) {
       try {
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/lmdOpeningGate.ejs'), {
@@ -823,12 +922,8 @@ const lmdOpeningGateReport = async (
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-
         await page.setContent(dynamicHtml);
-
         const pdfBuffer = await page.pdf({ format: 'Letter' });
-
-        // Close browser
         await browser.close();
 
         res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Gate_1_To_20__Opening_Report.pdf');
@@ -1043,11 +1138,10 @@ const lmdPondlevelGateReport = async (
         cell.font = { bold: true };
       });
 
-
       // worksheet.getRow(15).eachCell((cell) => {
       //   cell.font = { bold: true };
       // });
- 
+
       worksheet.getCell('B3').font = { bold: true };
 
       worksheet.mergeCells('B4:T13');
@@ -1061,6 +1155,130 @@ const lmdPondlevelGateReport = async (
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
+      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+      const itemsPerPage = 25; // Number of dates to print per page
+      const totalItems = lmdPondlevelGateReportsWithoutPagination.length; // Total number of dates
+      const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = lmdPondlevelGateReportsWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(logoImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+            // Heading
+            new Docx.Paragraph({
+              text: 'LMD Dam Inflow Outflow Pond-Level Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gagillapur Inflow Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gagillapur Inflow Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Potour Inflow Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Potour Inflow Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Chintakunta Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Chintakunta Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Alugunuru Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Alugunuru Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Pond Level (Feet)")] }),
+                  ],
+              }),
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
+                    return new Docx.TableRow({
+                        children: [
+                            new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)],width: { size: 12, type: Docx.WidthType.PERCENTAGE } }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Level.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Discharge.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Level.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Discharge.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow3Level.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow3Discharge.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamLevel.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamDischarge.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(3))] }),
+                            ],
+                    });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Inflow_Outflow_PondLevel_Report.docx');
+
+      // Stream the Word document to the response
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
     } else if (exportToExcel == 4) {
       try {
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/lmdInflowOutflowPondLevel.ejs'), {
@@ -1069,12 +1287,8 @@ const lmdPondlevelGateReport = async (
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-
         await page.setContent(dynamicHtml);
-
         const pdfBuffer = await page.pdf({ format: 'Letter' });
-
-        // Close browser
         await browser.close();
 
         res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Inflow_Outflow_PondLevel_Report.pdf');
@@ -1237,8 +1451,7 @@ const lmdGateParameterOverviewReport = async (
       pipelineWithoutPagination
     );
 
-     if (exportToExcel == 1) {
-      console.log('aaaaaaaaaaaaaaaaa');
+    if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('LMD Dam Paramete Overview Report');
 
@@ -1274,7 +1487,7 @@ const lmdGateParameterOverviewReport = async (
         'Inst. Gate Discharge(Cusecs)',
         'Inst. canal Discharge (Cusecs)',
         'Total Dam Discharge (Cusecs)',
-        'Cumulative Dam Discharge (Cusecs)'
+        'Cumulative Dam Discharge (Cusecs)',
       ];
       worksheet.addRow([]);
       worksheet.addRow(headers);
@@ -1305,9 +1518,9 @@ const lmdGateParameterOverviewReport = async (
 
       worksheet.getRow(15).eachCell((cell) => {
         cell.font = { bold: true };
-        cell.height ={size : 10}
+        cell.height = { size: 10 };
       });
- 
+
       worksheet.getCell('B3').font = { bold: true };
 
       worksheet.mergeCells('B4:T13');
@@ -1319,8 +1532,140 @@ const lmdGateParameterOverviewReport = async (
       res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Parameter_Overview_Report.xlsx');
 
       await workbook.xlsx.write(res);
-    }  else if (exportToExcel == 2){ 
+    } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
+      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+      const itemsPerPage = 25; // Number of dates to print per page
+      const totalItems = lmdGateParameterOverviewReportWithoutPagination.length; // Total number of dates
+      const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = lmdGateParameterOverviewReportWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(logoImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+
+            // Heading
+            new Docx.Paragraph({
+              text: 'LMD Dam Parameter Overview Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Pond Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Live Capacity (MCFT)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gross Storage (MCFT)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Full Reserve Water (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Contour Area (M.SqFt)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Cathment Area (Sq.Km)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Ayucut Area (Acres)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Filing Percentage (%)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Inst. Gate Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Inst. canal Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Total Dam Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Cumulative Dam Discharge (Cusecs)")] }),
+                  ],
+              }),
+
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
+                    return new Docx.TableRow({
+                        children: [
+                            new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)],width: { size: 12, type: Docx.WidthType.PERCENTAGE } }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.liveCapacity.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.grossStorage.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.fullReservoirLevel.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.contourArea.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.catchmentArea.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.ayacutArea.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.filling.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.instantaneousGateDischarge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.instantaneousCanalDischarge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.totalDamDischarge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.cumulativeDamDischarge.toFixed(2))] }),
+                            ],
+                    });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Parameter_Overview_Report.docx');
+
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
     } else if (exportToExcel == 4) {
       try {
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/lmdParameterOverview.ejs'), {
@@ -1329,17 +1674,14 @@ const lmdGateParameterOverviewReport = async (
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-
         await page.setContent(dynamicHtml);
-
         const pdfBuffer = await page.pdf({ format: 'Letter' });
-
-        // Close browser
         await browser.close();
 
         res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Parameter_Overview_Report.pdf');
         res.setHeader('Content-Type', 'application/pdf');
         res.send(pdfBuffer);
+
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
@@ -1565,12 +1907,12 @@ const lmdGateReport = async (
       hrrGate2Position: posDataWithoutPagination[index]?.hrrGate2Position || 0,
       hrrGate1Discharge: disDataWithoutPagination[index]?.hrrGate1Discharge || 0,
       hrrGate2Discharge: disDataWithoutPagination[index]?.hrrGate2Discharge || 0,
-      totalDischarge: disDataWithoutPagination[index]?.hrrGate1Discharge + disDataWithoutPagination[index]?.hrrGate2Discharge,
+      totalDischarge:
+        disDataWithoutPagination[index]?.hrrGate1Discharge + disDataWithoutPagination[index]?.hrrGate2Discharge,
       dateTime: posDataWithoutPagination[index]?.dateTime || disDataWithoutPagination[index]?.dateTime || null,
     }));
 
     if (exportToExcel == 1) {
-      console.log('aaaaaaaaaaaaaaaaa');
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('LMD HR Gate Report');
 
@@ -1599,7 +1941,7 @@ const lmdGateReport = async (
         'Gate 1 Discharge (C/S)',
         'Gate 2 Opening (Feet)',
         'Gate 2 Discharge (C/S)',
-        'Total Discharge (C/S)'
+        'Total Discharge (C/S)',
       ];
       worksheet.addRow([]);
       worksheet.addRow(headers);
@@ -1623,23 +1965,139 @@ const lmdGateReport = async (
 
       worksheet.getRow(15).eachCell((cell) => {
         cell.font = { bold: true };
-        cell.height ={size : 10}
+        cell.height = { size: 10 };
       });
- 
+
       worksheet.getCell('B3').font = { bold: true };
 
       worksheet.mergeCells('B4:T13');
-      // worksheet.mergeCells('B10:T13');
-      // worksheet.mergeCells('B9:H9');
-      // worksheet.mergeCells('M9:T9');
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=LMD_HR_Gate_Report.xlsx');
 
       await workbook.xlsx.write(res);
-    }  else if (exportToExcel == 2) {
+    } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
-    } else if (exportToExcel == 4) {
+      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+      const itemsPerPage = 25; 
+      const totalItems = mergedDataWithoutPagination.length; 
+      const totalPages = Math.ceil(totalItems / itemsPerPage); 
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = mergedDataWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(logoImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+
+            // Heading
+            new Docx.Paragraph({
+              text: 'LMD HR canal Gate Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gete 1 Opening (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gate 1 Discharge (C/S)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gete 2 Opening (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gate 2 Discharge (C/S)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Total Discharge(C/S)")] }),
+                      ],
+              }),
+
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
+                    return new Docx.TableRow({
+                        children: [
+                            new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)],width: { size: 12, type: Docx.WidthType.PERCENTAGE } }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrrGate1Position.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrrGate1Discharge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrrGate2Position.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrrGate2Discharge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.totalDischarge.toFixed(2))] }),
+                            ],
+                    });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_HR_Gat_Report.docx');
+
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
+
+    }else if (exportToExcel == 4) {
       try {
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/lmdHrGate.ejs'), {
           mergedDataWithoutPagination: mergedDataWithoutPagination,
@@ -1647,15 +2105,11 @@ const lmdGateReport = async (
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-
         await page.setContent(dynamicHtml);
-
         const pdfBuffer = await page.pdf({ format: 'Letter' });
-
-        // Close browser
         await browser.close();
 
-        res.setHeader('Content-Disposition', 'attachment; filename=LMD_HR_Gate__Report.pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=.pdf');
         res.setHeader('Content-Type', 'application/pdf');
         res.send(pdfBuffer);
       } catch (error) {
@@ -1668,7 +2122,7 @@ const lmdGateReport = async (
       return {
         data: mergedData,
         currentPage,
-        perPage,
+        perPage, 
         totalCount,
         totalPage,
       };
@@ -1795,6 +2249,452 @@ const sevenDayReport = async (user) => {
   }
 };
 
+
+
+
+
+//without pagination
+
+const lmdDischargeGateReportWp = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  res,
+  req
+) => {
+  try {
+  
+    const pipeline = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          gate1Discharge: { $first: '$gate1Discharge' },
+          gate2Discharge: { $first: '$gate2Discharge' },
+          gate3Discharge: { $first: '$gate3Discharge' },
+          gate4Discharge: { $first: '$gate4Discharge' },
+          gate5Discharge: { $first: '$gate5Discharge' },
+          gate6Discharge: { $first: '$gate6Discharge' },
+          gate7Discharge: { $first: '$gate7Discharge' },
+          gate8Discharge: { $first: '$gate8Discharge' },
+          gate9Discharge: { $first: '$gate9Discharge' },
+          gate10Discharge: { $first: '$gate10Discharge' },
+          gate11Discharge: { $first: '$gate11Discharge' },
+          gate12Discharge: { $first: '$gate12Discharge' },
+          gate13Discharge: { $first: '$gate13Discharge' },
+          gate14Discharge: { $first: '$gate14Discharge' },
+          gate15Discharge: { $first: '$gate15Discharge' },
+          gate16Discharge: { $first: '$gate16Discharge' },
+          gate17Discharge: { $first: '$gate17Discharge' },
+          gate18Discharge: { $first: '$gate18Discharge' },
+          gate19Discharge: { $first: '$gate19Discharge' },
+          gate20Discharge: { $first: '$gate20Discharge' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          gate1Discharge: 1,
+          gate2Discharge: 1,
+          gate3Discharge: 1,
+          gate4Discharge: 1,
+          gate5Discharge: 1,
+          gate6Discharge: 1,
+          gate7Discharge: 1,
+          gate8Discharge: 1,
+          gate9Discharge: 1,
+          gate10Discharge: 1,
+          gate11Discharge: 1,
+          gate12Discharge: 1,
+          gate13Discharge: 1,
+          gate14Discharge: 1,
+          gate15Discharge: 1,
+          gate16Discharge: 1,
+          gate17Discharge: 1,
+          gate18Discharge: 1,
+          gate19Discharge: 1,
+          gate20Discharge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const lmdDischargeGateReportWp = await LMD_DAM_OVERVIEW_DICH.aggregate(pipeline);
+
+      return  lmdDischargeGateReportWp
+    
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const lmdOpeningGateReportWp = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  res,
+  req
+) => {
+  try {
+
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          gate1Position: { $first: '$gate1Position' },
+          gate2Position: { $first: '$gate2Position' },
+          gate3Position: { $first: '$gate3Position' },
+          gate4Position: { $first: '$gate4Position' },
+          gate5Position: { $first: '$gate5Position' },
+          gate6Position: { $first: '$gate6Position' },
+          gate7Position: { $first: '$gate7Position' },
+          gate8Position: { $first: '$gate8Position' },
+          gate9Position: { $first: '$gate9Position' },
+          gate10Position: { $first: '$gate10Position' },
+          gate11Position: { $first: '$gate11Position' },
+          gate12Position: { $first: '$gate12Position' },
+          gate13Position: { $first: '$gate13Position' },
+          gate14Position: { $first: '$gate14Position' },
+          gate15Position: { $first: '$gate15Position' },
+          gate16Position: { $first: '$gate16Position' },
+          gate17Position: { $first: '$gate17Position' },
+          gate18Position: { $first: '$gate18Position' },
+          gate19Position: { $first: '$gate19Position' },
+          gate20Position: { $first: '$gate20Position' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          gate1Position: 1,
+          gate2Position: 1,
+          gate3Position: 1,
+          gate4Position: 1,
+          gate5Position: 1,
+          gate6Position: 1,
+          gate7Position: 1,
+          gate8Position: 1,
+          gate9Position: 1,
+          gate10Position: 1,
+          gate11Position: 1,
+          gate12Position: 1,
+          gate13Position: 1,
+          gate14Position: 1,
+          gate15Position: 1,
+          gate16Position: 1,
+          gate17Position: 1,
+          gate18Position: 1,
+          gate19Position: 1,
+          gate20Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const lmdOpeningGateReportWithoutPagination = await LMD_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
+      return lmdOpeningGateReportWithoutPagination
+    
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const lmdPondlevelGateReportWp = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  res,
+  req
+) => {
+  try {
+   
+
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          inflow1Level: { $first: '$inflow1Level' },
+          inflow2Level: { $first: '$inflow2Level' },
+          inflow3Level: { $first: '$inflow3Level' },
+          inflow1Discharge: { $first: '$inflow1Discharge' },
+          inflow2Discharge: { $first: '$inflow2Discharge' },
+          inflow3Discharge: { $first: '$inflow3Discharge' },
+          damDownstreamLevel: { $first: '$damDownstreamLevel' },
+          damDownstreamDischarge: { $first: '$damDownstreamDischarge' },
+          pondLevel: { $first: '$pondLevel' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          inflow1Level: 1,
+          inflow2Level: 1,
+          inflow3Level: 1,
+          inflow1Discharge: 1,
+          inflow2Discharge: 1,
+          inflow3Discharge: 1,
+          damDownstreamLevel: 1,
+          damDownstreamDischarge: 1,
+          pondLevel: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const lmdPondlevelGateReportsWithoutPagination = await LMD_POND_LEVEL_OVERVIEW.aggregate(pipelineWithoutPagination);
+      return lmdPondlevelGateReportsWithoutPagination
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const lmdGateParameterOverviewReportWp = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  res,
+  req
+) => {
+  try {
+   
+
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          pondLevel: { $first: '$pondLevel' },
+          liveCapacity: { $first: '$liveCapacity' },
+          grossStorage: { $first: '$grossStorage' },
+          fullReservoirLevel: { $first: '$fullReservoirLevel' },
+          contourArea: { $first: '$contourArea' },
+          catchmentArea: { $first: '$catchmentArea' },
+          ayacutArea: { $first: '$ayacutArea' },
+          filling: { $first: '$filling' },
+          instantaneousGateDischarge: { $first: '$instantaneousGateDischarge' },
+          instantaneousCanalDischarge: { $first: '$instantaneousCanalDischarge' },
+          totalDamDischarge: { $first: '$totalDamDischarge' },
+          cumulativeDamDischarge: { $first: '$cumulativeDamDischarge' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          pondLevel: 1,
+          liveCapacity: 1,
+          grossStorage: 1,
+          fullReservoirLevel: 1,
+          contourArea: 1,
+          catchmentArea: 1,
+          ayacutArea: 1,
+          filling: 1,
+          instantaneousGateDischarge: 1,
+          instantaneousCanalDischarge: 1,
+          totalDamDischarge: 1,
+          cumulativeDamDischarge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const lmdGateParameterOverviewReportWithoutPagination = await LMD_POND_LEVEL_OVERVIEW.aggregate(
+      pipelineWithoutPagination
+    );
+
+ return lmdGateParameterOverviewReportWithoutPagination
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const lmdGateReportWp = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  res,
+  req
+) => {
+  try {
+ 
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+
+          hrrGate1Position: { $first: '$hrrGate1Position' },
+          hrrGate2Position: { $first: '$hrrGate2Position' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrrGate1Position: 1,
+          hrrGate2Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const pipeline1WithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+
+          hrrGate1Discharge: { $first: '$hrrGate1Discharge' },
+          hrrGate2Discharge: { $first: '$hrrGate2Discharge' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrrGate1Discharge: 1,
+          hrrGate2Discharge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const lmdGateReportPosWithoutPagination = await LMD_HR_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
+    const lmdGateReportDisWithoutPagination = await LMD_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1WithoutPagination);
+    let posDataWithoutPagination = lmdGateReportPosWithoutPagination || [];
+    let disDataWithoutPagination = lmdGateReportDisWithoutPagination || [];
+    let minLengthWithoutPagination = Math.max(posDataWithoutPagination.length, disDataWithoutPagination.length);
+
+    // Merge data arrays based on index position
+    let mergedDataWithoutPagination = Array.from({ length: minLengthWithoutPagination }, (_, index) => ({
+      hrrGate1Position: posDataWithoutPagination[index]?.hrrGate1Position || 0,
+      hrrGate2Position: posDataWithoutPagination[index]?.hrrGate2Position || 0,
+      hrrGate1Discharge: disDataWithoutPagination[index]?.hrrGate1Discharge || 0,
+      hrrGate2Discharge: disDataWithoutPagination[index]?.hrrGate2Discharge || 0,
+      totalDischarge:
+        disDataWithoutPagination[index]?.hrrGate1Discharge + disDataWithoutPagination[index]?.hrrGate2Discharge,
+      dateTime: posDataWithoutPagination[index]?.dateTime || disDataWithoutPagination[index]?.dateTime || null,
+    }));
+
+      return mergedDataWithoutPagination
+       
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
 module.exports = {
   createSalientFeature,
   getSalientFeature,
@@ -1806,4 +2706,11 @@ module.exports = {
   lmdGateParameterOverviewReport,
   lmdGateReport,
   sevenDayReport,
+
+  //without pagination
+  lmdDischargeGateReportWp,
+  lmdOpeningGateReportWp,
+  lmdPondlevelGateReportWp,
+  lmdGateParameterOverviewReportWp,
+  lmdGateReportWp
 };

@@ -3,9 +3,8 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 const ejs = require('ejs');
 const fs = require('fs');
+const Docx = require('docx');
 const ExcelJS = require('exceljs');
-
-
 
 
 const {
@@ -326,6 +325,149 @@ const srspDischargeGate1TO21Report = async (startDate, endDate, intervalMinutes,
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
+      try {
+
+        const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+        const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+        const itemsPerPage = 26; // Number of dates to print per page
+        const totalItems = srspDischargeGate1TO21ReportWithoutPagination.length; // Total number of dates
+        const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+        const sections = [];
+        for (let page = 0; page < totalPages; page++) {
+          const startIndex = page * itemsPerPage;
+          const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+          const pageData = srspDischargeGate1TO21ReportWithoutPagination.slice(startIndex, endIndex);
+
+          sections.push({
+            properties: {
+              page: {
+                margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+                size: {
+                  orientation: Docx.PageOrientation.PORTRAIT,
+                  width: 12240,
+                  height: 15840,
+                },
+              },
+            },
+            children: [
+              // Add your images and heading here at the top of every page
+              new Docx.Paragraph({
+                children: [
+                  // Left image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(logoImagePath),
+                    transformation: {
+                      width: 100,
+                      height: 100,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.LEFT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                  // Right image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(chetasImagePath),
+                    transformation: {
+                      width: 100,
+                      height: 100,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.RIGHT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                ],
+              }),
+
+              // Heading
+              new Docx.Paragraph({
+                text: 'SRSP Dam Gate 1 To 21 Discharge Report',
+                heading: Docx.HeadingLevel.HEADING_1,
+                alignment: Docx.AlignmentType.CENTER,
+              }),
+
+              // Table
+              new Docx.Table({
+                width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+                rows: [
+                  // Table header
+                  new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph('Date Time')],
+                        alignment: { horizontal: Docx.AlignmentType.CENTER },
+                        // Adjusted width for Date Time column
+                      }),
+                      // Adjust the width for each gate column
+                      ...Array.from(
+                        { length: 21 },
+                        (_, i) =>
+                          new Docx.TableCell({
+                            children: [new Docx.Paragraph(`Gate ${i + 1}`)],
+                            alignment: { horizontal: Docx.AlignmentType.CENTER },
+                            // Adjusted width for gate columns
+                          })
+                      ),
+                    ],
+                  }),
+
+                  // Table rows
+                  ...pageData.map((item) => {
+                    const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                    return new Docx.TableRow({
+                      children: [
+                        new Docx.TableCell({
+                          children: [new Docx.Paragraph(formattedDate)],
+                          alignment: { horizontal: Docx.AlignmentType.CENTER },
+                          // Adjusted width for Date Time column
+                        }),
+                        // Include each gate discharge value
+                        ...Array.from(
+                          { length: 21 },
+                          (_, i) =>
+                            new Docx.TableCell({
+                              children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toFixed(2))],
+                              alignment: { horizontal: Docx.AlignmentType.CENTER },
+                              // Adjusted width for gate columns
+                            })
+                        ),
+                      ],
+                    });
+                  }),
+                ],
+              }),
+            ],
+          });
+        }
+
+        const doc = new Docx.Document({
+          sections: sections,
+        });
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21_Discharge_Report.docx');
+
+        // Stream the Word document to the response
+        const buffer = await Docx.Packer.toBuffer(doc);
+        res.end(buffer);
+      } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
+      }
     } else if (exportToExcel == 4) {
       try {
 
@@ -588,7 +730,152 @@ const srspDischargeGate22TO42Report = async (startDate, endDate, intervalMinutes
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42__Discharge_Report.xlsx');
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
-    } else if (exportToExcel == 3) {
+    }  else if (exportToExcel == 3) {
+      try {
+
+        const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+        const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+        const itemsPerPage = 26; // Number of dates to print per page
+        const totalItems = srspDischargeGate22TO42ReportWithoutPagination.length; // Total number of dates
+        const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+        const sections = [];
+        for (let page = 0; page < totalPages; page++) {
+          const startIndex = page * itemsPerPage;
+          const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+          const pageData = srspDischargeGate22TO42ReportWithoutPagination.slice(startIndex, endIndex);
+
+          console.log(pageData, "++++++++++++++");
+
+          sections.push({
+            properties: {
+              page: {
+                margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+                size: {
+                  orientation: Docx.PageOrientation.PORTRAIT,
+                  width: 12240,
+                  height: 15840,
+                },
+              },
+            },
+            children: [
+              // Add your images and heading here at the top of every page
+              new Docx.Paragraph({
+                children: [
+                  // Left image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(logoImagePath),
+                    transformation: {
+                      width: 100,
+                      height: 100,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.LEFT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                  // Right image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(chetasImagePath),
+                    transformation: {
+                      width: 100,
+                      height: 100,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.RIGHT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                ],
+              }),
+
+              // Heading
+              new Docx.Paragraph({
+                text: 'SRSP Dam Gate 22 To 42 Discharge Report',
+                heading: Docx.HeadingLevel.HEADING_1,
+                alignment: Docx.AlignmentType.CENTER,
+              }),
+
+              // Table
+              new Docx.Table({
+                width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+                rows: [
+                  // Table header
+                  new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph('Date Time')],
+                        alignment: { horizontal: Docx.AlignmentType.CENTER },
+                        // Adjusted width for Date Time column
+                      }),
+                      // Adjust the width for each gate column
+                      ...Array.from(
+                        { length: 21 },
+                        (_, i) =>
+                          new Docx.TableCell({
+                            children: [new Docx.Paragraph(`Gate ${i + 22}`)],
+                            alignment: { horizontal: Docx.AlignmentType.CENTER },
+                            // Adjusted width for gate columns
+                          })
+                      ),
+                    ],
+                  }),
+
+                  // Table rows
+                  ...pageData.map((item) => {
+                    const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                    return new Docx.TableRow({
+                      children: [
+                        new Docx.TableCell({
+                          children: [new Docx.Paragraph(formattedDate)],
+                          alignment: { horizontal: Docx.AlignmentType.CENTER },
+                          // Adjusted width for Date Time column
+                        }),
+                        // Include each gate discharge value
+                        ...Array.from(
+                          { length: 21 },
+                          (_, i) =>
+                            new Docx.TableCell({
+                              children: [new Docx.Paragraph(item[`gate${i + 22}Discharge`].toFixed(2))],
+                              alignment: { horizontal: Docx.AlignmentType.CENTER },
+                              // Adjusted width for gate columns
+                            })
+                        ),
+                      ],
+                    });
+                  }),
+                ],
+              }),
+            ],
+          });
+        }
+
+        const doc = new Docx.Document({
+          sections: sections,
+        });
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42_Discharge_Report.docx');
+
+        // Stream the Word document to the response
+        const buffer = await Docx.Packer.toBuffer(doc);
+        res.end(buffer);
+      } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
+      }
     } else if (exportToExcel == 4) {
       try {
 
@@ -851,7 +1138,150 @@ const srspOpeningGate1TO21Report = async (startDate, endDate, intervalMinutes, e
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
-    } else if (exportToExcel == 4) {
+      try {
+
+        const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+        const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+        const itemsPerPage = 26; // Number of dates to print per page
+        const totalItems = srspOpeningGate1TO21ReportWithoutPagination.length; // Total number of dates
+        const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+        const sections = [];
+        for (let page = 0; page < totalPages; page++) {
+          const startIndex = page * itemsPerPage;
+          const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+          const pageData = srspOpeningGate1TO21ReportWithoutPagination.slice(startIndex, endIndex);
+
+          sections.push({
+            properties: {
+              page: {
+                margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+                size: {
+                  orientation: Docx.PageOrientation.PORTRAIT,
+                  width: 12240,
+                  height: 15840,
+                },
+              },
+            },
+            children: [
+              // Add your images and heading here at the top of every page
+              new Docx.Paragraph({
+                children: [
+                  // Left image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(logoImagePath),
+                    transformation: {
+                      width: 100,
+                      height: 100,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.LEFT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                  // Right image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(chetasImagePath),
+                    transformation: {
+                      width: 100,
+                      height: 100,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.RIGHT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                ],
+              }),
+
+              // Heading
+              new Docx.Paragraph({
+                text: 'SRSP Dam Gate 1 To 21 Opening Report',
+                heading: Docx.HeadingLevel.HEADING_1,
+                alignment: Docx.AlignmentType.CENTER,
+              }),
+
+              // Table
+              new Docx.Table({
+                width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+                rows: [
+                  // Table header
+                  new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph('Date Time')],
+                        alignment: { horizontal: Docx.AlignmentType.CENTER },
+                        // Adjusted width for Date Time column
+                      }),
+                      // Adjust the width for each gate column
+                      ...Array.from(
+                        { length: 21 },
+                        (_, i) =>
+                          new Docx.TableCell({
+                            children: [new Docx.Paragraph(`Gate ${i + 1}`)],
+                            alignment: { horizontal: Docx.AlignmentType.CENTER },
+                            // Adjusted width for gate columns
+                          })
+                      ),
+                    ],
+                  }),
+
+                  // Table rows
+                  ...pageData.map((item) => {
+                    const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                    return new Docx.TableRow({
+                      children: [
+                        new Docx.TableCell({
+                          children: [new Docx.Paragraph(formattedDate)],
+                          alignment: { horizontal: Docx.AlignmentType.CENTER },
+                          // Adjusted width for Date Time column
+                        }),
+                        // Include each gate discharge value
+                        ...Array.from(
+                          { length: 21 },
+                          (_, i) =>
+                            new Docx.TableCell({
+                              children: [new Docx.Paragraph(item[`gate${i + 1}Position`].toFixed(2))],
+                              alignment: { horizontal: Docx.AlignmentType.CENTER },
+                              // Adjusted width for gate columns
+                            })
+                        ),
+                      ],
+                    });
+                  }),
+                ],
+              }),
+            ],
+          });
+        }
+
+        const doc = new Docx.Document({
+          sections: sections,
+        });
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21_Opening_Report.docx');
+
+        // Stream the Word document to the response
+        const buffer = await Docx.Packer.toBuffer(doc);
+        res.end(buffer);
+      } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
+      }
+    }else if (exportToExcel == 4) {
       try {
 
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspOpeningGate1to21.ejs'), {
@@ -1114,6 +1544,149 @@ const srspOpeningGate22TO42Report = async (startDate, endDate, intervalMinutes, 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
+      try {
+
+        const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+        const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+        const itemsPerPage = 26; // Number of dates to print per page
+        const totalItems = srspOpeningGate22TO42ReportWithoutPagination.length; // Total number of dates
+        const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+        const sections = [];
+        for (let page = 0; page < totalPages; page++) {
+          const startIndex = page * itemsPerPage;
+          const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+          const pageData = srspOpeningGate22TO42ReportWithoutPagination.slice(startIndex, endIndex);
+
+          sections.push({
+            properties: {
+              page: {
+                margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+                size: {
+                  orientation: Docx.PageOrientation.PORTRAIT,
+                  width: 12240,
+                  height: 15840,
+                },
+              },
+            },
+            children: [
+              // Add your images and heading here at the top of every page
+              new Docx.Paragraph({
+                children: [
+                  // Left image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(logoImagePath),
+                    transformation: {
+                      width: 100,
+                      height: 100,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.LEFT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                  // Right image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(chetasImagePath),
+                    transformation: {
+                      width: 100,
+                      height: 100,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.RIGHT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                ],
+              }),
+
+              // Heading
+              new Docx.Paragraph({
+                text: 'SRSP Dam Gate 22 To 42 Opening Report',
+                heading: Docx.HeadingLevel.HEADING_1,
+                alignment: Docx.AlignmentType.CENTER,
+              }),
+
+              // Table
+              new Docx.Table({
+                width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+                rows: [
+                  // Table header
+                  new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph('Date Time')],
+                        alignment: { horizontal: Docx.AlignmentType.CENTER },
+                        // Adjusted width for Date Time column
+                      }),
+                      // Adjust the width for each gate column
+                      ...Array.from(
+                        { length: 21 },
+                        (_, i) =>
+                          new Docx.TableCell({
+                            children: [new Docx.Paragraph(`Gate ${i + 22}`)],
+                            alignment: { horizontal: Docx.AlignmentType.CENTER },
+                            // Adjusted width for gate columns
+                          })
+                      ),
+                    ],
+                  }),
+
+                  // Table rows
+                  ...pageData.map((item) => {
+                    const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                    return new Docx.TableRow({
+                      children: [
+                        new Docx.TableCell({
+                          children: [new Docx.Paragraph(formattedDate)],
+                          alignment: { horizontal: Docx.AlignmentType.CENTER },
+                          // Adjusted width for Date Time column
+                        }),
+                        // Include each gate discharge value
+                        ...Array.from(
+                          { length: 21 },
+                          (_, i) =>
+                            new Docx.TableCell({
+                              children: [new Docx.Paragraph(item[`gate${i + 22}Position`].toFixed(2))],
+                              alignment: { horizontal: Docx.AlignmentType.CENTER },
+                              // Adjusted width for gate columns
+                            })
+                        ),
+                      ],
+                    });
+                  }),
+                ],
+              }),
+            ],
+          });
+        }
+
+        const doc = new Docx.Document({
+          sections: sections,
+        });
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42_Opening_Report.docx');
+
+        // Stream the Word document to the response
+        const buffer = await Docx.Packer.toBuffer(doc);
+        res.end(buffer);
+      } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
+      }
     } else if (exportToExcel == 4) {
       try {
 
@@ -1343,6 +1916,126 @@ const srspInflowOutflowPondLevelReport = async (startDate, endDate, intervalMinu
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
+      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+      const itemsPerPage = 25; // Number of dates to print per page
+      const totalItems = srspInflowOutflowPondLevelReportWithoutPagination.length; // Total number of dates
+      const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = srspInflowOutflowPondLevelReportWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(logoImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+            // Heading
+            new Docx.Paragraph({
+              text: 'SRSP Dam Inflow Outflow Pond-Level Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("BASAR Inflow Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("BASAR Inflow Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Pendapally Inflow Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Pendapally Inflow Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("SOAN Outflow Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("SOAN Outflow Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Pond Level (Feet)")] }),
+                  ],
+              }),
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
+                    return new Docx.TableRow({
+                        children: [
+                            new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)],width: { size: 12, type: Docx.WidthType.PERCENTAGE } }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Level.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Discharge.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Level.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Discharge.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamLevel.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamDischarge.toFixed(3))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(3))] }),
+                            ],
+                    });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Inflow_Outflow_PondLevel_Report.docx');
+
+      // Stream the Word document to the response
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
     } else if (exportToExcel == 4) {
       try {
 
@@ -1555,7 +2248,7 @@ const srspParameterOverviewReport = async (startDate, endDate, intervalMinutes, 
         'Cumulative Dam Discharge (TMC)'
       ];
       worksheet.addRow([]);
-      worksheet.addRow(headers);
+      worksheet.addRow(headers); 
 
       srspParameterOverviewReportWithoutPagination.forEach((row) => {
         const rowData = [
@@ -1599,7 +2292,139 @@ const srspParameterOverviewReport = async (startDate, endDate, intervalMinutes, 
       await workbook.xlsx.write(res);
     }  else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
-    } else if (exportToExcel == 4) {
+      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+      const itemsPerPage = 25; // Number of dates to print per page
+      const totalItems = srspParameterOverviewReportWithoutPagination.length; // Total number of dates
+      const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = srspParameterOverviewReportWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(logoImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+
+            // Heading
+            new Docx.Paragraph({
+              text: 'SRSP Dam Parameter Overview Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Pond Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Live Capacity (MCFT)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gross Storage (MCFT)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Full Reserve Water (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Contour Area (M.SqFt)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Cathment Area (Sq.Km)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Ayucut Area (Acres)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Filing Percentage (%)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Inst. Gate Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Inst. canal Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Total Dam Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Cumulative Dam Discharge (Cusecs)")] }),
+                  ],
+              }),
+
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
+                    return new Docx.TableRow({
+                        children: [
+                            new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)],width: { size: 12, type: Docx.WidthType.PERCENTAGE } }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.liveCapacity.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.grossStorage.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.fullReservoirLevel.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.contourArea.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.catchmentArea.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.ayacutArea.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.filling.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.instantaneousGateDischarge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.instantaneousCanalDischarge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.totalDamDischarge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.cumulativeDamDischarge.toFixed(2))] }),
+                            ],
+                    });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Parameter_Overview_Report.docx');
+
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
+    }  else if (exportToExcel == 4) {
       try {
 
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspParameterOverviewReport.ejs'), {
@@ -2193,6 +3018,709 @@ const sevenDayReport = async (user) => {
   }
 };
 
+
+//without pagination
+const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+  try {
+ 
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [
+                  { $toLong: "$dateTime" },
+                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
+                ],
+              },
+            },
+          },
+          gate1Discharge: { $first: "$gate1Discharge" },
+          gate2Discharge: { $first: "$gate2Discharge" },
+          gate3Discharge: { $first: "$gate3Discharge" },
+          gate4Discharge: { $first: "$gate4Discharge" },
+          gate5Discharge: { $first: "$gate5Discharge" },
+          gate6Discharge: { $first: "$gate6Discharge" },
+          gate7Discharge: { $first: "$gate7Discharge" },
+          gate8Discharge: { $first: "$gate8Discharge" },
+          gate9Discharge: { $first: "$gate9Discharge" },
+          gate10Discharge: { $first: "$gate10Discharge" },
+          gate11Discharge: { $first: "$gate11Discharge" },
+          gate12Discharge: { $first: "$gate12Discharge" },
+          gate13Discharge: { $first: "$gate13Discharge" },
+          gate14Discharge: { $first: "$gate14Discharge" },
+          gate15Discharge: { $first: "$gate15Discharge" },
+          gate16Discharge: { $first: "$gate16Discharge" },
+          gate17Discharge: { $first: "$gate17Discharge" },
+          gate18Discharge: { $first: "$gate18Discharge" },
+          gate19Discharge: { $first: "$gate19Discharge" },
+          gate20Discharge: { $first: "$gate20Discharge" },
+          gate21Discharge: { $first: "$gate21Discharge" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: "$_id.interval",
+          gate1Discharge: 1,
+          gate2Discharge: 1,
+          gate3Discharge: 1,
+          gate4Discharge: 1,
+          gate5Discharge: 1,
+          gate6Discharge: 1,
+          gate7Discharge: 1,
+          gate8Discharge: 1,
+          gate9Discharge: 1,
+          gate10Discharge: 1,
+          gate11Discharge: 1,
+          gate12Discharge: 1,
+          gate13Discharge: 1,
+          gate14Discharge: 1,
+          gate15Discharge: 1,
+          gate16Discharge: 1,
+          gate17Discharge: 1,
+          gate18Discharge: 1,
+          gate19Discharge: 1,
+          gate20Discharge: 1,
+          gate21Discharge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1
+        }
+      },
+    ];
+
+    const srspDischargeGate1TO21ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_DICH.aggregate(pipelineWithoutPagination);
+      return srspDischargeGate1TO21ReportWithoutPagination
+
+  } catch (error) {
+    console.error("Error:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+  try {
+   
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [
+                  { $toLong: "$dateTime" },
+                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
+                ],
+              },
+            },
+          },
+          gate22Discharge: { $first: "$gate22Discharge" },
+          gate23Discharge: { $first: "$gate23Discharge" },
+          gate24Discharge: { $first: "$gate24Discharge" },
+          gate25Discharge: { $first: "$gate25Discharge" },
+          gate26Discharge: { $first: "$gate26Discharge" },
+          gate27Discharge: { $first: "$gate27Discharge" },
+          gate28Discharge: { $first: "$gate28Discharge" },
+          gate29Discharge: { $first: "$gate29Discharge" },
+          gate30Discharge: { $first: "$gate30Discharge" },
+          gate31Discharge: { $first: "$gate31Discharge" },
+          gate32Discharge: { $first: "$gate32Discharge" },
+          gate33Discharge: { $first: "$gate33Discharge" },
+          gate34Discharge: { $first: "$gate34Discharge" },
+          gate35Discharge: { $first: "$gate35Discharge" },
+          gate36Discharge: { $first: "$gate36Discharge" },
+          gate37Discharge: { $first: "$gate37Discharge" },
+          gate38Discharge: { $first: "$gate38Discharge" },
+          gate39Discharge: { $first: "$gate39Discharge" },
+          gate40Discharge: { $first: "$gate40Discharge" },
+          gate41Discharge: { $first: "$gate41Discharge" },
+          gate42Discharge: { $first: "$gate42Discharge" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: "$_id.interval",
+          gate22Discharge: 1,
+          gate23Discharge: 1,
+          gate24Discharge: 1,
+          gate25Discharge: 1,
+          gate26Discharge: 1,
+          gate27Discharge: 1,
+          gate28Discharge: 1,
+          gate29Discharge: 1,
+          gate30Discharge: 1,
+          gate31Discharge: 1,
+          gate32Discharge: 1,
+          gate33Discharge: 1,
+          gate34Discharge: 1,
+          gate35Discharge: 1,
+          gate36Discharge: 1,
+          gate37Discharge: 1,
+          gate38Discharge: 1,
+          gate39Discharge: 1,
+          gate40Discharge: 1,
+          gate41Discharge: 1,
+          gate41Discharge: 1,
+          gate42Discharge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1
+        }
+      },
+    ];
+
+    const srspDischargeGate22TO42ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_DICH.aggregate(pipelineWithoutPagination);
+      return srspDischargeGate22TO42ReportWithoutPagination
+
+  } catch (error) {
+    console.error("Error:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+  try {
+  
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [
+                  { $toLong: "$dateTime" },
+                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
+                ],
+              },
+            },
+          },
+          gate1Position: { $first: "$gate1Position" },
+          gate2Position: { $first: "$gate2Position" },
+          gate3Position: { $first: "$gate3Position" },
+          gate4Position: { $first: "$gate4Position" },
+          gate5Position: { $first: "$gate5Position" },
+          gate6Position: { $first: "$gate6Position" },
+          gate7Position: { $first: "$gate7Position" },
+          gate8Position: { $first: "$gate8Position" },
+          gate9Position: { $first: "$gate9Position" },
+          gate10Position: { $first: "$gate10Position" },
+          gate11Position: { $first: "$gate11Position" },
+          gate12Position: { $first: "$gate12Position" },
+          gate13Position: { $first: "$gate13Position" },
+          gate14Position: { $first: "$gate14Position" },
+          gate15Position: { $first: "$gate15Position" },
+          gate16Position: { $first: "$gate16Position" },
+          gate17Position: { $first: "$gate17Position" },
+          gate18Position: { $first: "$gate18Position" },
+          gate19Position: { $first: "$gate19Position" },
+          gate20Position: { $first: "$gate20Position" },
+          gate21Position: { $first: "$gate21Position" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: "$_id.interval",
+          gate1Position: 1,
+          gate2Position: 1,
+          gate3Position: 1,
+          gate4Position: 1,
+          gate5Position: 1,
+          gate6Position: 1,
+          gate7Position: 1,
+          gate8Position: 1,
+          gate9Position: 1,
+          gate10Position: 1,
+          gate11Position: 1,
+          gate12Position: 1,
+          gate13Position: 1,
+          gate14Position: 1,
+          gate15Position: 1,
+          gate16Position: 1,
+          gate17Position: 1,
+          gate18Position: 1,
+          gate19Position: 1,
+          gate20Position: 1,
+          gate21Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1
+        }
+      },
+    ];
+
+    const srspOpeningGate1TO21ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
+      return srspOpeningGate1TO21ReportWithoutPagination
+
+  } catch (error) {
+    console.error("Error:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+  try {
+
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [
+                  { $toLong: "$dateTime" },
+                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
+                ],
+              },
+            },
+          },
+          gate22Position: { $first: "$gate22Position" },
+          gate23Position: { $first: "$gate23Position" },
+          gate24Position: { $first: "$gate24Position" },
+          gate25Position: { $first: "$gate25Position" },
+          gate26Position: { $first: "$gate26Position" },
+          gate27Position: { $first: "$gate27Position" },
+          gate28Position: { $first: "$gate28Position" },
+          gate29Position: { $first: "$gate29Position" },
+          gate30Position: { $first: "$gate30Position" },
+          gate31Position: { $first: "$gate31Position" },
+          gate32Position: { $first: "$gate32Position" },
+          gate33Position: { $first: "$gate33Position" },
+          gate34Position: { $first: "$gate34Position" },
+          gate35Position: { $first: "$gate35Position" },
+          gate36Position: { $first: "$gate36Position" },
+          gate37Position: { $first: "$gate37Position" },
+          gate38Position: { $first: "$gate38Position" },
+          gate39Position: { $first: "$gate39Position" },
+          gate40Position: { $first: "$gate40Position" },
+          gate41Position: { $first: "$gate41Position" },
+          gate42Position: { $first: "$gate42Position" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: "$_id.interval",
+          gate22Position: 1,
+          gate23Position: 1,
+          gate24Position: 1,
+          gate25Position: 1,
+          gate26Position: 1,
+          gate27Position: 1,
+          gate28Position: 1,
+          gate29Position: 1,
+          gate30Position: 1,
+          gate31Position: 1,
+          gate32Position: 1,
+          gate33Position: 1,
+          gate34Position: 1,
+          gate35Position: 1,
+          gate36Position: 1,
+          gate37Position: 1,
+          gate38Position: 1,
+          gate39Position: 1,
+          gate40Position: 1,
+          gate41Position: 1,
+          gate41Position: 1,
+          gate42Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1
+        }
+      },
+    ];
+
+    const srspOpeningGate22TO42ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
+      return srspOpeningGate22TO42ReportWithoutPagination
+       
+  } catch (error) {
+    console.error("Error:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+  try {
+
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [
+                  { $toLong: "$dateTime" },
+                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
+                ],
+              },
+            },
+          },
+          inflow1Level: { $first: "$inflow1Level" },
+          inflow1Discharge: { $first: "$inflow1Discharge" },
+          inflow2Level: { $first: "$inflow2Level" },
+          inflow2Discharge: { $first: "$inflow2Discharge" },
+          damDownstreamLevel: { $first: "$damDownstreamLevel" },
+          damDownstreamDischarge: { $first: "$damDownstreamDischarge" },
+          pondLevel: { $first: "$pondLevel" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: "$_id.interval",
+          inflow1Level: 1,
+          inflow1Discharge: 1,
+          inflow2Level: 1,
+          inflow2Discharge: 1,
+          damDownstreamLevel: 1,
+          damDownstreamDischarge: 1,
+          pondLevel: 1
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1
+        }
+      },
+    ];
+
+    const srspInflowOutflowPondLevelReportWithoutPagination = await SRSP_POND_LEVEL_OVERVIEW.aggregate(pipelineWithoutPagination);
+      return srspInflowOutflowPondLevelReportWithoutPagination
+
+  } catch (error) {
+    console.error("Error:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+  try {
+
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [
+                  { $toLong: "$dateTime" },
+                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
+                ],
+              },
+            },
+          },
+          pondLevel: { $first: "$pondLevel" },
+          liveCapacity: { $first: "$liveCapacity" },
+          grossStorage: { $first: "$grossStorage" },
+          fullReservoirLevel: { $first: "$fullReservoirLevel" },
+          contourArea: { $first: "$contourArea" },
+          catchmentArea: { $first: "$catchmentArea" },
+          ayacutArea: { $first: "$ayacutArea" },
+          filling: { $first: "$filling" },
+          instantaneousGateDischarge: { $first: "$instantaneousGateDischarge" },
+          instantaneousCanalDischarge: { $first: "$instantaneousCanalDischarge" },
+          totalDamDischarge: { $first: "$totalDamDischarge" },
+          cumulativeDamDischarge: { $first: "$cumulativeDamDischarge" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: "$_id.interval",
+          pondLevel: 1,
+          liveCapacity: 1,
+          grossStorage: 1,
+          fullReservoirLevel: 1,
+          contourArea: 1,
+          catchmentArea: 1,
+          ayacutArea: 1,
+          filling: 1,
+          instantaneousGateDischarge: 1,
+          instantaneousCanalDischarge: 1,
+          totalDamDischarge: 1,
+          cumulativeDamDischarge: 1
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1
+        }
+      },
+    ];
+
+    const srspParameterOverviewReportWithoutPagination = await SRSP_POND_LEVEL_OVERVIEW.aggregate(pipelineWithoutPagination);
+      return srspParameterOverviewReportWithoutPagination
+
+  } catch (error) {
+    console.error("Error:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+  try {
+
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [
+                  { $toLong: "$dateTime" },
+                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
+                ],
+              },
+            },
+          },
+          hrkGate1Position: { $first: "$hrkGate1Position" },
+          hrkGate2Position: { $first: "$hrkGate2Position" },
+          hrkGate3Position: { $first: "$hrkGate3Position" },
+          hrkGate4Position: { $first: "$hrkGate4Position" },
+          hrsGate1Position: { $first: "$hrsGate1Position" },
+          hrsGate2Position: { $first: "$hrsGate2Position" },
+          hrfGate1Position: { $first: "$hrfGate1Position" },
+          hrfGate2Position: { $first: "$hrfGate2Position" },
+          hrfGate3Position: { $first: "$hrfGate3Position" },
+          hrfGate4Position: { $first: "$hrfGate4Position" },
+          hrfGate5Position: { $first: "$hrfGate5Position" },
+          hrfGate6Position: { $first: "$hrfGate6Position" },
+          hrlManGate1Position: { $first: "$hrlManGate1Position" },
+          hrlManGate2Position: { $first: "$hrlManGate2Position" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: "$_id.interval",
+          hrkGate1Position: 1,
+          hrkGate2Position: 1,
+          hrkGate3Position: 1,
+          hrkGate4Position: 1,
+          hrsGate1Position: 1,
+          hrsGate2Position: 1,
+          hrfGate1Position: 1,
+          hrfGate2Position: 1,
+          hrfGate3Position: 1,
+          hrfGate4Position: 1,
+          hrfGate5Position: 1,
+          hrfGate6Position: 1,
+          hrlManGate1Position: 1,
+          hrlManGate2Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1
+        }
+      },
+    ];
+
+    const pipeline1WithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [
+                  { $toLong: "$dateTime" },
+                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
+                ],
+              },
+            },
+          },
+          hrkGate1Discharge: { $first: "$hrkGate1Discharge" },
+          hrkGate2Discharge: { $first: "$hrkGate2Discharge" },
+          hrkGate3Discharge: { $first: "$hrkGate3Discharge" },
+          hrkGate4Discharge: { $first: "$hrkGate4Discharge" },
+          hrsGate1Discharge: { $first: "$hrsGate1Discharge" },
+          hrsGate2Discharge: { $first: "$hrsGate2Discharge" },
+          hrfGate1Discharge: { $first: "$hrfGate1Discharge" },
+          hrfGate2Discharge: { $first: "$hrfGate2Discharge" },
+          hrfGate3Discharge: { $first: "$hrfGate3Discharge" },
+          hrfGate4Discharge: { $first: "$hrfGate4Discharge" },
+          hrfGate5Discharge: { $first: "$hrfGate5Discharge" },
+          hrfGate6Discharge: { $first: "$hrfGate6Discharge" },
+          hrlManGate1Discharge: { $first: "$hrlManGate1Discharge" },
+          hrlManGate2Discharge: { $first: "$hrlManGate2Discharge" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: "$_id.interval",
+          hrkGate1Discharge: 1,
+          hrkGate2Discharge: 1,
+          hrkGate3Discharge: 1,
+          hrkGate4Discharge: 1,
+          hrsGate1Discharge: 1,
+          hrsGate2Discharge: 1,
+          hrfGate1Discharge: 1,
+          hrfGate2Discharge: 1,
+          hrfGate3Discharge: 1,
+          hrfGate4Discharge: 1,
+          hrfGate5Discharge: 1,
+          hrfGate6Discharge: 1,
+          hrlManGate1Discharge: 1,
+          hrlManGate2Discharge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1
+        }
+      },
+    ];
+
+    const srspHrDamGateReportPosWithoutPagination = await SRSP_HR_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
+    const srspHrDamGateReportDisWithoutPagination = await SRSP_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1WithoutPagination);
+    let posDataWithoutPagination = srspHrDamGateReportPosWithoutPagination || [];
+    let disDataWithoutPagination = srspHrDamGateReportDisWithoutPagination || [];
+    let minLengthWithoutPagination = Math.max(posDataWithoutPagination.length, disDataWithoutPagination.length);
+
+    let mergedDataWithoutPagination = Array.from({ length: minLengthWithoutPagination }, (_, index) => {
+      const hrkGate1Discharge = disDataWithoutPagination[index]?.hrkGate1Discharge || 0;
+      const hrkGate2Discharge = disDataWithoutPagination[index]?.hrkGate2Discharge || 0;
+      const hrkGate3Discharge = disDataWithoutPagination[index]?.hrkGate3Discharge || 0;
+      const hrkGate4Discharge = disDataWithoutPagination[index]?.hrkGate4Discharge || 0;
+      const hrsGate1Discharge = disDataWithoutPagination[index]?.hrsGate1Discharge || 0;
+      const hrsGate2Discharge = disDataWithoutPagination[index]?.hrsGate2Discharge || 0;
+      const hrfGate1Discharge = disDataWithoutPagination[index]?.hrfGate1Discharge || 0;
+      const hrfGate2Discharge = disDataWithoutPagination[index]?.hrfGate2Discharge || 0;
+      const hrfGate3Discharge = disDataWithoutPagination[index]?.hrfGate3Discharge || 0;
+      const hrfGate4Discharge = disDataWithoutPagination[index]?.hrfGate4Discharge || 0;
+      const hrfGate5Discharge = disDataWithoutPagination[index]?.hrfGate5Discharge || 0;
+      const hrfGate6Discharge = disDataWithoutPagination[index]?.hrfGate6Discharge || 0;
+      const hrlManGate1Discharge = disDataWithoutPagination[index]?.hrlManGate1Discharge || 0;
+      const hrlManGate2Discharge = disDataWithoutPagination[index]?.hrlManGate2Discharge || 0;
+
+      const kakatiyaTotalDischarge = hrkGate1Discharge + hrkGate2Discharge + hrkGate3Discharge + hrkGate4Discharge;
+      const saraswatiTotalDischarge = hrsGate1Discharge + hrsGate2Discharge;
+      const floodFlowTotalDischarge = hrfGate1Discharge + hrfGate2Discharge + hrfGate3Discharge + hrfGate4Discharge + hrfGate5Discharge + hrfGate6Discharge;
+      const lakshmiGateTotalDischarge = hrlManGate1Discharge + hrlManGate2Discharge;
+
+
+      return {
+        hrkGate1Position: posDataWithoutPagination[index]?.hrkGate1Position || 0,
+        hrkGate2Position: posDataWithoutPagination[index]?.hrkGate2Position || 0,
+        hrkGate3Position: posDataWithoutPagination[index]?.hrkGate3Position || 0,
+        hrkGate4Position: posDataWithoutPagination[index]?.hrkGate4Position || 0,
+        hrsGate1Position: posDataWithoutPagination[index]?.hrsGate1Position || 0,
+        hrsGate2Position: posDataWithoutPagination[index]?.hrsGate2Position || 0,
+        hrfGate1Position: posDataWithoutPagination[index]?.hrfGate1Position || 0,
+        hrfGate2Position: posDataWithoutPagination[index]?.hrfGate2Position || 0,
+        hrfGate3Position: posDataWithoutPagination[index]?.hrfGate3Position || 0,
+        hrfGate4Position: posDataWithoutPagination[index]?.hrfGate4Position || 0,
+        hrfGate5Position: posDataWithoutPagination[index]?.hrfGate5Position || 0,
+        hrfGate6Position: posDataWithoutPagination[index]?.hrfGate6Position || 0,
+        hrlManGate1Position: posDataWithoutPagination[index]?.hrlManGate1Position || 0,
+        hrlManGate2Position: posDataWithoutPagination[index]?.hrlManGate2Position || 0,
+        dateTime: posDataWithoutPagination[index]?.dateTime || disDataWithoutPagination[index]?.dateTime || null,
+
+        hrkGate1Discharge: hrkGate1Discharge,
+        hrkGate2Discharge: hrkGate2Discharge,
+        hrkGate3Discharge: hrkGate3Discharge,
+        hrkGate4Discharge: hrkGate4Discharge,
+        kakatiyaTotalDischarge: kakatiyaTotalDischarge,
+        hrsGate1Discharge: hrsGate1Discharge,
+        hrsGate2Discharge: hrsGate2Discharge,
+        saraswatiTotalDischarge: saraswatiTotalDischarge,
+        hrfGate1Discharge: hrfGate1Discharge,
+        hrfGate2Discharge: hrfGate2Discharge,
+        hrfGate3Discharge: hrfGate3Discharge,
+        hrfGate4Discharge: hrfGate4Discharge,
+        hrfGate5Discharge: hrfGate5Discharge,
+        hrfGate6Discharge: hrfGate6Discharge,
+        floodFlowTotalDischarge: floodFlowTotalDischarge,
+        hrlManGate1Discharge: hrlManGate1Discharge,
+        hrlManGate2Discharge: hrlManGate2Discharge,
+        lakshmiGateTotalDischarge: lakshmiGateTotalDischarge
+      };
+    });
+
+      return mergedDataWithoutPagination
+   
+  } catch (error) {
+    console.error("Error:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
 module.exports = {
   createSalientFeature,
   getSalientFeature,
@@ -2206,4 +3734,13 @@ module.exports = {
   srspParameterOverviewReport,
   srspHrDamGateReport,
   sevenDayReport,
+
+  //without pagination
+  srspDischargeGate1TO21ReportWp,
+  srspDischargeGate22TO42ReportWp,
+  srspOpeningGate1TO21ReportWp,
+  srspOpeningGate22TO42ReportWp,
+  srspInflowOutflowPondLevelReportWp,
+  srspParameterOverviewReportWp,
+  srspHrDamGateReportWp
 };

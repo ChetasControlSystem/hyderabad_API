@@ -19,6 +19,12 @@ router.get('/lmd-hr-gate-report', lmdController.lmdHrGateReport);
 router.get('/sevenDayReport', auth(), lmdController.sevenDayReport);
 
 
+//without pagination
+router.get('/lmd-1to20-dis-gatereport-wp', lmdController.lmdDischargeGateReportWp);
+router.get('/lmd-1to20-opn-gatereport-wp', lmdController.lmdOpeningGateReportWp);
+router.get('/lmd-pondlevel-report-wp',lmdController.lmdPondlevelGateReportWp);
+router.get('/lmd-parameter-overview-report-wp', lmdController.lmdGateParameterOverviewReportWp);
+router.get('/lmd-hr-gate-report-wp', lmdController.lmdHrGateReportWp);
 
 
 module.exports = router;

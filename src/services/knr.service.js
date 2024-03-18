@@ -4,6 +4,7 @@ const path = require('path');
 const ejs = require('ejs');
 const ExcelJS = require('exceljs');
 const fs = require('fs');
+const Docx = require('docx');
 const ApiError = require('../utils/ApiError');
 
 const {
@@ -310,6 +311,143 @@ const kadamOpeningGate1To18Report = async (startDate, endDate, intervalMinutes, 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
+
+      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+      const itemsPerPage = 26; // Number of dates to print per page
+      const totalItems = kadamOpeningGate1To18ReportWithoutPagination.length; // Total number of dates
+      const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = kadamOpeningGate1To18ReportWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(logoImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }), 
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+            // Heading
+            new Docx.Paragraph({
+              text: 'KADDAM Dam Gate 1 To 18 Opening Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                    new Docx.TableCell({
+                      children: [new Docx.Paragraph('Date Time')],
+                      alignment: { horizontal: Docx.AlignmentType.CENTER },
+                      // Adjusted width for Date Time column
+                    }),
+                    // Adjust the width for each gate column
+                    ...Array.from(
+                      { length: 18 },
+                      (_, i) =>
+                        new Docx.TableCell({
+                          children: [new Docx.Paragraph(`Gate ${i + 1}`)],
+                          alignment: { horizontal: Docx.AlignmentType.CENTER },
+                          // Adjusted width for gate columns
+                        })
+                    ),
+                  ],
+                }),
+
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                  return new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph(formattedDate)],
+                        alignment: { horizontal: Docx.AlignmentType.CENTER },
+                        // Adjusted width for Date Time column
+                      }),
+                      // Include each gate Opening value
+                      ...Array.from(
+                        { length: 18 },
+                        (_, i) =>
+                          new Docx.TableCell({
+                            children: [new Docx.Paragraph(item[`gate${i + 1}Position`].toString())],
+                            alignment: { horizontal: Docx.AlignmentType.CENTER },
+                            // Adjusted width for gate columns
+                          })
+                      ),
+                    ],
+                  });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Opening_Report.docx');
+
+      // Stream the Word document to the response
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
+
     } else if (exportToExcel == 4) {
       try {
 
@@ -327,7 +465,7 @@ const kadamOpeningGate1To18Report = async (startDate, endDate, intervalMinutes, 
         // Close browser
         await browser.close();
 
-        res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18__Opening_Report.pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Opening_Report.pdf');
         res.setHeader('Content-Type', 'application/pdf');
         res.send(pdfBuffer);
       } catch (error) {
@@ -346,10 +484,6 @@ const kadamOpeningGate1To18Report = async (startDate, endDate, intervalMinutes, 
         totalPage
       };
     }
-
-
-
-  
   } catch (error) {
     console.error("Error:", error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -564,7 +698,144 @@ const kadamDishchargeGate1To18Report = async (startDate, endDate, intervalMinute
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
-    } else if (exportToExcel == 4) {
+
+      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+      const itemsPerPage = 26; // Number of dates to print per page
+      const totalItems = kadamDishchargeGate1To18ReportWithoutPagination.length; // Total number of dates
+      const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = kadamDishchargeGate1To18ReportWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(logoImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }), 
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+            // Heading
+            new Docx.Paragraph({
+              text: 'KADDAM Dam Gate 1 To 18 Discharge Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                    new Docx.TableCell({
+                      children: [new Docx.Paragraph('Date Time')],
+                      alignment: { horizontal: Docx.AlignmentType.CENTER },
+                      // Adjusted width for Date Time column
+                    }),
+                    // Adjust the width for each gate column
+                    ...Array.from(
+                      { length: 18 },
+                      (_, i) =>
+                        new Docx.TableCell({
+                          children: [new Docx.Paragraph(`Gate ${i + 1}`)],
+                          alignment: { horizontal: Docx.AlignmentType.CENTER },
+                          // Adjusted width for gate columns
+                        })
+                    ),
+                  ],
+                }),
+
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                  return new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph(formattedDate)],
+                        alignment: { horizontal: Docx.AlignmentType.CENTER },
+                        // Adjusted width for Date Time column
+                      }),
+                      // Include each gate Opening value
+                      ...Array.from(
+                        { length: 18 },
+                        (_, i) =>
+                          new Docx.TableCell({
+                            children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toString())],
+                            alignment: { horizontal: Docx.AlignmentType.CENTER },
+                            // Adjusted width for gate columns
+                          })
+                      ),
+                    ],
+                  });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Discharge_Report.docx');
+
+      // Stream the Word document to the response
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
+
+    }else if (exportToExcel == 4) {
       try {
 
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/kadamDischargeGate.ejs'), {
@@ -581,7 +852,7 @@ const kadamDishchargeGate1To18Report = async (startDate, endDate, intervalMinute
         // Close browser
         await browser.close();
 
-        res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18__Discharge_Report.pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Discharge_Report.pdf');
         res.setHeader('Content-Type', 'application/pdf');
         res.send(pdfBuffer);
       } catch (error) {
@@ -809,7 +1080,131 @@ const kadamInflowOutflowPondLevelReport = async (startDate, endDate, intervalMin
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
-    } else if (exportToExcel == 3) {
+    }  else if (exportToExcel == 3) {
+      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+      const itemsPerPage = 25; // Number of dates to print per page
+      const totalItems = kadamInflowOutflowPondLevelReportWithoutPagination.length; // Total number of dates
+      const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = kadamInflowOutflowPondLevelReportWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(logoImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+            // Heading
+            new Docx.Paragraph({
+              text: 'KADDAM Dam Inflow Outflow Pond-Level Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Mendapelly Inflow Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Itikyal Inflow Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Sikkumanu Inflow Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Mendapelly Inflow Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Itikyal Inflow Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Sikkumanu Inflow Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Pandawapur Bridge Outflow Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Pandawapur Bridge Outflow Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Pond Level (Feet)")] }),
+                  ],
+              }),
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
+                    return new Docx.TableRow({
+                        children: [
+                            new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)],width: { size: 12, type: Docx.WidthType.PERCENTAGE } }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Level.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Level.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow3Level.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Discharge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Discharge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow3Discharge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.damOutflowLevel.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.damOutflowDischarge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(2))] }),
+                            ],
+                    });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Inflow_Outflow_PondLevel_Report.docx');
+
+      // Stream the Word document to the response
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
     } else if (exportToExcel == 4) {
       try {
 
@@ -1068,7 +1463,139 @@ const kadamGateParameterOverviewReport = async (startDate, endDate, intervalMinu
 
       await workbook.xlsx.write(res);
     }  else if (exportToExcel == 2) {
-    } else if (exportToExcel == 3) {
+    }  else if (exportToExcel == 3) {
+      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+      const itemsPerPage = 25; // Number of dates to print per page
+      const totalItems = kadamGateParameterOverviewReportWithoutPagination.length; // Total number of dates
+      const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = kadamGateParameterOverviewReportWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(logoImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+
+            // Heading
+            new Docx.Paragraph({
+              text: 'KADDAM Dam Parameter Overview Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Pond Level (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Live Capacity (MCFT)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gross Storage (MCFT)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Full Reserve Water (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Contour Area (M.SqFt)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Cathment Area (Sq.Km)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Ayucut Area (Acres)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Filing Percentage (%)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Inst. Gate Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Inst. canal Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Total Dam Discharge (Cusecs)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Cumulative Dam Discharge (Cusecs)")] }),
+                  ],
+              }),
+
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
+                    return new Docx.TableRow({
+                        children: [
+                            new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)],width: { size: 12, type: Docx.WidthType.PERCENTAGE } }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.liveCapacity.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.grossStorage.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.fullReservoirLevel.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.contourArea.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.catchmentArea.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.ayacutArea.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.filling.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.instantaneousGateDischarge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.instantaneousCanalDischarge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.totalDamDischarge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.cumulativeDamDischarge.toFixed(2))] }),
+                            ],
+                    });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Parameter_Overview_Report.docx');
+
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
     } else if (exportToExcel == 4) {
       try {
 
@@ -1399,21 +1926,25 @@ const kadamHrDamGateReport = async (startDate, endDate, intervalMinutes, exportT
       addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
 
       worksheet.getCell('I9').value = 'KADDAM HR Gate Report';
+      worksheet.getCell('I15').value = 'Kaddam Dam Canal';
+
 
       const headers = [
         'DateTime',
-        'Gate 1 Opening (Feet)',
-        'Gate 1 Discharge (C/S)',
-        'Gate 2 Opening (Feet)',
-        'Gate 2 Discharge (C/S)',
-        'Gate 3 Opening (Feet)',
-        'Gate 3 Discharge (C/S)',
-        'Gate 4 Opening (Feet)',
-        'Gate 4 Discharge (C/S)',
-        'Gate 5 Opening (Feet)',
-        'Gate 5 Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
         'Total Discharge (C/S)'
       ];
+      worksheet.addRow([]);
+      worksheet.addRow([]);
       worksheet.addRow([]);
       worksheet.addRow(headers);
 
@@ -1440,16 +1971,62 @@ const kadamHrDamGateReport = async (startDate, endDate, intervalMinutes, exportT
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
       // worksheet.getRow(3).height = 20;
 
-      worksheet.getRow(15).eachCell((cell) => {
+      worksheet.getRow(19).eachCell((cell) => {
         cell.font = { bold: true };
         cell.height ={size : 10}
       });
  
       // worksheet.getCell('B3').font = { bold: true };
 
-      // worksheet.mergeCells('B4:T13');
+      worksheet.mergeCells('B4:T13');
 
-      worksheet.mergeCells('B15:T15');
+      worksheet.mergeCells(`B15:T15`);
+      const mergedCell = worksheet.getCell('B15');
+      mergedCell.value = "Kaddam Dam's Canal";
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      worksheet.getRow(15).height = 30;
+
+      const mergedCellB16C17 = worksheet.getCell('B16');
+    mergedCellB16C17.value = 'Gate 1';
+    worksheet.mergeCells('B16:C17');
+    applyBorder(mergedCellB16C17);
+
+    const mergedCellD16E17 = worksheet.getCell('D16');
+    mergedCellD16E17.value = 'Gate 2';
+    worksheet.mergeCells('D16:E17');
+    applyBorder(mergedCellD16E17);
+
+    const mergedCellF16G17 = worksheet.getCell('F16');
+    mergedCellF16G17.value = 'Gate 3';
+    worksheet.mergeCells('F16:G17');
+    applyBorder(mergedCellF16G17);
+
+    const mergedCellH16I17 = worksheet.getCell('H16');
+    mergedCellH16I17.value = 'Gate 4';
+    worksheet.mergeCells('H16:I17');
+    applyBorder(mergedCellH16I17);
+
+    const mergedCellJ16K17 = worksheet.getCell('J16');
+    mergedCellJ16K17.value = 'Gate 5';
+    worksheet.mergeCells('J16:K17');
+    applyBorder(mergedCellJ16K17);
+
+    const mergedCellL16M17 = worksheet.getCell('L16');
+    mergedCellL16M17.value = `Total Discharge (C/S)`;
+    worksheet.mergeCells('L16:M17');
+    applyBorder(mergedCellL16M17);
+
+
+    function applyBorder(cell) {
+    cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+    };
+}
+
       // worksheet.mergeCells('B9:H9');
       // worksheet.mergeCells('M9:T9');
 
@@ -1459,6 +2036,137 @@ const kadamHrDamGateReport = async (startDate, endDate, intervalMinutes, exportT
       await workbook.xlsx.write(res);
     }else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
+      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
+      const itemsPerPage = 25; 
+      const totalItems = mergedDataWithoutPagination.length; 
+      const totalPages = Math.ceil(totalItems / itemsPerPage); 
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = mergedDataWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(logoImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+
+            // Heading
+            new Docx.Paragraph({
+              text: 'KADDAM HR canal Gate Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gete 1 Opening (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gate 1 Discharge (C/S)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gete 2 Opening (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gate 2 Discharge (C/S)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gete 3 Opening (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gate 3 Discharge (C/S)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gete 4 Opening (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gate 4 Discharge (C/S)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gete 5 Opening (Feet)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Gate 5 Discharge (C/S)")] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph("Total Discharge(C/S)")] }),
+                      ],
+              }),
+
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
+                    return new Docx.TableRow({
+                        children: [
+                            new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)],width: { size: 12, type: Docx.WidthType.PERCENTAGE } }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate1Position.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate1Discharge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate2Position.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate2Discharge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate3Position.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate3Discharge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate4Position.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate4Discharge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate5Position.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate5Discharge.toFixed(2))] }),
+                            new Docx.TableCell({ children: [new Docx.Paragraph(item.totalDischarge.toFixed(2))] }),
+                            ],
+                    });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADAM_HR_Dam_Gate_Report.docx');
+
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
+
     } else if (exportToExcel == 4) {
       try {
 

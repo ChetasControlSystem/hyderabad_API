@@ -17,7 +17,7 @@ router.get('/kadam-parameter-overview-report',  kadamController.kadamGateParamet
 router.get('/kadam-hr-dam-gatereport',  kadamController.kadamHrDamGateReport);
 
 
-
+ 
 
 router.get('/sevenDayReport', auth(), kadamController.sevenDayReport);
 
