@@ -21,12 +21,12 @@ router.get('/srsp-hr-dam-gatereport', srspController.srspHrDamGateReport);
 router.get('/sevenDayReport', auth(), srspController.sevenDayReport);
 
 //without pagination
-router.get('/srsp-1to21-dis-gatereport-wp', srspController.srspDischargeGate1TO21ReportWp);
-router.get('/srsp-22to42-dis-gatereport-wp', srspController.srspDischargeGate22TO42ReportWp);
-router.get('/srsp-1to21-opn-gatereport-wp',  srspController.srspOpeningGate1TO21ReportWp);
-router.get('/srsp-22to42-opn-gatereport-wp',  srspController.srspOpeningGate22TO42ReportWp);
-router.get('/srsp-pondlevel-gatereport-wp',  srspController.srspInflowOutflowPondLevelReportWp);
-router.get('/srsp-parameter-overview-gatereport-wp',  srspController.srspParameterOverviewReportWp);
-router.get('/srsp-hr-dam-gatereport-wp', srspController.srspHrDamGateReportWp);
+router.get('/srsp-1to21-dis-gatereport-download', srspController.srspDischargeGate1TO21ReportWp);
+router.get('/srsp-22to42-dis-gatereport-download', srspController.srspDischargeGate22TO42ReportWp);
+router.get('/srsp-1to21-opn-gatereport-download',  srspController.srspOpeningGate1TO21ReportWp);
+router.get('/srsp-22to42-opn-gatereport-download',  srspController.srspOpeningGate22TO42ReportWp);
+router.get('/srsp-pondlevel-gatereport-download',  srspController.srspInflowOutflowPondLevelReportWp);
+router.get('/srsp-parameter-overview-gatereport-download',  srspController.srspParameterOverviewReportWp);
+router.get('/srsp-hr-dam-gatereport-download', srspController.srspHrDamGateReportWp);
 
 module.exports = router;

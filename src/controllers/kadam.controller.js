@@ -10,6 +10,12 @@ const KHDOP = require('../models/KNR_HR_DAM_OVERVIEW_POS');
 const KHDOD = require('../models/KNR_HR_DAM_OVERVIEW_DICH');
 const KSADVM = require('../models/KNR_SPARE_ADVM');
 
+function getWeekNumber(date) {
+  const onejan = new Date(date.getFullYear(), 0, 1);
+  const millisecsInDay = 86400000;
+  return Math.ceil(((date - onejan) / millisecsInDay + onejan.getDay() + 1) / 7);
+}
+
 async function kadamMongoDBData(data) {
   try {
     const kadamPondLevel = data.kadamPondLevel;
@@ -20,15 +26,18 @@ async function kadamMongoDBData(data) {
     const kadamHrKnrAdvm = data.kadamHrKnrAdvm;
 
     const mappedData = kadamPondLevel.map((row) => {
-      const dateTime = moment(row.DateTime);
+      const dateTime = new Date(row.DateTime);
+      const date = dateTime.toISOString().split('T')[0];
+      const time = dateTime.toTimeString().slice(0, 8);
+
       return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+        date: date,
+        time: time,
+        year: dateTime.getFullYear(),
+        month: dateTime.getMonth() + 1,
+        week: getWeekNumber(dateTime),
+        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
+        dateTime: dateTime.toISOString(),
         inflow1Level: row.D1,
         inflow2Level: row.D2,
         inflow3Level: row.D3,
@@ -75,15 +84,18 @@ async function kadamMongoDBData(data) {
     });
 
     const mappedData1 = kadamKnrDamOverviewPosition.map((row) => {
-      const dateTime = moment(row.DateTime);
+      const dateTime = new Date(row.DateTime);
+      const date = dateTime.toISOString().split('T')[0];
+      const time = dateTime.toTimeString().slice(0, 8);
+
       return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+        date: date,
+        time: time,
+        year: dateTime.getFullYear(),
+        month: dateTime.getMonth() + 1,
+        week: getWeekNumber(dateTime),
+        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
+        dateTime: dateTime.toISOString(),
         gate1Position: row.D1,
         gate2Position: row.D2,
         gate3Position: row.D3,
@@ -130,15 +142,18 @@ async function kadamMongoDBData(data) {
     });
 
     const mappedData2 = kadamKnrDamOverviewDischarge.map((row) => {
-      const dateTime = moment(row.DateTime);
+      const dateTime = new Date(row.DateTime);
+      const date = dateTime.toISOString().split('T')[0];
+      const time = dateTime.toTimeString().slice(0, 8);
+
       return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+        date: date,
+        time: time,
+        year: dateTime.getFullYear(),
+        month: dateTime.getMonth() + 1,
+        week: getWeekNumber(dateTime),
+        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
+        dateTime: dateTime.toISOString(),
         gate1Discharge: row.D1,
         gate2Discharge: row.D2,
         gate3Discharge: row.D3,
@@ -185,15 +200,18 @@ async function kadamMongoDBData(data) {
     });
 
     const mappedData3 = kadamHrDamOverviewPosition.map((row) => {
-      const dateTime = moment(row.DateTime);
+      const dateTime = new Date(row.DateTime);
+      const date = dateTime.toISOString().split('T')[0];
+      const time = dateTime.toTimeString().slice(0, 8);
+
       return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+        date: date,
+        time: time,
+        year: dateTime.getFullYear(),
+        month: dateTime.getMonth() + 1,
+        week: getWeekNumber(dateTime),
+        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
+        dateTime: dateTime.toISOString(),
         hrklManGate1Position: row.D1,
         hrklManGate2Position: row.D2,
         hrklManGate3Position: row.D3,
@@ -240,15 +258,18 @@ async function kadamMongoDBData(data) {
     });
 
     const mappedData4 = kadamHrDamOverviewDischarge.map((row) => {
-      const dateTime = moment(row.DateTime);
+      const dateTime = new Date(row.DateTime);
+      const date = dateTime.toISOString().split('T')[0];
+      const time = dateTime.toTimeString().slice(0, 8);
+
       return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+        date: date,
+        time: time,
+        year: dateTime.getFullYear(),
+        month: dateTime.getMonth() + 1,
+        week: getWeekNumber(dateTime),
+        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
+        dateTime: dateTime.toISOString(),
         hrklManGate1Discharge: row.D1,
         hrklManGate2Discharge: row.D2,
         hrklManGate3Discharge: row.D3,
@@ -295,15 +316,18 @@ async function kadamMongoDBData(data) {
     });
 
     const mappedData5 = kadamHrKnrAdvm.map((row) => {
-      const dateTime = moment(row.DateTime);
+      const dateTime = new Date(row.DateTime);
+      const date = dateTime.toISOString().split('T')[0];
+      const time = dateTime.toTimeString().slice(0, 8);
+
       return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+        date: date,
+        time: time,
+        year: dateTime.getFullYear(),
+        month: dateTime.getMonth() + 1,
+        week: getWeekNumber(dateTime),
+        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
+        dateTime: dateTime.toISOString(),
         D1: row.D1,
         D2: row.D2,
         D3: row.D3,
@@ -488,7 +512,7 @@ const sevenDayReport = catchAsync(async (req, res) => {
 });
 
 const kadamOpeningGate1To18Report = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+  let { startDate, endDate, intervalMinutes} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -502,13 +526,13 @@ const kadamOpeningGate1To18Report = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamOpeningGate1To18Report = await knrService.kadamOpeningGate1To18Report(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
+  const kadamOpeningGate1To18Report = await knrService.kadamOpeningGate1To18Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
 
   res.json(kadamOpeningGate1To18Report);
 });
 
 const kadamDishchargeGate1To18Report = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+  let { startDate, endDate, intervalMinutes} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -522,13 +546,13 @@ const kadamDishchargeGate1To18Report = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamDishchargeGate1To18Report = await knrService.kadamDishchargeGate1To18Report(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
+  const kadamDishchargeGate1To18Report = await knrService.kadamDishchargeGate1To18Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
 
   res.json(kadamDishchargeGate1To18Report);
 });
 
 const kadamInflowOutflowPondLevelReport = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+  let { startDate, endDate, intervalMinutes} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -542,13 +566,13 @@ const kadamInflowOutflowPondLevelReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamInflowOutflowPondLevelReport = await knrService.kadamInflowOutflowPondLevelReport(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
+  const kadamInflowOutflowPondLevelReport = await knrService.kadamInflowOutflowPondLevelReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
 
   res.json(kadamInflowOutflowPondLevelReport);
 });
 
 const kadamGateParameterOverviewReport = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+  let { startDate, endDate, intervalMinutes} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -562,13 +586,13 @@ const kadamGateParameterOverviewReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamGateParameterOverviewReport = await knrService.kadamGateParameterOverviewReport(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
+  const kadamGateParameterOverviewReport = await knrService.kadamGateParameterOverviewReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
 
   res.json(kadamGateParameterOverviewReport);
 });
 
 const kadamHrDamGateReport = catchAsync(async (req, res) => {
-  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+  let { startDate, endDate, intervalMinutes} = req.query;
 
   if (!startDate && !endDate) {
     return res.status(400).json({ message: 'Please provide startDate or endDate' });
@@ -582,10 +606,93 @@ const kadamHrDamGateReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamHrDamGateReport = await knrService.kadamHrDamGateReport(startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req, req.user);
+  const kadamHrDamGateReport = await knrService.kadamHrDamGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
 
   res.json(kadamHrDamGateReport);
 });
+
+
+///Report Download
+const kadamOpeningGate1To18ReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const kadamOpeningGate1To18Report = await knrService.kadamOpeningGate1To18ReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+
+  res.json(kadamOpeningGate1To18Report);
+});
+
+const kadamDishchargeGate1To18ReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const kadamDishchargeGate1To18Report = await knrService.kadamDishchargeGate1To18ReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+
+  res.json(kadamDishchargeGate1To18Report);
+});
+
+const kadamInflowOutflowPondLevelReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const kadamInflowOutflowPondLevelReport = await knrService.kadamInflowOutflowPondLevelReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+
+  res.json(kadamInflowOutflowPondLevelReport);
+});
+
+const kadamGateParameterOverviewReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const kadamGateParameterOverviewReport = await knrService.kadamGateParameterOverviewReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+
+  res.json(kadamGateParameterOverviewReport);
+});
+
+const kadamHrDamGateReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const kadamHrDamGateReport = await knrService.kadamHrDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+
+  res.json(kadamHrDamGateReport);
+});
+
 
 module.exports = {
   kadamMongoDBData,
@@ -599,4 +706,11 @@ module.exports = {
   kadamGateParameterOverviewReport,
   kadamHrDamGateReport,
   sevenDayReport,
+
+  //without pagination
+  kadamOpeningGate1To18ReportWp,
+  kadamDishchargeGate1To18ReportWp,
+  kadamInflowOutflowPondLevelReportWp,
+  kadamGateParameterOverviewReportWp,
+  kadamHrDamGateReportWp
 };

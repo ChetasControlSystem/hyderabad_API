@@ -2,6 +2,8 @@
 <html lang="en">
   <head>
     <title>Demo test</title>
+      <!-- Include Bootstrap CSS -->
+      <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
       table {
         border-collapse: collapse;
@@ -81,17 +83,28 @@
       .page-container {
         page-break-before: always;
       }
+      .mt-40 {
+            margin-top: 100px;
+        }
     </style>
   </head>
   <body>
-    <% for (let pageIndex = 0; pageIndex < Math.ceil(lmdPondlevelGateReportsWithoutPagination.length / 14); pageIndex++) { %>
+    <% for (let pageIndex = 0; pageIndex < Math.ceil(lmdPondlevelGateReportsWithoutPagination.length / 17); pageIndex++) { %>
     <div class="header-container">
-      <div class="img-container">
-        <img src="http://142.168.1.106:3002/assets/logo2.jpeg" class="img-size" alt="Placeholder Image" />
-        <img src="https://www.chetascontrol.com/images/ind2.jpg" class="img-size" alt="Placeholder Image" />
+      <div class="row">
+          <div class="col-md-2">
+              <img src="http://192.168.1.106:3002/assets/logo2.jpeg" class="img-size" alt="Placeholder Image">
+          </div>
+          <div class="col-md-8 mt-40">
+              <h1>LMD Dam Gate Inflow Outflow Pond-Level Report</h1>
+          </div>
+          <div class="col-md-2">
+              <img src="https://www.chetascontrol.com/images/ind2.jpg" class="img-size" alt="Placeholder Image">
+          </div>
       </div>
-      <h1>LMD Dam Gate Inflow Outflow Pond-Level Report</h1>
-    </div>
+      <div class="img-container">
+      </div>
+  </div>
  
     <table>
       <thead>
@@ -109,7 +122,7 @@
         </tr>
       </thead>
       <tbody>
-        <% for (let i = pageIndex * 14; i < (pageIndex + 1) * 14 && i < lmdPondlevelGateReportsWithoutPagination.length; i++)
+        <% for (let i = pageIndex * 17; i < (pageIndex + 1) * 17 && i < lmdPondlevelGateReportsWithoutPagination.length; i++)
         { %>
         <tr>
           <td>

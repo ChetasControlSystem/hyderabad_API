@@ -16,10 +16,15 @@ router.get('/kadam-pondlevel-report', kadamController.kadamInflowOutflowPondLeve
 router.get('/kadam-parameter-overview-report',  kadamController.kadamGateParameterOverviewReport);
 router.get('/kadam-hr-dam-gatereport',  kadamController.kadamHrDamGateReport);
 
-
- 
-
 router.get('/sevenDayReport', auth(), kadamController.sevenDayReport);
+
+//Download Report
+router.get('/kadam-1to18-opn-gatereport-download', kadamController.kadamOpeningGate1To18ReportWp);
+router.get('/kadam-1to18-dis-gatereport-download',  kadamController.kadamDishchargeGate1To18ReportWp);
+router.get('/kadam-pondlevel-report-download', kadamController.kadamInflowOutflowPondLevelReportWp);
+router.get('/kadam-parameter-overview-report-download',  kadamController.kadamGateParameterOverviewReportWp);
+router.get('/kadam-hr-dam-gatereport-download',  kadamController.kadamHrDamGateReportWp);
+
 
  
 

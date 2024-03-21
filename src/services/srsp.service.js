@@ -6,7 +6,6 @@ const fs = require('fs');
 const Docx = require('docx');
 const ExcelJS = require('exceljs');
 
-
 const {
   SRSPS,
   SRSP_HR_DAM_OVERVIEW_DICH,
@@ -31,7 +30,11 @@ const getSalientFeature = async (user) => {
   try {
     const checkPermission = await Permission.findOne({ name: 'srspSalientFeatures' });
 
-    if (user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+    if (
+      user.role === 'admin' ||
+      user.role === 'srspSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
       const showOneSalientFeature = await SRSPS.findOne();
       return showOneSalientFeature;
     } else {
@@ -46,8 +49,11 @@ const getLastDataSrspDamOverview = async (user) => {
   try {
     const checkPermission = await Permission.findOne({ name: 'srspDamOverview' });
 
-    if (user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
-
+    if (
+      user.role === 'admin' ||
+      user.role === 'srspSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
       const getLastDataSrspDamPondLevelOverview = await SRSP_POND_LEVEL_OVERVIEW.findOne()
         .select(
           'pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge inflow1Level inflow2Level inflow1Discharge inflow2Discharge damDownstreamLevel damDownstreamDischarge'
@@ -96,8 +102,11 @@ const getLastDataSrspDamOverview = async (user) => {
 const getLastDataSrspDamSpareAdvm = async (user) => {
   try {
     const checkPermission = await Permission.findOne({ name: 'srspDamOverview' });
-    if (user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
-
+    if (
+      user.role === 'admin' ||
+      user.role === 'srspSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
       const getLastDataSrspDamSpareAdvm = await SRSP_HR_KAKATIYA_ADVM.findOne().sort({ dateTime: -1 });
       return getLastDataSrspDamSpareAdvm;
     } else {
@@ -108,7 +117,16 @@ const getLastDataSrspDamSpareAdvm = async (user) => {
   }
 };
 
-const srspDischargeGate1TO21Report = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+const srspDischargeGate1TO21Report = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  currentPage,
+  perPage,
+  startIndex,
+  res,
+  req
+) => {
   try {
     const pipeline = [
       {
@@ -124,40 +142,37 @@ const srspDischargeGate1TO21Report = async (startDate, endDate, intervalMinutes,
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          gate1Discharge: { $first: "$gate1Discharge" },
-          gate2Discharge: { $first: "$gate2Discharge" },
-          gate3Discharge: { $first: "$gate3Discharge" },
-          gate4Discharge: { $first: "$gate4Discharge" },
-          gate5Discharge: { $first: "$gate5Discharge" },
-          gate6Discharge: { $first: "$gate6Discharge" },
-          gate7Discharge: { $first: "$gate7Discharge" },
-          gate8Discharge: { $first: "$gate8Discharge" },
-          gate9Discharge: { $first: "$gate9Discharge" },
-          gate10Discharge: { $first: "$gate10Discharge" },
-          gate11Discharge: { $first: "$gate11Discharge" },
-          gate12Discharge: { $first: "$gate12Discharge" },
-          gate13Discharge: { $first: "$gate13Discharge" },
-          gate14Discharge: { $first: "$gate14Discharge" },
-          gate15Discharge: { $first: "$gate15Discharge" },
-          gate16Discharge: { $first: "$gate16Discharge" },
-          gate17Discharge: { $first: "$gate17Discharge" },
-          gate18Discharge: { $first: "$gate18Discharge" },
-          gate19Discharge: { $first: "$gate19Discharge" },
-          gate20Discharge: { $first: "$gate20Discharge" },
-          gate21Discharge: { $first: "$gate21Discharge" },
+          gate1Discharge: { $first: '$gate1Discharge' },
+          gate2Discharge: { $first: '$gate2Discharge' },
+          gate3Discharge: { $first: '$gate3Discharge' },
+          gate4Discharge: { $first: '$gate4Discharge' },
+          gate5Discharge: { $first: '$gate5Discharge' },
+          gate6Discharge: { $first: '$gate6Discharge' },
+          gate7Discharge: { $first: '$gate7Discharge' },
+          gate8Discharge: { $first: '$gate8Discharge' },
+          gate9Discharge: { $first: '$gate9Discharge' },
+          gate10Discharge: { $first: '$gate10Discharge' },
+          gate11Discharge: { $first: '$gate11Discharge' },
+          gate12Discharge: { $first: '$gate12Discharge' },
+          gate13Discharge: { $first: '$gate13Discharge' },
+          gate14Discharge: { $first: '$gate14Discharge' },
+          gate15Discharge: { $first: '$gate15Discharge' },
+          gate16Discharge: { $first: '$gate16Discharge' },
+          gate17Discharge: { $first: '$gate17Discharge' },
+          gate18Discharge: { $first: '$gate18Discharge' },
+          gate19Discharge: { $first: '$gate19Discharge' },
+          gate20Discharge: { $first: '$gate20Discharge' },
+          gate21Discharge: { $first: '$gate21Discharge' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           gate1Discharge: 1,
           gate2Discharge: 1,
           gate3Discharge: 1,
@@ -183,17 +198,868 @@ const srspDischargeGate1TO21Report = async (startDate, endDate, intervalMinutes,
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
       {
         $facet: {
           data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
+          totalCount: [{ $count: 'count' }],
         },
       },
     ];
 
+    const srspDischargeGate1TO21Report = await SRSP_SSD_DAM_OVERVIEW_DICH.aggregate(pipeline);
+
+    let totalCount = srspDischargeGate1TO21Report[0]?.totalCount[0]?.count;
+    const totalPage = Math.ceil(totalCount / perPage);
+
+    return {
+      data: srspDischargeGate1TO21Report[0]?.data,
+      currentPage,
+      perPage,
+      totalCount,
+      totalPage,
+    };
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspDischargeGate22TO42Report = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  currentPage,
+  perPage,
+  startIndex,
+  res,
+  req
+) => {
+  try {
+    const pipeline = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          gate22Discharge: { $first: '$gate22Discharge' },
+          gate23Discharge: { $first: '$gate23Discharge' },
+          gate24Discharge: { $first: '$gate24Discharge' },
+          gate25Discharge: { $first: '$gate25Discharge' },
+          gate26Discharge: { $first: '$gate26Discharge' },
+          gate27Discharge: { $first: '$gate27Discharge' },
+          gate28Discharge: { $first: '$gate28Discharge' },
+          gate29Discharge: { $first: '$gate29Discharge' },
+          gate30Discharge: { $first: '$gate30Discharge' },
+          gate31Discharge: { $first: '$gate31Discharge' },
+          gate32Discharge: { $first: '$gate32Discharge' },
+          gate33Discharge: { $first: '$gate33Discharge' },
+          gate34Discharge: { $first: '$gate34Discharge' },
+          gate35Discharge: { $first: '$gate35Discharge' },
+          gate36Discharge: { $first: '$gate36Discharge' },
+          gate37Discharge: { $first: '$gate37Discharge' },
+          gate38Discharge: { $first: '$gate38Discharge' },
+          gate39Discharge: { $first: '$gate39Discharge' },
+          gate40Discharge: { $first: '$gate40Discharge' },
+          gate41Discharge: { $first: '$gate41Discharge' },
+          gate42Discharge: { $first: '$gate42Discharge' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          gate22Discharge: 1,
+          gate23Discharge: 1,
+          gate24Discharge: 1,
+          gate25Discharge: 1,
+          gate26Discharge: 1,
+          gate27Discharge: 1,
+          gate28Discharge: 1,
+          gate29Discharge: 1,
+          gate30Discharge: 1,
+          gate31Discharge: 1,
+          gate32Discharge: 1,
+          gate33Discharge: 1,
+          gate34Discharge: 1,
+          gate35Discharge: 1,
+          gate36Discharge: 1,
+          gate37Discharge: 1,
+          gate38Discharge: 1,
+          gate39Discharge: 1,
+          gate40Discharge: 1,
+          gate41Discharge: 1,
+          gate41Discharge: 1,
+          gate42Discharge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+      {
+        $facet: {
+          data: [{ $skip: startIndex }, { $limit: perPage }],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ];
+
+    const srspDischargeGate22TO42Report = await SRSP_SSD_DAM_OVERVIEW_DICH.aggregate(pipeline);
+
+    let totalCount = srspDischargeGate22TO42Report[0]?.totalCount[0]?.count;
+    const totalPage = Math.ceil(totalCount / perPage);
+
+    return {
+      data: srspDischargeGate22TO42Report[0]?.data,
+      currentPage,
+      perPage,
+      totalCount,
+      totalPage,
+    };
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspOpeningGate1TO21Report = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  currentPage,
+  perPage,
+  startIndex,
+  res,
+  req
+) => {
+  try {
+    const pipeline = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          gate1Position: { $first: '$gate1Position' },
+          gate2Position: { $first: '$gate2Position' },
+          gate3Position: { $first: '$gate3Position' },
+          gate4Position: { $first: '$gate4Position' },
+          gate5Position: { $first: '$gate5Position' },
+          gate6Position: { $first: '$gate6Position' },
+          gate7Position: { $first: '$gate7Position' },
+          gate8Position: { $first: '$gate8Position' },
+          gate9Position: { $first: '$gate9Position' },
+          gate10Position: { $first: '$gate10Position' },
+          gate11Position: { $first: '$gate11Position' },
+          gate12Position: { $first: '$gate12Position' },
+          gate13Position: { $first: '$gate13Position' },
+          gate14Position: { $first: '$gate14Position' },
+          gate15Position: { $first: '$gate15Position' },
+          gate16Position: { $first: '$gate16Position' },
+          gate17Position: { $first: '$gate17Position' },
+          gate18Position: { $first: '$gate18Position' },
+          gate19Position: { $first: '$gate19Position' },
+          gate20Position: { $first: '$gate20Position' },
+          gate21Position: { $first: '$gate21Position' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          gate1Position: 1,
+          gate2Position: 1,
+          gate3Position: 1,
+          gate4Position: 1,
+          gate5Position: 1,
+          gate6Position: 1,
+          gate7Position: 1,
+          gate8Position: 1,
+          gate9Position: 1,
+          gate10Position: 1,
+          gate11Position: 1,
+          gate12Position: 1,
+          gate13Position: 1,
+          gate14Position: 1,
+          gate15Position: 1,
+          gate16Position: 1,
+          gate17Position: 1,
+          gate18Position: 1,
+          gate19Position: 1,
+          gate20Position: 1,
+          gate21Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+      {
+        $facet: {
+          data: [{ $skip: startIndex }, { $limit: perPage }],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ];
+
+    const srspOpeningGate1TO21Report = await SRSP_SSD_DAM_OVERVIEW_POS.aggregate(pipeline);
+
+    let totalCount = srspOpeningGate1TO21Report[0]?.totalCount[0]?.count;
+    const totalPage = Math.ceil(totalCount / perPage);
+
+    return {
+      data: srspOpeningGate1TO21Report[0]?.data,
+      currentPage,
+      perPage,
+      totalCount,
+      totalPage,
+    };
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspOpeningGate22TO42Report = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  currentPage,
+  perPage,
+  startIndex,
+  res,
+  req
+) => {
+  try {
+    const pipeline = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          gate22Position: { $first: '$gate22Position' },
+          gate23Position: { $first: '$gate23Position' },
+          gate24Position: { $first: '$gate24Position' },
+          gate25Position: { $first: '$gate25Position' },
+          gate26Position: { $first: '$gate26Position' },
+          gate27Position: { $first: '$gate27Position' },
+          gate28Position: { $first: '$gate28Position' },
+          gate29Position: { $first: '$gate29Position' },
+          gate30Position: { $first: '$gate30Position' },
+          gate31Position: { $first: '$gate31Position' },
+          gate32Position: { $first: '$gate32Position' },
+          gate33Position: { $first: '$gate33Position' },
+          gate34Position: { $first: '$gate34Position' },
+          gate35Position: { $first: '$gate35Position' },
+          gate36Position: { $first: '$gate36Position' },
+          gate37Position: { $first: '$gate37Position' },
+          gate38Position: { $first: '$gate38Position' },
+          gate39Position: { $first: '$gate39Position' },
+          gate40Position: { $first: '$gate40Position' },
+          gate41Position: { $first: '$gate41Position' },
+          gate42Position: { $first: '$gate42Position' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          gate22Position: 1,
+          gate23Position: 1,
+          gate24Position: 1,
+          gate25Position: 1,
+          gate26Position: 1,
+          gate27Position: 1,
+          gate28Position: 1,
+          gate29Position: 1,
+          gate30Position: 1,
+          gate31Position: 1,
+          gate32Position: 1,
+          gate33Position: 1,
+          gate34Position: 1,
+          gate35Position: 1,
+          gate36Position: 1,
+          gate37Position: 1,
+          gate38Position: 1,
+          gate39Position: 1,
+          gate40Position: 1,
+          gate41Position: 1,
+          gate41Position: 1,
+          gate42Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+      {
+        $facet: {
+          data: [{ $skip: startIndex }, { $limit: perPage }],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ];
+
+    const srspOpeningGate22TO42Report = await SRSP_SSD_DAM_OVERVIEW_POS.aggregate(pipeline);
+
+    let totalCount = srspOpeningGate22TO42Report[0]?.totalCount[0]?.count;
+    const totalPage = Math.ceil(totalCount / perPage);
+
+    return {
+      data: srspOpeningGate22TO42Report[0]?.data,
+      currentPage,
+      perPage,
+      totalCount,
+      totalPage,
+    };
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspInflowOutflowPondLevelReport = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  currentPage,
+  perPage,
+  startIndex,
+  res,
+  req
+) => {
+  try {
+    const pipeline = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          inflow1Level: { $first: '$inflow1Level' },
+          inflow1Discharge: { $first: '$inflow1Discharge' },
+          inflow2Level: { $first: '$inflow2Level' },
+          inflow2Discharge: { $first: '$inflow2Discharge' },
+          damDownstreamLevel: { $first: '$damDownstreamLevel' },
+          damDownstreamDischarge: { $first: '$damDownstreamDischarge' },
+          pondLevel: { $first: '$pondLevel' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          inflow1Level: 1,
+          inflow1Discharge: 1,
+          inflow2Level: 1,
+          inflow2Discharge: 1,
+          damDownstreamLevel: 1,
+          damDownstreamDischarge: 1,
+          pondLevel: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+      {
+        $facet: {
+          data: [{ $skip: startIndex }, { $limit: perPage }],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ];
+
+    const srspInflowOutflowPondLevelReport = await SRSP_POND_LEVEL_OVERVIEW.aggregate(pipeline);
+
+    let totalCount = srspInflowOutflowPondLevelReport[0]?.totalCount[0]?.count;
+    const totalPage = Math.ceil(totalCount / perPage);
+
+    return {
+      data: srspInflowOutflowPondLevelReport[0]?.data,
+      currentPage,
+      perPage,
+      totalCount,
+      totalPage,
+    };
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspParameterOverviewReport = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  currentPage,
+  perPage,
+  startIndex,
+  res,
+  req
+) => {
+  try {
+    const pipeline = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          pondLevel: { $first: '$pondLevel' },
+          liveCapacity: { $first: '$liveCapacity' },
+          grossStorage: { $first: '$grossStorage' },
+          fullReservoirLevel: { $first: '$fullReservoirLevel' },
+          contourArea: { $first: '$contourArea' },
+          catchmentArea: { $first: '$catchmentArea' },
+          ayacutArea: { $first: '$ayacutArea' },
+          filling: { $first: '$filling' },
+          instantaneousGateDischarge: { $first: '$instantaneousGateDischarge' },
+          instantaneousCanalDischarge: { $first: '$instantaneousCanalDischarge' },
+          totalDamDischarge: { $first: '$totalDamDischarge' },
+          cumulativeDamDischarge: { $first: '$cumulativeDamDischarge' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          pondLevel: 1,
+          liveCapacity: 1,
+          grossStorage: 1,
+          fullReservoirLevel: 1,
+          contourArea: 1,
+          catchmentArea: 1,
+          ayacutArea: 1,
+          filling: 1,
+          instantaneousGateDischarge: 1,
+          instantaneousCanalDischarge: 1,
+          totalDamDischarge: 1,
+          cumulativeDamDischarge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+      {
+        $facet: {
+          data: [{ $skip: startIndex }, { $limit: perPage }],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ];
+
+    const srspParameterOverviewReport = await SRSP_POND_LEVEL_OVERVIEW.aggregate(pipeline);
+
+    let totalCount = srspParameterOverviewReport[0]?.totalCount[0]?.count;
+    const totalPage = Math.ceil(totalCount / perPage);
+
+    return {
+      data: srspParameterOverviewReport[0]?.data,
+      currentPage,
+      perPage,
+      totalCount,
+      totalPage,
+    };
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req) => {
+  try {
+    const pipeline = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          hrkGate1Position: { $first: '$hrkGate1Position' },
+          hrkGate2Position: { $first: '$hrkGate2Position' },
+          hrkGate3Position: { $first: '$hrkGate3Position' },
+          hrkGate4Position: { $first: '$hrkGate4Position' },
+          hrsGate1Position: { $first: '$hrsGate1Position' },
+          hrsGate2Position: { $first: '$hrsGate2Position' },
+          hrfGate1Position: { $first: '$hrfGate1Position' },
+          hrfGate2Position: { $first: '$hrfGate2Position' },
+          hrfGate3Position: { $first: '$hrfGate3Position' },
+          hrfGate4Position: { $first: '$hrfGate4Position' },
+          hrfGate5Position: { $first: '$hrfGate5Position' },
+          hrfGate6Position: { $first: '$hrfGate6Position' },
+          hrlManGate1Position: { $first: '$hrlManGate1Position' },
+          hrlManGate2Position: { $first: '$hrlManGate2Position' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrkGate1Position: 1,
+          hrkGate2Position: 1,
+          hrkGate3Position: 1,
+          hrkGate4Position: 1,
+          hrsGate1Position: 1,
+          hrsGate2Position: 1,
+          hrfGate1Position: 1,
+          hrfGate2Position: 1,
+          hrfGate3Position: 1,
+          hrfGate4Position: 1,
+          hrfGate5Position: 1,
+          hrfGate6Position: 1,
+          hrlManGate1Position: 1,
+          hrlManGate2Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+      {
+        $facet: {
+          data: [{ $skip: startIndex }, { $limit: perPage }],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ];
+
+    const pipeline1 = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          hrkGate1Discharge: { $first: '$hrkGate1Discharge' },
+          hrkGate2Discharge: { $first: '$hrkGate2Discharge' },
+          hrkGate3Discharge: { $first: '$hrkGate3Discharge' },
+          hrkGate4Discharge: { $first: '$hrkGate4Discharge' },
+          hrsGate1Discharge: { $first: '$hrsGate1Discharge' },
+          hrsGate2Discharge: { $first: '$hrsGate2Discharge' },
+          hrfGate1Discharge: { $first: '$hrfGate1Discharge' },
+          hrfGate2Discharge: { $first: '$hrfGate2Discharge' },
+          hrfGate3Discharge: { $first: '$hrfGate3Discharge' },
+          hrfGate4Discharge: { $first: '$hrfGate4Discharge' },
+          hrfGate5Discharge: { $first: '$hrfGate5Discharge' },
+          hrfGate6Discharge: { $first: '$hrfGate6Discharge' },
+          hrlManGate1Discharge: { $first: '$hrlManGate1Discharge' },
+          hrlManGate2Discharge: { $first: '$hrlManGate2Discharge' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrkGate1Discharge: 1,
+          hrkGate2Discharge: 1,
+          hrkGate3Discharge: 1,
+          hrkGate4Discharge: 1,
+          hrsGate1Discharge: 1,
+          hrsGate2Discharge: 1,
+          hrfGate1Discharge: 1,
+          hrfGate2Discharge: 1,
+          hrfGate3Discharge: 1,
+          hrfGate4Discharge: 1,
+          hrfGate5Discharge: 1,
+          hrfGate6Discharge: 1,
+          hrlManGate1Discharge: 1,
+          hrlManGate2Discharge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+      {
+        $facet: {
+          data: [{ $skip: startIndex }, { $limit: perPage }],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ];
+
+    const srspHrDamGateReportPos = await SRSP_HR_DAM_OVERVIEW_POS.aggregate(pipeline);
+    const srspHrDamGateReportDis = await SRSP_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1);
+    let posData = srspHrDamGateReportPos[0]?.data || [];
+    let disData = srspHrDamGateReportDis[0]?.data || [];
+    let minLength = Math.max(posData.length, disData.length);
+
+    let mergedData = Array.from({ length: minLength }, (_, index) => {
+      const hrkGate1Discharge = disData[index]?.hrkGate1Discharge || 0;
+      const hrkGate2Discharge = disData[index]?.hrkGate2Discharge || 0;
+      const hrkGate3Discharge = disData[index]?.hrkGate3Discharge || 0;
+      const hrkGate4Discharge = disData[index]?.hrkGate4Discharge || 0;
+      const hrsGate1Discharge = disData[index]?.hrsGate1Discharge || 0;
+      const hrsGate2Discharge = disData[index]?.hrsGate2Discharge || 0;
+      const hrfGate1Discharge = disData[index]?.hrfGate1Discharge || 0;
+      const hrfGate2Discharge = disData[index]?.hrfGate2Discharge || 0;
+      const hrfGate3Discharge = disData[index]?.hrfGate3Discharge || 0;
+      const hrfGate4Discharge = disData[index]?.hrfGate4Discharge || 0;
+      const hrfGate5Discharge = disData[index]?.hrfGate5Discharge || 0;
+      const hrfGate6Discharge = disData[index]?.hrfGate6Discharge || 0;
+      const hrlManGate1Discharge = disData[index]?.hrlManGate1Discharge || 0;
+      const hrlManGate2Discharge = disData[index]?.hrlManGate2Discharge || 0;
+
+      const kakatiyaTotalDischarge = hrkGate1Discharge + hrkGate2Discharge + hrkGate3Discharge + hrkGate4Discharge;
+      const saraswatiTotalDischarge = hrsGate1Discharge + hrsGate2Discharge;
+      const floodFlowTotalDischarge =
+        hrfGate1Discharge +
+        hrfGate2Discharge +
+        hrfGate3Discharge +
+        hrfGate4Discharge +
+        hrfGate5Discharge +
+        hrfGate6Discharge;
+      const lakshmiGateTotalDischarge = hrlManGate1Discharge + hrlManGate2Discharge;
+
+      return {
+        hrkGate1Position: posData[index]?.hrkGate1Position || 0,
+        hrkGate2Position: posData[index]?.hrkGate2Position || 0,
+        hrkGate3Position: posData[index]?.hrkGate3Position || 0,
+        hrkGate4Position: posData[index]?.hrkGate4Position || 0,
+        hrsGate1Position: posData[index]?.hrsGate1Position || 0,
+        hrsGate2Position: posData[index]?.hrsGate2Position || 0,
+        hrfGate1Position: posData[index]?.hrfGate1Position || 0,
+        hrfGate2Position: posData[index]?.hrfGate2Position || 0,
+        hrfGate3Position: posData[index]?.hrfGate3Position || 0,
+        hrfGate4Position: posData[index]?.hrfGate4Position || 0,
+        hrfGate5Position: posData[index]?.hrfGate5Position || 0,
+        hrfGate6Position: posData[index]?.hrfGate6Position || 0,
+        hrlManGate1Position: posData[index]?.hrlManGate1Position || 0,
+        hrlManGate2Position: posData[index]?.hrlManGate2Position || 0,
+        dateTime: posData[index]?.dateTime || disData[index]?.dateTime || null,
+
+        hrkGate1Discharge: hrkGate1Discharge,
+        hrkGate2Discharge: hrkGate2Discharge,
+        hrkGate3Discharge: hrkGate3Discharge,
+        hrkGate4Discharge: hrkGate4Discharge,
+        kakatiyaTotalDischarge: kakatiyaTotalDischarge,
+        hrsGate1Discharge: hrsGate1Discharge,
+        hrsGate2Discharge: hrsGate2Discharge,
+        saraswatiTotalDischarge: saraswatiTotalDischarge,
+        hrfGate1Discharge: hrfGate1Discharge,
+        hrfGate2Discharge: hrfGate2Discharge,
+        hrfGate3Discharge: hrfGate3Discharge,
+        hrfGate4Discharge: hrfGate4Discharge,
+        hrfGate5Discharge: hrfGate5Discharge,
+        hrfGate6Discharge: hrfGate6Discharge,
+        floodFlowTotalDischarge: floodFlowTotalDischarge,
+        hrlManGate1Discharge: hrlManGate1Discharge,
+        hrlManGate2Discharge: hrlManGate2Discharge,
+        lakshmiGateTotalDischarge: lakshmiGateTotalDischarge,
+      };
+    });
+
+    let totalCount = srspHrDamGateReportPos[0]?.totalCount[0]?.count;
+    const totalPage = Math.ceil(totalCount / perPage);
+
+    return {
+      data: mergedData,
+      currentPage,
+      perPage,
+      totalCount,
+      totalPage,
+    };
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const sevenDayReport = async (user) => {
+  try {
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if (
+      user.role === 'admin' ||
+      user.role === 'srspSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+      const currentDate = new Date();
+      const sevenDaysAgo = new Date(currentDate);
+      sevenDaysAgo.setDate(currentDate.getDate() - 6);
+
+      const pondLevelSevenDayReport = await SRSP_POND_LEVEL_OVERVIEW.find({
+        dateTime: { $gte: sevenDaysAgo, $lte: currentDate },
+      });
+
+      const groupedByDate = {};
+      pondLevelSevenDayReport.forEach((entry) => {
+        const dateKey = entry.dateTime.toISOString().split('T')[0];
+        if (!groupedByDate[dateKey]) {
+          groupedByDate[dateKey] = {
+            date: dateKey,
+            maxPondLevel: entry.pondLevel,
+            minPondLevel: entry.pondLevel,
+            sumPondLevel: entry.pondLevel,
+            count: 1,
+            maxInflow1Level: entry.inflow1Level,
+            minInflow1Level: entry.inflow1Level,
+            sumInflow1Level: entry.inflow1Level,
+            maxInflow2Level: entry.inflow2Level,
+            minInflow2Level: entry.inflow2Level,
+            sumInflow2Level: entry.inflow2Level,
+          };
+        } else {
+          groupedByDate[dateKey].maxPondLevel = Math.max(groupedByDate[dateKey].maxPondLevel, entry.pondLevel);
+          groupedByDate[dateKey].minPondLevel = Math.min(groupedByDate[dateKey].minPondLevel, entry.pondLevel);
+          groupedByDate[dateKey].sumPondLevel += entry.pondLevel;
+          groupedByDate[dateKey].count++;
+
+          groupedByDate[dateKey].maxInflow1Level = Math.max(groupedByDate[dateKey].maxInflow1Level, entry.inflow1Level);
+          groupedByDate[dateKey].minInflow1Level = Math.min(groupedByDate[dateKey].minInflow1Level, entry.inflow1Level);
+          groupedByDate[dateKey].sumInflow1Level += entry.inflow1Level;
+
+          groupedByDate[dateKey].maxInflow2Level = Math.max(groupedByDate[dateKey].maxInflow2Level, entry.inflow2Level);
+          groupedByDate[dateKey].minInflow2Level = Math.min(groupedByDate[dateKey].minInflow2Level, entry.inflow2Level);
+          groupedByDate[dateKey].sumInflow2Level += entry.inflow2Level;
+        }
+      });
+
+      const result = [];
+      const daysInRange = Array.from({ length: 7 }, (_, index) => {
+        const date = new Date(sevenDaysAgo);
+        date.setDate(sevenDaysAgo.getDate() + index);
+        return date.toISOString().split('T')[0];
+      });
+
+      daysInRange.forEach((dateKey) => {
+        if (groupedByDate[dateKey]) {
+          const record = groupedByDate[dateKey];
+          const avgPondLevel = record.sumPondLevel / record.count;
+          const avgInflow1Level = record.sumInflow1Level / record.count;
+          const avgInflow2Level = record.sumInflow2Level / record.count;
+
+          result.push({
+            date: record.date,
+            maxPondLevel: record.maxPondLevel,
+            minPondLevel: record.minPondLevel,
+            avgPondLevel: avgPondLevel,
+            maxInflow1Level: record.maxInflow1Level,
+            minInflow1Level: record.minInflow1Level,
+            avgInflow1Level: avgInflow1Level,
+            maxInflow2Level: record.maxInflow2Level,
+            minInflow2Level: record.minInflow2Level,
+            avgInflow2Level: avgInflow2Level,
+          });
+        } else {
+          result.push({
+            date: dateKey,
+            maxPondLevel: '',
+            minPondLevel: '',
+            avgPondLevel: '',
+            maxInflow1Level: '',
+            minInflow1Level: '',
+            avgInflow1Level: '',
+            maxInflow2Level: '',
+            minInflow2Level: '',
+            avgInflow2Level: '',
+          });
+        }
+      });
+
+      return result;
+    } else {
+      return 'You are not authorized to access this data';
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+//Report Download
+const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+  try {
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -208,40 +1074,37 @@ const srspDischargeGate1TO21Report = async (startDate, endDate, intervalMinutes,
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          gate1Discharge: { $first: "$gate1Discharge" },
-          gate2Discharge: { $first: "$gate2Discharge" },
-          gate3Discharge: { $first: "$gate3Discharge" },
-          gate4Discharge: { $first: "$gate4Discharge" },
-          gate5Discharge: { $first: "$gate5Discharge" },
-          gate6Discharge: { $first: "$gate6Discharge" },
-          gate7Discharge: { $first: "$gate7Discharge" },
-          gate8Discharge: { $first: "$gate8Discharge" },
-          gate9Discharge: { $first: "$gate9Discharge" },
-          gate10Discharge: { $first: "$gate10Discharge" },
-          gate11Discharge: { $first: "$gate11Discharge" },
-          gate12Discharge: { $first: "$gate12Discharge" },
-          gate13Discharge: { $first: "$gate13Discharge" },
-          gate14Discharge: { $first: "$gate14Discharge" },
-          gate15Discharge: { $first: "$gate15Discharge" },
-          gate16Discharge: { $first: "$gate16Discharge" },
-          gate17Discharge: { $first: "$gate17Discharge" },
-          gate18Discharge: { $first: "$gate18Discharge" },
-          gate19Discharge: { $first: "$gate19Discharge" },
-          gate20Discharge: { $first: "$gate20Discharge" },
-          gate21Discharge: { $first: "$gate21Discharge" },
+          gate1Discharge: { $first: '$gate1Discharge' },
+          gate2Discharge: { $first: '$gate2Discharge' },
+          gate3Discharge: { $first: '$gate3Discharge' },
+          gate4Discharge: { $first: '$gate4Discharge' },
+          gate5Discharge: { $first: '$gate5Discharge' },
+          gate6Discharge: { $first: '$gate6Discharge' },
+          gate7Discharge: { $first: '$gate7Discharge' },
+          gate8Discharge: { $first: '$gate8Discharge' },
+          gate9Discharge: { $first: '$gate9Discharge' },
+          gate10Discharge: { $first: '$gate10Discharge' },
+          gate11Discharge: { $first: '$gate11Discharge' },
+          gate12Discharge: { $first: '$gate12Discharge' },
+          gate13Discharge: { $first: '$gate13Discharge' },
+          gate14Discharge: { $first: '$gate14Discharge' },
+          gate15Discharge: { $first: '$gate15Discharge' },
+          gate16Discharge: { $first: '$gate16Discharge' },
+          gate17Discharge: { $first: '$gate17Discharge' },
+          gate18Discharge: { $first: '$gate18Discharge' },
+          gate19Discharge: { $first: '$gate19Discharge' },
+          gate20Discharge: { $first: '$gate20Discharge' },
+          gate21Discharge: { $first: '$gate21Discharge' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           gate1Discharge: 1,
           gate2Discharge: 1,
           gate3Discharge: 1,
@@ -267,13 +1130,14 @@ const srspDischargeGate1TO21Report = async (startDate, endDate, intervalMinutes,
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
     ];
 
-    const srspDischargeGate1TO21Report = await SRSP_SSD_DAM_OVERVIEW_DICH.aggregate(pipeline);
-    const srspDischargeGate1TO21ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_DICH.aggregate(pipelineWithoutPagination);
+    const srspDischargeGate1TO21ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_DICH.aggregate(
+      pipelineWithoutPagination
+    );
 
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
@@ -293,7 +1157,7 @@ const srspDischargeGate1TO21Report = async (startDate, endDate, intervalMinutes,
         });
       };
 
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [3, 6]);
+      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
       addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [15, 18]);
 
       worksheet.getCell('I9').value = 'SRSP Dam Gate 1 To 21 Discharge Report';
@@ -326,8 +1190,7 @@ const srspDischargeGate1TO21Report = async (startDate, endDate, intervalMinutes,
     } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
       try {
-
-        const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+        const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
         const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
         const itemsPerPage = 26; // Number of dates to print per page
@@ -470,7 +1333,6 @@ const srspDischargeGate1TO21Report = async (startDate, endDate, intervalMinutes,
       }
     } else if (exportToExcel == 4) {
       try {
-
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspDischargeGate1to21.ejs'), {
           srspDischargeGate1TO21ReportWithoutPagination: srspDischargeGate1TO21ReportWithoutPagination,
         });
@@ -491,113 +1353,17 @@ const srspDischargeGate1TO21Report = async (startDate, endDate, intervalMinutes,
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    } else {
-
-      let totalCount = srspDischargeGate1TO21Report[0]?.totalCount[0]?.count
-      const totalPage = Math.ceil(totalCount / perPage);
-
-      return {
-        data: srspDischargeGate1TO21Report[0]?.data,
-        currentPage,
-        perPage,
-        totalCount,
-        totalPage
-      };
+    }else{
+      res.send(srspDischargeGate1TO21ReportWithoutPagination)
     }
-
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const srspDischargeGate22TO42Report = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
   try {
-    const pipeline = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          gate22Discharge: { $first: "$gate22Discharge" },
-          gate23Discharge: { $first: "$gate23Discharge" },
-          gate24Discharge: { $first: "$gate24Discharge" },
-          gate25Discharge: { $first: "$gate25Discharge" },
-          gate26Discharge: { $first: "$gate26Discharge" },
-          gate27Discharge: { $first: "$gate27Discharge" },
-          gate28Discharge: { $first: "$gate28Discharge" },
-          gate29Discharge: { $first: "$gate29Discharge" },
-          gate30Discharge: { $first: "$gate30Discharge" },
-          gate31Discharge: { $first: "$gate31Discharge" },
-          gate32Discharge: { $first: "$gate32Discharge" },
-          gate33Discharge: { $first: "$gate33Discharge" },
-          gate34Discharge: { $first: "$gate34Discharge" },
-          gate35Discharge: { $first: "$gate35Discharge" },
-          gate36Discharge: { $first: "$gate36Discharge" },
-          gate37Discharge: { $first: "$gate37Discharge" },
-          gate38Discharge: { $first: "$gate38Discharge" },
-          gate39Discharge: { $first: "$gate39Discharge" },
-          gate40Discharge: { $first: "$gate40Discharge" },
-          gate41Discharge: { $first: "$gate41Discharge" },
-          gate42Discharge: { $first: "$gate42Discharge" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          gate22Discharge: 1,
-          gate23Discharge: 1,
-          gate24Discharge: 1,
-          gate25Discharge: 1,
-          gate26Discharge: 1,
-          gate27Discharge: 1,
-          gate28Discharge: 1,
-          gate29Discharge: 1,
-          gate30Discharge: 1,
-          gate31Discharge: 1,
-          gate32Discharge: 1,
-          gate33Discharge: 1,
-          gate34Discharge: 1,
-          gate35Discharge: 1,
-          gate36Discharge: 1,
-          gate37Discharge: 1,
-          gate38Discharge: 1,
-          gate39Discharge: 1,
-          gate40Discharge: 1,
-          gate41Discharge: 1,
-          gate41Discharge: 1,
-          gate42Discharge: 1,
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-      {
-        $facet: {
-          data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
-        },
-      },
-    ];
-
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -612,40 +1378,37 @@ const srspDischargeGate22TO42Report = async (startDate, endDate, intervalMinutes
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          gate22Discharge: { $first: "$gate22Discharge" },
-          gate23Discharge: { $first: "$gate23Discharge" },
-          gate24Discharge: { $first: "$gate24Discharge" },
-          gate25Discharge: { $first: "$gate25Discharge" },
-          gate26Discharge: { $first: "$gate26Discharge" },
-          gate27Discharge: { $first: "$gate27Discharge" },
-          gate28Discharge: { $first: "$gate28Discharge" },
-          gate29Discharge: { $first: "$gate29Discharge" },
-          gate30Discharge: { $first: "$gate30Discharge" },
-          gate31Discharge: { $first: "$gate31Discharge" },
-          gate32Discharge: { $first: "$gate32Discharge" },
-          gate33Discharge: { $first: "$gate33Discharge" },
-          gate34Discharge: { $first: "$gate34Discharge" },
-          gate35Discharge: { $first: "$gate35Discharge" },
-          gate36Discharge: { $first: "$gate36Discharge" },
-          gate37Discharge: { $first: "$gate37Discharge" },
-          gate38Discharge: { $first: "$gate38Discharge" },
-          gate39Discharge: { $first: "$gate39Discharge" },
-          gate40Discharge: { $first: "$gate40Discharge" },
-          gate41Discharge: { $first: "$gate41Discharge" },
-          gate42Discharge: { $first: "$gate42Discharge" },
+          gate22Discharge: { $first: '$gate22Discharge' },
+          gate23Discharge: { $first: '$gate23Discharge' },
+          gate24Discharge: { $first: '$gate24Discharge' },
+          gate25Discharge: { $first: '$gate25Discharge' },
+          gate26Discharge: { $first: '$gate26Discharge' },
+          gate27Discharge: { $first: '$gate27Discharge' },
+          gate28Discharge: { $first: '$gate28Discharge' },
+          gate29Discharge: { $first: '$gate29Discharge' },
+          gate30Discharge: { $first: '$gate30Discharge' },
+          gate31Discharge: { $first: '$gate31Discharge' },
+          gate32Discharge: { $first: '$gate32Discharge' },
+          gate33Discharge: { $first: '$gate33Discharge' },
+          gate34Discharge: { $first: '$gate34Discharge' },
+          gate35Discharge: { $first: '$gate35Discharge' },
+          gate36Discharge: { $first: '$gate36Discharge' },
+          gate37Discharge: { $first: '$gate37Discharge' },
+          gate38Discharge: { $first: '$gate38Discharge' },
+          gate39Discharge: { $first: '$gate39Discharge' },
+          gate40Discharge: { $first: '$gate40Discharge' },
+          gate41Discharge: { $first: '$gate41Discharge' },
+          gate42Discharge: { $first: '$gate42Discharge' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           gate22Discharge: 1,
           gate23Discharge: 1,
           gate24Discharge: 1,
@@ -672,14 +1435,14 @@ const srspDischargeGate22TO42Report = async (startDate, endDate, intervalMinutes
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
     ];
 
-    const srspDischargeGate22TO42Report = await SRSP_SSD_DAM_OVERVIEW_DICH.aggregate(pipeline);
-    const srspDischargeGate22TO42ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_DICH.aggregate(pipelineWithoutPagination);
-
+    const srspDischargeGate22TO42ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_DICH.aggregate(
+      pipelineWithoutPagination
+    );
 
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
@@ -699,7 +1462,7 @@ const srspDischargeGate22TO42Report = async (startDate, endDate, intervalMinutes
         });
       };
 
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [3, 6]);
+      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
       addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [15, 18]);
 
       worksheet.getCell('I9').value = 'SRSP Dam Gate 22 To 42 Discharge Report';
@@ -730,10 +1493,9 @@ const srspDischargeGate22TO42Report = async (startDate, endDate, intervalMinutes
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42__Discharge_Report.xlsx');
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
-    }  else if (exportToExcel == 3) {
+    } else if (exportToExcel == 3) {
       try {
-
-        const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+        const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
         const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
         const itemsPerPage = 26; // Number of dates to print per page
@@ -746,7 +1508,7 @@ const srspDischargeGate22TO42Report = async (startDate, endDate, intervalMinutes
           const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
           const pageData = srspDischargeGate22TO42ReportWithoutPagination.slice(startIndex, endIndex);
 
-          console.log(pageData, "++++++++++++++");
+          console.log(pageData, '++++++++++++++');
 
           sections.push({
             properties: {
@@ -878,7 +1640,6 @@ const srspDischargeGate22TO42Report = async (startDate, endDate, intervalMinutes
       }
     } else if (exportToExcel == 4) {
       try {
-
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspDischargeGate22to42.ejs'), {
           srspDischargeGate22TO42ReportWithoutPagination: srspDischargeGate22TO42ReportWithoutPagination,
         });
@@ -899,112 +1660,17 @@ const srspDischargeGate22TO42Report = async (startDate, endDate, intervalMinutes
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    } else {
-
-      let totalCount = srspDischargeGate22TO42Report[0]?.totalCount[0]?.count
-      const totalPage = Math.ceil(totalCount / perPage);
-
-      return {
-        data: srspDischargeGate22TO42Report[0]?.data,
-        currentPage,
-        perPage,
-        totalCount,
-        totalPage
-      };
+    }else{
+      res.send(srspDischargeGate22TO42ReportWithoutPagination)
     }
-
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const srspOpeningGate1TO21Report = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
   try {
-    const pipeline = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          gate1Position: { $first: "$gate1Position" },
-          gate2Position: { $first: "$gate2Position" },
-          gate3Position: { $first: "$gate3Position" },
-          gate4Position: { $first: "$gate4Position" },
-          gate5Position: { $first: "$gate5Position" },
-          gate6Position: { $first: "$gate6Position" },
-          gate7Position: { $first: "$gate7Position" },
-          gate8Position: { $first: "$gate8Position" },
-          gate9Position: { $first: "$gate9Position" },
-          gate10Position: { $first: "$gate10Position" },
-          gate11Position: { $first: "$gate11Position" },
-          gate12Position: { $first: "$gate12Position" },
-          gate13Position: { $first: "$gate13Position" },
-          gate14Position: { $first: "$gate14Position" },
-          gate15Position: { $first: "$gate15Position" },
-          gate16Position: { $first: "$gate16Position" },
-          gate17Position: { $first: "$gate17Position" },
-          gate18Position: { $first: "$gate18Position" },
-          gate19Position: { $first: "$gate19Position" },
-          gate20Position: { $first: "$gate20Position" },
-          gate21Position: { $first: "$gate21Position" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          gate1Position: 1,
-          gate2Position: 1,
-          gate3Position: 1,
-          gate4Position: 1,
-          gate5Position: 1,
-          gate6Position: 1,
-          gate7Position: 1,
-          gate8Position: 1,
-          gate9Position: 1,
-          gate10Position: 1,
-          gate11Position: 1,
-          gate12Position: 1,
-          gate13Position: 1,
-          gate14Position: 1,
-          gate15Position: 1,
-          gate16Position: 1,
-          gate17Position: 1,
-          gate18Position: 1,
-          gate19Position: 1,
-          gate20Position: 1,
-          gate21Position: 1,
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-      {
-        $facet: {
-          data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
-        },
-      },
-    ];
-
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -1019,40 +1685,37 @@ const srspOpeningGate1TO21Report = async (startDate, endDate, intervalMinutes, e
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          gate1Position: { $first: "$gate1Position" },
-          gate2Position: { $first: "$gate2Position" },
-          gate3Position: { $first: "$gate3Position" },
-          gate4Position: { $first: "$gate4Position" },
-          gate5Position: { $first: "$gate5Position" },
-          gate6Position: { $first: "$gate6Position" },
-          gate7Position: { $first: "$gate7Position" },
-          gate8Position: { $first: "$gate8Position" },
-          gate9Position: { $first: "$gate9Position" },
-          gate10Position: { $first: "$gate10Position" },
-          gate11Position: { $first: "$gate11Position" },
-          gate12Position: { $first: "$gate12Position" },
-          gate13Position: { $first: "$gate13Position" },
-          gate14Position: { $first: "$gate14Position" },
-          gate15Position: { $first: "$gate15Position" },
-          gate16Position: { $first: "$gate16Position" },
-          gate17Position: { $first: "$gate17Position" },
-          gate18Position: { $first: "$gate18Position" },
-          gate19Position: { $first: "$gate19Position" },
-          gate20Position: { $first: "$gate20Position" },
-          gate21Position: { $first: "$gate21Position" },
+          gate1Position: { $first: '$gate1Position' },
+          gate2Position: { $first: '$gate2Position' },
+          gate3Position: { $first: '$gate3Position' },
+          gate4Position: { $first: '$gate4Position' },
+          gate5Position: { $first: '$gate5Position' },
+          gate6Position: { $first: '$gate6Position' },
+          gate7Position: { $first: '$gate7Position' },
+          gate8Position: { $first: '$gate8Position' },
+          gate9Position: { $first: '$gate9Position' },
+          gate10Position: { $first: '$gate10Position' },
+          gate11Position: { $first: '$gate11Position' },
+          gate12Position: { $first: '$gate12Position' },
+          gate13Position: { $first: '$gate13Position' },
+          gate14Position: { $first: '$gate14Position' },
+          gate15Position: { $first: '$gate15Position' },
+          gate16Position: { $first: '$gate16Position' },
+          gate17Position: { $first: '$gate17Position' },
+          gate18Position: { $first: '$gate18Position' },
+          gate19Position: { $first: '$gate19Position' },
+          gate20Position: { $first: '$gate20Position' },
+          gate21Position: { $first: '$gate21Position' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           gate1Position: 1,
           gate2Position: 1,
           gate3Position: 1,
@@ -1078,14 +1741,12 @@ const srspOpeningGate1TO21Report = async (startDate, endDate, intervalMinutes, e
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
     ];
 
-    const srspOpeningGate1TO21Report = await SRSP_SSD_DAM_OVERVIEW_POS.aggregate(pipeline);
     const srspOpeningGate1TO21ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
-
 
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
@@ -1105,8 +1766,8 @@ const srspOpeningGate1TO21Report = async (startDate, endDate, intervalMinutes, e
         });
       };
 
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [3, 6]);
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [15, 18]);
+      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
+      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [15, 18]);
 
       worksheet.getCell('I9').value = 'SRSP Dam Gate 1 To 21 Opening Report';
 
@@ -1139,8 +1800,7 @@ const srspOpeningGate1TO21Report = async (startDate, endDate, intervalMinutes, e
     } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
       try {
-
-        const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+        const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
         const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
         const itemsPerPage = 26; // Number of dates to print per page
@@ -1281,9 +1941,8 @@ const srspOpeningGate1TO21Report = async (startDate, endDate, intervalMinutes, e
         console.error('Error:', error);
         res.status(500).send('Internal Server Error');
       }
-    }else if (exportToExcel == 4) {
+    } else if (exportToExcel == 4) {
       try {
-
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspOpeningGate1to21.ejs'), {
           srspOpeningGate1TO21ReportWithoutPagination: srspOpeningGate1TO21ReportWithoutPagination,
         });
@@ -1304,113 +1963,17 @@ const srspOpeningGate1TO21Report = async (startDate, endDate, intervalMinutes, e
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    } else {
-
-      let totalCount = srspOpeningGate1TO21Report[0]?.totalCount[0]?.count
-      const totalPage = Math.ceil(totalCount / perPage);
-
-      return {
-        data: srspOpeningGate1TO21Report[0]?.data,
-        currentPage,
-        perPage,
-        totalCount,
-        totalPage
-      };
+    }else{
+      res.send(srspOpeningGate1TO21ReportWithoutPagination)
     }
-
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const srspOpeningGate22TO42Report = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
   try {
-    const pipeline = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          gate22Position: { $first: "$gate22Position" },
-          gate23Position: { $first: "$gate23Position" },
-          gate24Position: { $first: "$gate24Position" },
-          gate25Position: { $first: "$gate25Position" },
-          gate26Position: { $first: "$gate26Position" },
-          gate27Position: { $first: "$gate27Position" },
-          gate28Position: { $first: "$gate28Position" },
-          gate29Position: { $first: "$gate29Position" },
-          gate30Position: { $first: "$gate30Position" },
-          gate31Position: { $first: "$gate31Position" },
-          gate32Position: { $first: "$gate32Position" },
-          gate33Position: { $first: "$gate33Position" },
-          gate34Position: { $first: "$gate34Position" },
-          gate35Position: { $first: "$gate35Position" },
-          gate36Position: { $first: "$gate36Position" },
-          gate37Position: { $first: "$gate37Position" },
-          gate38Position: { $first: "$gate38Position" },
-          gate39Position: { $first: "$gate39Position" },
-          gate40Position: { $first: "$gate40Position" },
-          gate41Position: { $first: "$gate41Position" },
-          gate42Position: { $first: "$gate42Position" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          gate22Position: 1,
-          gate23Position: 1,
-          gate24Position: 1,
-          gate25Position: 1,
-          gate26Position: 1,
-          gate27Position: 1,
-          gate28Position: 1,
-          gate29Position: 1,
-          gate30Position: 1,
-          gate31Position: 1,
-          gate32Position: 1,
-          gate33Position: 1,
-          gate34Position: 1,
-          gate35Position: 1,
-          gate36Position: 1,
-          gate37Position: 1,
-          gate38Position: 1,
-          gate39Position: 1,
-          gate40Position: 1,
-          gate41Position: 1,
-          gate41Position: 1,
-          gate42Position: 1,
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-      {
-        $facet: {
-          data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
-        },
-      },
-    ];
-
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -1425,40 +1988,37 @@ const srspOpeningGate22TO42Report = async (startDate, endDate, intervalMinutes, 
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          gate22Position: { $first: "$gate22Position" },
-          gate23Position: { $first: "$gate23Position" },
-          gate24Position: { $first: "$gate24Position" },
-          gate25Position: { $first: "$gate25Position" },
-          gate26Position: { $first: "$gate26Position" },
-          gate27Position: { $first: "$gate27Position" },
-          gate28Position: { $first: "$gate28Position" },
-          gate29Position: { $first: "$gate29Position" },
-          gate30Position: { $first: "$gate30Position" },
-          gate31Position: { $first: "$gate31Position" },
-          gate32Position: { $first: "$gate32Position" },
-          gate33Position: { $first: "$gate33Position" },
-          gate34Position: { $first: "$gate34Position" },
-          gate35Position: { $first: "$gate35Position" },
-          gate36Position: { $first: "$gate36Position" },
-          gate37Position: { $first: "$gate37Position" },
-          gate38Position: { $first: "$gate38Position" },
-          gate39Position: { $first: "$gate39Position" },
-          gate40Position: { $first: "$gate40Position" },
-          gate41Position: { $first: "$gate41Position" },
-          gate42Position: { $first: "$gate42Position" },
+          gate22Position: { $first: '$gate22Position' },
+          gate23Position: { $first: '$gate23Position' },
+          gate24Position: { $first: '$gate24Position' },
+          gate25Position: { $first: '$gate25Position' },
+          gate26Position: { $first: '$gate26Position' },
+          gate27Position: { $first: '$gate27Position' },
+          gate28Position: { $first: '$gate28Position' },
+          gate29Position: { $first: '$gate29Position' },
+          gate30Position: { $first: '$gate30Position' },
+          gate31Position: { $first: '$gate31Position' },
+          gate32Position: { $first: '$gate32Position' },
+          gate33Position: { $first: '$gate33Position' },
+          gate34Position: { $first: '$gate34Position' },
+          gate35Position: { $first: '$gate35Position' },
+          gate36Position: { $first: '$gate36Position' },
+          gate37Position: { $first: '$gate37Position' },
+          gate38Position: { $first: '$gate38Position' },
+          gate39Position: { $first: '$gate39Position' },
+          gate40Position: { $first: '$gate40Position' },
+          gate41Position: { $first: '$gate41Position' },
+          gate42Position: { $first: '$gate42Position' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           gate22Position: 1,
           gate23Position: 1,
           gate24Position: 1,
@@ -1485,13 +2045,14 @@ const srspOpeningGate22TO42Report = async (startDate, endDate, intervalMinutes, 
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
     ];
 
-    const srspOpeningGate22TO42Report = await SRSP_SSD_DAM_OVERVIEW_POS.aggregate(pipeline);
-    const srspOpeningGate22TO42ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
+    const srspOpeningGate22TO42ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_POS.aggregate(
+      pipelineWithoutPagination
+    );
 
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
@@ -1511,8 +2072,8 @@ const srspOpeningGate22TO42Report = async (startDate, endDate, intervalMinutes, 
         });
       };
 
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [3, 6]);
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [15, 18]);
+      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
+      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [15, 18]);
 
       worksheet.getCell('I9').value = 'SRSP Dam Gate 22 To 42 Opening Report';
 
@@ -1545,8 +2106,7 @@ const srspOpeningGate22TO42Report = async (startDate, endDate, intervalMinutes, 
     } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
       try {
-
-        const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+        const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
         const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
         const itemsPerPage = 26; // Number of dates to print per page
@@ -1689,7 +2249,6 @@ const srspOpeningGate22TO42Report = async (startDate, endDate, intervalMinutes, 
       }
     } else if (exportToExcel == 4) {
       try {
-
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspOpeningGate22to42.ejs'), {
           srspOpeningGate22TO42ReportWithoutPagination: srspOpeningGate22TO42ReportWithoutPagination,
         });
@@ -1710,85 +2269,18 @@ const srspOpeningGate22TO42Report = async (startDate, endDate, intervalMinutes, 
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    } else {
+    }else{
+      res.send(srspOpeningGate22TO42ReportWithoutPagination)
 
-      let totalCount = srspOpeningGate22TO42Report[0]?.totalCount[0]?.count
-      const totalPage = Math.ceil(totalCount / perPage);
-
-      return {
-        data: srspOpeningGate22TO42Report[0]?.data,
-        currentPage,
-        perPage,
-        totalCount,
-        totalPage
-      };
     }
-
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const srspInflowOutflowPondLevelReport = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
   try {
-
-    const pipeline = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          inflow1Level: { $first: "$inflow1Level" },
-          inflow1Discharge: { $first: "$inflow1Discharge" },
-          inflow2Level: { $first: "$inflow2Level" },
-          inflow2Discharge: { $first: "$inflow2Discharge" },
-          damDownstreamLevel: { $first: "$damDownstreamLevel" },
-          damDownstreamDischarge: { $first: "$damDownstreamDischarge" },
-          pondLevel: { $first: "$pondLevel" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          inflow1Level: 1,
-          inflow1Discharge: 1,
-          inflow2Level: 1,
-          inflow2Discharge: 1,
-          damDownstreamLevel: 1,
-          damDownstreamDischarge: 1,
-          pondLevel: 1
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-      {
-        $facet: {
-          data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
-        },
-      },
-    ];
-
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -1803,46 +2295,43 @@ const srspInflowOutflowPondLevelReport = async (startDate, endDate, intervalMinu
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          inflow1Level: { $first: "$inflow1Level" },
-          inflow1Discharge: { $first: "$inflow1Discharge" },
-          inflow2Level: { $first: "$inflow2Level" },
-          inflow2Discharge: { $first: "$inflow2Discharge" },
-          damDownstreamLevel: { $first: "$damDownstreamLevel" },
-          damDownstreamDischarge: { $first: "$damDownstreamDischarge" },
-          pondLevel: { $first: "$pondLevel" },
+          inflow1Level: { $first: '$inflow1Level' },
+          inflow1Discharge: { $first: '$inflow1Discharge' },
+          inflow2Level: { $first: '$inflow2Level' },
+          inflow2Discharge: { $first: '$inflow2Discharge' },
+          damDownstreamLevel: { $first: '$damDownstreamLevel' },
+          damDownstreamDischarge: { $first: '$damDownstreamDischarge' },
+          pondLevel: { $first: '$pondLevel' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           inflow1Level: 1,
           inflow1Discharge: 1,
           inflow2Level: 1,
           inflow2Discharge: 1,
           damDownstreamLevel: 1,
           damDownstreamDischarge: 1,
-          pondLevel: 1
+          pondLevel: 1,
         },
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
     ];
 
-    const srspInflowOutflowPondLevelReport = await SRSP_POND_LEVEL_OVERVIEW.aggregate(pipeline);
-    const srspInflowOutflowPondLevelReportWithoutPagination = await SRSP_POND_LEVEL_OVERVIEW.aggregate(pipelineWithoutPagination);
+    const srspInflowOutflowPondLevelReportWithoutPagination = await SRSP_POND_LEVEL_OVERVIEW.aggregate(
+      pipelineWithoutPagination
+    );
 
-    
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('SRSP Dam Inflow Outflow Pond-Level Report');
@@ -1861,7 +2350,7 @@ const srspInflowOutflowPondLevelReport = async (startDate, endDate, intervalMinu
         });
       };
 
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [3, 6]);
+      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
       addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
 
       worksheet.getCell('I9').value = 'SRSP Dam Inflow Outflow Pond-Level Report';
@@ -1874,7 +2363,7 @@ const srspInflowOutflowPondLevelReport = async (startDate, endDate, intervalMinu
         'Pendapally Inflow Discharge (Cusecs)',
         'SOAN Outflow Level (Feet)',
         'SOAN Outflow Discharge (Cusecs)',
-        'Pond Level (Feet)'
+        'Pond Level (Feet)',
       ];
       worksheet.addRow([]);
       worksheet.addRow(headers);
@@ -1900,9 +2389,9 @@ const srspInflowOutflowPondLevelReport = async (startDate, endDate, intervalMinu
 
       worksheet.getRow(15).eachCell((cell) => {
         cell.font = { bold: true };
-        cell.height ={size : 10}
+        cell.height = { size: 10 };
       });
- 
+
       worksheet.getCell('B3').font = { bold: true };
 
       worksheet.mergeCells('B4:T13');
@@ -1916,7 +2405,7 @@ const srspInflowOutflowPondLevelReport = async (startDate, endDate, intervalMinu
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
-      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
       const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
       const itemsPerPage = 25; // Number of dates to print per page
@@ -1995,31 +2484,34 @@ const srspInflowOutflowPondLevelReport = async (startDate, endDate, intervalMinu
                 // Table header
                 new Docx.TableRow({
                   children: [
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("BASAR Inflow Level (Feet)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("BASAR Inflow Discharge (Cusecs)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Pendapally Inflow Level (Feet)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Pendapally Inflow Discharge (Cusecs)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("SOAN Outflow Level (Feet)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("SOAN Outflow Discharge (Cusecs)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Pond Level (Feet)")] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Date Time')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('BASAR Inflow Level (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('BASAR Inflow Discharge (Cusecs)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Pendapally Inflow Level (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Pendapally Inflow Discharge (Cusecs)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('SOAN Outflow Level (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('SOAN Outflow Discharge (Cusecs)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Pond Level (Feet)')] }),
                   ],
-              }),
+                }),
                 // Table rows
                 ...pageData.map((item) => {
-                  const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
-                    return new Docx.TableRow({
-                        children: [
-                            new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)],width: { size: 12, type: Docx.WidthType.PERCENTAGE } }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Level.toFixed(3))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Discharge.toFixed(3))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Level.toFixed(3))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Discharge.toFixed(3))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamLevel.toFixed(3))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamDischarge.toFixed(3))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(3))] }),
-                            ],
-                    });
+                  const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                  return new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph(formattedDate)],
+                        width: { size: 12, type: Docx.WidthType.PERCENTAGE },
+                      }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Level.toFixed(3))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Discharge.toFixed(3))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Level.toFixed(3))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Discharge.toFixed(3))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamLevel.toFixed(3))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamDischarge.toFixed(3))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(3))] }),
+                    ],
+                  });
                 }),
               ],
             }),
@@ -2038,7 +2530,6 @@ const srspInflowOutflowPondLevelReport = async (startDate, endDate, intervalMinu
       res.end(buffer);
     } else if (exportToExcel == 4) {
       try {
-
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspInflowOutflowPondLevelReport.ejs'), {
           srspInflowOutflowPondLevelReportWithoutPagination: srspInflowOutflowPondLevelReportWithoutPagination,
         });
@@ -2059,93 +2550,17 @@ const srspInflowOutflowPondLevelReport = async (startDate, endDate, intervalMinu
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    } else {
-   
-      let totalCount = srspInflowOutflowPondLevelReport[0]?.totalCount[0]?.count
-      const totalPage = Math.ceil(totalCount / perPage);
-  
-      return {
-        data: srspInflowOutflowPondLevelReport[0]?.data,
-        currentPage,
-        perPage,
-        totalCount,
-        totalPage
-      };
+    }else{
+      res.send(srspInflowOutflowPondLevelReportWithoutPagination)
     }
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const srspParameterOverviewReport = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
   try {
-    const pipeline = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          pondLevel: { $first: "$pondLevel" },
-          liveCapacity: { $first: "$liveCapacity" },
-          grossStorage: { $first: "$grossStorage" },
-          fullReservoirLevel: { $first: "$fullReservoirLevel" },
-          contourArea: { $first: "$contourArea" },
-          catchmentArea: { $first: "$catchmentArea" },
-          ayacutArea: { $first: "$ayacutArea" },
-          filling: { $first: "$filling" },
-          instantaneousGateDischarge: { $first: "$instantaneousGateDischarge" },
-          instantaneousCanalDischarge: { $first: "$instantaneousCanalDischarge" },
-          totalDamDischarge: { $first: "$totalDamDischarge" },
-          cumulativeDamDischarge: { $first: "$cumulativeDamDischarge" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          pondLevel: 1,
-          liveCapacity: 1,
-          grossStorage: 1,
-          fullReservoirLevel: 1,
-          contourArea: 1,
-          catchmentArea: 1,
-          ayacutArea: 1,
-          filling: 1,
-          instantaneousGateDischarge: 1,
-          instantaneousCanalDischarge: 1,
-          totalDamDischarge: 1,
-          cumulativeDamDischarge: 1
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-      {
-        $facet: {
-          data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
-        },
-      },
-    ];
-
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -2160,31 +2575,28 @@ const srspParameterOverviewReport = async (startDate, endDate, intervalMinutes, 
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          pondLevel: { $first: "$pondLevel" },
-          liveCapacity: { $first: "$liveCapacity" },
-          grossStorage: { $first: "$grossStorage" },
-          fullReservoirLevel: { $first: "$fullReservoirLevel" },
-          contourArea: { $first: "$contourArea" },
-          catchmentArea: { $first: "$catchmentArea" },
-          ayacutArea: { $first: "$ayacutArea" },
-          filling: { $first: "$filling" },
-          instantaneousGateDischarge: { $first: "$instantaneousGateDischarge" },
-          instantaneousCanalDischarge: { $first: "$instantaneousCanalDischarge" },
-          totalDamDischarge: { $first: "$totalDamDischarge" },
-          cumulativeDamDischarge: { $first: "$cumulativeDamDischarge" },
+          pondLevel: { $first: '$pondLevel' },
+          liveCapacity: { $first: '$liveCapacity' },
+          grossStorage: { $first: '$grossStorage' },
+          fullReservoirLevel: { $first: '$fullReservoirLevel' },
+          contourArea: { $first: '$contourArea' },
+          catchmentArea: { $first: '$catchmentArea' },
+          ayacutArea: { $first: '$ayacutArea' },
+          filling: { $first: '$filling' },
+          instantaneousGateDischarge: { $first: '$instantaneousGateDischarge' },
+          instantaneousCanalDischarge: { $first: '$instantaneousCanalDischarge' },
+          totalDamDischarge: { $first: '$totalDamDischarge' },
+          cumulativeDamDischarge: { $first: '$cumulativeDamDischarge' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           pondLevel: 1,
           liveCapacity: 1,
           grossStorage: 1,
@@ -2196,17 +2608,16 @@ const srspParameterOverviewReport = async (startDate, endDate, intervalMinutes, 
           instantaneousGateDischarge: 1,
           instantaneousCanalDischarge: 1,
           totalDamDischarge: 1,
-          cumulativeDamDischarge: 1
+          cumulativeDamDischarge: 1,
         },
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
     ];
 
-    const srspParameterOverviewReport = await SRSP_POND_LEVEL_OVERVIEW.aggregate(pipeline);
     const srspParameterOverviewReportWithoutPagination = await SRSP_POND_LEVEL_OVERVIEW.aggregate(pipelineWithoutPagination);
 
     if (exportToExcel == 1) {
@@ -2227,7 +2638,7 @@ const srspParameterOverviewReport = async (startDate, endDate, intervalMinutes, 
         });
       };
 
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/logo2.png', [3, 6]);
+      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
       addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
 
       worksheet.getCell('I9').value = 'SRSP Dam Parameter Overview Report';
@@ -2245,10 +2656,10 @@ const srspParameterOverviewReport = async (startDate, endDate, intervalMinutes, 
         'Inst. Gate Discharge (Cusecs)',
         'Inst. canal Discharge (Cusecs)',
         'Total Dam Discharge (Cusecs)',
-        'Cumulative Dam Discharge (TMC)'
+        'Cumulative Dam Discharge (TMC)',
       ];
       worksheet.addRow([]);
-      worksheet.addRow(headers); 
+      worksheet.addRow(headers);
 
       srspParameterOverviewReportWithoutPagination.forEach((row) => {
         const rowData = [
@@ -2276,9 +2687,9 @@ const srspParameterOverviewReport = async (startDate, endDate, intervalMinutes, 
 
       worksheet.getRow(15).eachCell((cell) => {
         cell.font = { bold: true };
-        cell.height ={size : 10}
+        cell.height = { size: 10 };
       });
- 
+
       worksheet.getCell('B3').font = { bold: true };
 
       worksheet.mergeCells('B4:T13');
@@ -2290,9 +2701,9 @@ const srspParameterOverviewReport = async (startDate, endDate, intervalMinutes, 
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Parameter_Overview_Report.xlsx');
 
       await workbook.xlsx.write(res);
-    }  else if (exportToExcel == 2) {
+    } else if (exportToExcel == 2) {
     } else if (exportToExcel == 3) {
-      const logoImagePath = path.join(__dirname, '../../views/logo2.png');
+      const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
       const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
       const itemsPerPage = 25; // Number of dates to print per page
@@ -2373,42 +2784,45 @@ const srspParameterOverviewReport = async (startDate, endDate, intervalMinutes, 
                 // Table header
                 new Docx.TableRow({
                   children: [
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Date Time")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Pond Level (Feet)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Live Capacity (MCFT)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Gross Storage (MCFT)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Full Reserve Water (Feet)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Contour Area (M.SqFt)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Cathment Area (Sq.Km)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Ayucut Area (Acres)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Filing Percentage (%)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Inst. Gate Discharge (Cusecs)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Inst. canal Discharge (Cusecs)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Total Dam Discharge (Cusecs)")] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph("Cumulative Dam Discharge (Cusecs)")] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Date Time')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Pond Level (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Live Capacity (MCFT)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Gross Storage (MCFT)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Full Reserve Water (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Contour Area (M.SqFt)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Cathment Area (Sq.Km)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Ayucut Area (Acres)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Filing Percentage (%)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Inst. Gate Discharge (Cusecs)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Inst. canal Discharge (Cusecs)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Total Dam Discharge (Cusecs)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Cumulative Dam Discharge (Cusecs)')] }),
                   ],
-              }),
+                }),
 
                 // Table rows
                 ...pageData.map((item) => {
-                  const formattedDate = new Date(item.dateTime).toISOString().replace("T", "   T").slice(0, -8)
-                    return new Docx.TableRow({
-                        children: [
-                            new Docx.TableCell({ children: [new Docx.Paragraph(formattedDate)],width: { size: 12, type: Docx.WidthType.PERCENTAGE } }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(2))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.liveCapacity.toFixed(2))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.grossStorage.toFixed(2))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.fullReservoirLevel.toFixed(2))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.contourArea.toFixed(2))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.catchmentArea.toFixed(2))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.ayacutArea.toFixed(2))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.filling.toFixed(2))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.instantaneousGateDischarge.toFixed(2))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.instantaneousCanalDischarge.toFixed(2))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.totalDamDischarge.toFixed(2))] }),
-                            new Docx.TableCell({ children: [new Docx.Paragraph(item.cumulativeDamDischarge.toFixed(2))] }),
-                            ],
-                    });
+                  const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                  return new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph(formattedDate)],
+                        width: { size: 12, type: Docx.WidthType.PERCENTAGE },
+                      }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.liveCapacity.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.grossStorage.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.fullReservoirLevel.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.contourArea.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.catchmentArea.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.ayacutArea.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.filling.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.instantaneousGateDischarge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.instantaneousCanalDischarge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.totalDamDischarge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.cumulativeDamDischarge.toFixed(2))] }),
+                    ],
+                  });
                 }),
               ],
             }),
@@ -2424,9 +2838,8 @@ const srspParameterOverviewReport = async (startDate, endDate, intervalMinutes, 
 
       const buffer = await Docx.Packer.toBuffer(doc);
       res.end(buffer);
-    }  else if (exportToExcel == 4) {
+    } else if (exportToExcel == 4) {
       try {
-
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspParameterOverviewReport.ejs'), {
           srspParameterOverviewReportWithoutPagination: srspParameterOverviewReportWithoutPagination,
         });
@@ -2447,169 +2860,17 @@ const srspParameterOverviewReport = async (startDate, endDate, intervalMinutes, 
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    } else {
-
-      let totalCount = srspParameterOverviewReport[0]?.totalCount[0]?.count
-      const totalPage = Math.ceil(totalCount / perPage);
-  
-      return {
-        data: srspParameterOverviewReport[0]?.data,
-        currentPage,
-        perPage,
-        totalCount,
-        totalPage
-      };
+    }else{
+      res.send(srspParameterOverviewReportWithoutPagination)
     }
-
- 
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
+const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
   try {
-    const pipeline = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          hrkGate1Position: { $first: "$hrkGate1Position" },
-          hrkGate2Position: { $first: "$hrkGate2Position" },
-          hrkGate3Position: { $first: "$hrkGate3Position" },
-          hrkGate4Position: { $first: "$hrkGate4Position" },
-          hrsGate1Position: { $first: "$hrsGate1Position" },
-          hrsGate2Position: { $first: "$hrsGate2Position" },
-          hrfGate1Position: { $first: "$hrfGate1Position" },
-          hrfGate2Position: { $first: "$hrfGate2Position" },
-          hrfGate3Position: { $first: "$hrfGate3Position" },
-          hrfGate4Position: { $first: "$hrfGate4Position" },
-          hrfGate5Position: { $first: "$hrfGate5Position" },
-          hrfGate6Position: { $first: "$hrfGate6Position" },
-          hrlManGate1Position: { $first: "$hrlManGate1Position" },
-          hrlManGate2Position: { $first: "$hrlManGate2Position" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          hrkGate1Position: 1,
-          hrkGate2Position: 1,
-          hrkGate3Position: 1,
-          hrkGate4Position: 1,
-          hrsGate1Position: 1,
-          hrsGate2Position: 1,
-          hrfGate1Position: 1,
-          hrfGate2Position: 1,
-          hrfGate3Position: 1,
-          hrfGate4Position: 1,
-          hrfGate5Position: 1,
-          hrfGate6Position: 1,
-          hrlManGate1Position: 1,
-          hrlManGate2Position: 1,
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-      {
-        $facet: {
-          data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
-        },
-      },
-    ];
-
-    const pipeline1 = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          hrkGate1Discharge: { $first: "$hrkGate1Discharge" },
-          hrkGate2Discharge: { $first: "$hrkGate2Discharge" },
-          hrkGate3Discharge: { $first: "$hrkGate3Discharge" },
-          hrkGate4Discharge: { $first: "$hrkGate4Discharge" },
-          hrsGate1Discharge: { $first: "$hrsGate1Discharge" },
-          hrsGate2Discharge: { $first: "$hrsGate2Discharge" },
-          hrfGate1Discharge: { $first: "$hrfGate1Discharge" },
-          hrfGate2Discharge: { $first: "$hrfGate2Discharge" },
-          hrfGate3Discharge: { $first: "$hrfGate3Discharge" },
-          hrfGate4Discharge: { $first: "$hrfGate4Discharge" },
-          hrfGate5Discharge: { $first: "$hrfGate5Discharge" },
-          hrfGate6Discharge: { $first: "$hrfGate6Discharge" },
-          hrlManGate1Discharge: { $first: "$hrlManGate1Discharge" },
-          hrlManGate2Discharge: { $first: "$hrlManGate2Discharge" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          hrkGate1Discharge: 1,
-          hrkGate2Discharge: 1,
-          hrkGate3Discharge: 1,
-          hrkGate4Discharge: 1,
-          hrsGate1Discharge: 1,
-          hrsGate2Discharge: 1,
-          hrfGate1Discharge: 1,
-          hrfGate2Discharge: 1,
-          hrfGate3Discharge: 1,
-          hrfGate4Discharge: 1,
-          hrfGate5Discharge: 1,
-          hrfGate6Discharge: 1,
-          hrlManGate1Discharge: 1,
-          hrlManGate2Discharge: 1,
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-      {
-        $facet: {
-          data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: "count" }],
-        },
-      },
-    ];
-
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -2624,33 +2885,30 @@ const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, exportTo
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          hrkGate1Position: { $first: "$hrkGate1Position" },
-          hrkGate2Position: { $first: "$hrkGate2Position" },
-          hrkGate3Position: { $first: "$hrkGate3Position" },
-          hrkGate4Position: { $first: "$hrkGate4Position" },
-          hrsGate1Position: { $first: "$hrsGate1Position" },
-          hrsGate2Position: { $first: "$hrsGate2Position" },
-          hrfGate1Position: { $first: "$hrfGate1Position" },
-          hrfGate2Position: { $first: "$hrfGate2Position" },
-          hrfGate3Position: { $first: "$hrfGate3Position" },
-          hrfGate4Position: { $first: "$hrfGate4Position" },
-          hrfGate5Position: { $first: "$hrfGate5Position" },
-          hrfGate6Position: { $first: "$hrfGate6Position" },
-          hrlManGate1Position: { $first: "$hrlManGate1Position" },
-          hrlManGate2Position: { $first: "$hrlManGate2Position" },
+          hrkGate1Position: { $first: '$hrkGate1Position' },
+          hrkGate2Position: { $first: '$hrkGate2Position' },
+          hrkGate3Position: { $first: '$hrkGate3Position' },
+          hrkGate4Position: { $first: '$hrkGate4Position' },
+          hrsGate1Position: { $first: '$hrsGate1Position' },
+          hrsGate2Position: { $first: '$hrsGate2Position' },
+          hrfGate1Position: { $first: '$hrfGate1Position' },
+          hrfGate2Position: { $first: '$hrfGate2Position' },
+          hrfGate3Position: { $first: '$hrfGate3Position' },
+          hrfGate4Position: { $first: '$hrfGate4Position' },
+          hrfGate5Position: { $first: '$hrfGate5Position' },
+          hrfGate6Position: { $first: '$hrfGate6Position' },
+          hrlManGate1Position: { $first: '$hrlManGate1Position' },
+          hrlManGate2Position: { $first: '$hrlManGate2Position' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           hrkGate1Position: 1,
           hrkGate2Position: 1,
           hrkGate3Position: 1,
@@ -2669,8 +2927,8 @@ const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, exportTo
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
     ];
 
@@ -2688,33 +2946,30 @@ const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, exportTo
           _id: {
             interval: {
               $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
               },
             },
           },
-          hrkGate1Discharge: { $first: "$hrkGate1Discharge" },
-          hrkGate2Discharge: { $first: "$hrkGate2Discharge" },
-          hrkGate3Discharge: { $first: "$hrkGate3Discharge" },
-          hrkGate4Discharge: { $first: "$hrkGate4Discharge" },
-          hrsGate1Discharge: { $first: "$hrsGate1Discharge" },
-          hrsGate2Discharge: { $first: "$hrsGate2Discharge" },
-          hrfGate1Discharge: { $first: "$hrfGate1Discharge" },
-          hrfGate2Discharge: { $first: "$hrfGate2Discharge" },
-          hrfGate3Discharge: { $first: "$hrfGate3Discharge" },
-          hrfGate4Discharge: { $first: "$hrfGate4Discharge" },
-          hrfGate5Discharge: { $first: "$hrfGate5Discharge" },
-          hrfGate6Discharge: { $first: "$hrfGate6Discharge" },
-          hrlManGate1Discharge: { $first: "$hrlManGate1Discharge" },
-          hrlManGate2Discharge: { $first: "$hrlManGate2Discharge" },
+          hrkGate1Discharge: { $first: '$hrkGate1Discharge' },
+          hrkGate2Discharge: { $first: '$hrkGate2Discharge' },
+          hrkGate3Discharge: { $first: '$hrkGate3Discharge' },
+          hrkGate4Discharge: { $first: '$hrkGate4Discharge' },
+          hrsGate1Discharge: { $first: '$hrsGate1Discharge' },
+          hrsGate2Discharge: { $first: '$hrsGate2Discharge' },
+          hrfGate1Discharge: { $first: '$hrfGate1Discharge' },
+          hrfGate2Discharge: { $first: '$hrfGate2Discharge' },
+          hrfGate3Discharge: { $first: '$hrfGate3Discharge' },
+          hrfGate4Discharge: { $first: '$hrfGate4Discharge' },
+          hrfGate5Discharge: { $first: '$hrfGate5Discharge' },
+          hrfGate6Discharge: { $first: '$hrfGate6Discharge' },
+          hrlManGate1Discharge: { $first: '$hrlManGate1Discharge' },
+          hrlManGate2Discharge: { $first: '$hrlManGate2Discharge' },
         },
       },
       {
         $project: {
           _id: 0,
-          dateTime: "$_id.interval",
+          dateTime: '$_id.interval',
           hrkGate1Discharge: 1,
           hrkGate2Discharge: 1,
           hrkGate3Discharge: 1,
@@ -2733,83 +2988,18 @@ const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, exportTo
       },
       {
         $sort: {
-          dateTime: 1
-        }
+          dateTime: 1,
+        },
       },
     ];
 
-    const srspHrDamGateReportPos = await SRSP_HR_DAM_OVERVIEW_POS.aggregate(pipeline);
-    const srspHrDamGateReportDis = await SRSP_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1);
     const srspHrDamGateReportPosWithoutPagination = await SRSP_HR_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
     const srspHrDamGateReportDisWithoutPagination = await SRSP_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1WithoutPagination);
 
-    let posData = srspHrDamGateReportPos[0]?.data || [];
-    let disData = srspHrDamGateReportDis[0]?.data || [];
     let posDataWithoutPagination = srspHrDamGateReportPosWithoutPagination || [];
     let disDataWithoutPagination = srspHrDamGateReportDisWithoutPagination || [];
 
-    let minLength = Math.max(posData.length, disData.length);
     let minLengthWithoutPagination = Math.max(posDataWithoutPagination.length, disDataWithoutPagination.length);
-
-    let mergedData = Array.from({ length: minLength }, (_, index) => {
-      const hrkGate1Discharge = disData[index]?.hrkGate1Discharge || 0;
-      const hrkGate2Discharge = disData[index]?.hrkGate2Discharge || 0;
-      const hrkGate3Discharge = disData[index]?.hrkGate3Discharge || 0;
-      const hrkGate4Discharge = disData[index]?.hrkGate4Discharge || 0;
-      const hrsGate1Discharge = disData[index]?.hrsGate1Discharge || 0;
-      const hrsGate2Discharge = disData[index]?.hrsGate2Discharge || 0;
-      const hrfGate1Discharge = disData[index]?.hrfGate1Discharge || 0;
-      const hrfGate2Discharge = disData[index]?.hrfGate2Discharge || 0;
-      const hrfGate3Discharge = disData[index]?.hrfGate3Discharge || 0;
-      const hrfGate4Discharge = disData[index]?.hrfGate4Discharge || 0;
-      const hrfGate5Discharge = disData[index]?.hrfGate5Discharge || 0;
-      const hrfGate6Discharge = disData[index]?.hrfGate6Discharge || 0;
-      const hrlManGate1Discharge = disData[index]?.hrlManGate1Discharge || 0;
-      const hrlManGate2Discharge = disData[index]?.hrlManGate2Discharge || 0;
-
-      const kakatiyaTotalDischarge = hrkGate1Discharge + hrkGate2Discharge + hrkGate3Discharge + hrkGate4Discharge;
-      const saraswatiTotalDischarge = hrsGate1Discharge + hrsGate2Discharge;
-      const floodFlowTotalDischarge = hrfGate1Discharge + hrfGate2Discharge + hrfGate3Discharge + hrfGate4Discharge + hrfGate5Discharge + hrfGate6Discharge;
-      const lakshmiGateTotalDischarge = hrlManGate1Discharge + hrlManGate2Discharge;
-
-
-      return {
-        hrkGate1Position: posData[index]?.hrkGate1Position || 0,
-        hrkGate2Position: posData[index]?.hrkGate2Position || 0,
-        hrkGate3Position: posData[index]?.hrkGate3Position || 0,
-        hrkGate4Position: posData[index]?.hrkGate4Position || 0,
-        hrsGate1Position: posData[index]?.hrsGate1Position || 0,
-        hrsGate2Position: posData[index]?.hrsGate2Position || 0,
-        hrfGate1Position: posData[index]?.hrfGate1Position || 0,
-        hrfGate2Position: posData[index]?.hrfGate2Position || 0,
-        hrfGate3Position: posData[index]?.hrfGate3Position || 0,
-        hrfGate4Position: posData[index]?.hrfGate4Position || 0,
-        hrfGate5Position: posData[index]?.hrfGate5Position || 0,
-        hrfGate6Position: posData[index]?.hrfGate6Position || 0,
-        hrlManGate1Position: posData[index]?.hrlManGate1Position || 0,
-        hrlManGate2Position: posData[index]?.hrlManGate2Position || 0,
-        dateTime: posData[index]?.dateTime || disData[index]?.dateTime || null,
-
-        hrkGate1Discharge: hrkGate1Discharge,
-        hrkGate2Discharge: hrkGate2Discharge,
-        hrkGate3Discharge: hrkGate3Discharge,
-        hrkGate4Discharge: hrkGate4Discharge,
-        kakatiyaTotalDischarge: kakatiyaTotalDischarge,
-        hrsGate1Discharge: hrsGate1Discharge,
-        hrsGate2Discharge: hrsGate2Discharge,
-        saraswatiTotalDischarge: saraswatiTotalDischarge,
-        hrfGate1Discharge: hrfGate1Discharge,
-        hrfGate2Discharge: hrfGate2Discharge,
-        hrfGate3Discharge: hrfGate3Discharge,
-        hrfGate4Discharge: hrfGate4Discharge,
-        hrfGate5Discharge: hrfGate5Discharge,
-        hrfGate6Discharge: hrfGate6Discharge,
-        floodFlowTotalDischarge: floodFlowTotalDischarge,
-        hrlManGate1Discharge: hrlManGate1Discharge,
-        hrlManGate2Discharge: hrlManGate2Discharge,
-        lakshmiGateTotalDischarge: lakshmiGateTotalDischarge
-      };
-    });
 
     let mergedDataWithoutPagination = Array.from({ length: minLengthWithoutPagination }, (_, index) => {
       const hrkGate1Discharge = disDataWithoutPagination[index]?.hrkGate1Discharge || 0;
@@ -2829,9 +3019,14 @@ const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, exportTo
 
       const kakatiyaTotalDischarge = hrkGate1Discharge + hrkGate2Discharge + hrkGate3Discharge + hrkGate4Discharge;
       const saraswatiTotalDischarge = hrsGate1Discharge + hrsGate2Discharge;
-      const floodFlowTotalDischarge = hrfGate1Discharge + hrfGate2Discharge + hrfGate3Discharge + hrfGate4Discharge + hrfGate5Discharge + hrfGate6Discharge;
+      const floodFlowTotalDischarge =
+        hrfGate1Discharge +
+        hrfGate2Discharge +
+        hrfGate3Discharge +
+        hrfGate4Discharge +
+        hrfGate5Discharge +
+        hrfGate6Discharge;
       const lakshmiGateTotalDischarge = hrlManGate1Discharge + hrlManGate2Discharge;
-
 
       return {
         hrkGate1Position: posDataWithoutPagination[index]?.hrkGate1Position || 0,
@@ -2867,7 +3062,7 @@ const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, exportTo
         floodFlowTotalDischarge: floodFlowTotalDischarge,
         hrlManGate1Discharge: hrlManGate1Discharge,
         hrlManGate2Discharge: hrlManGate2Discharge,
-        lakshmiGateTotalDischarge: lakshmiGateTotalDischarge
+        lakshmiGateTotalDischarge: lakshmiGateTotalDischarge,
       };
     });
 
@@ -2876,7 +3071,6 @@ const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, exportTo
     } else if (exportToExcel == 3) {
     } else if (exportToExcel == 4) {
       try {
-
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspHrDamGateReport.ejs'), {
           mergedDataWithoutPagination: mergedDataWithoutPagination,
         });
@@ -2888,7 +3082,7 @@ const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, exportTo
 
         const pdfBuffer = await page.pdf({ format: 'Letter' });
 
-        console.log(pdfBuffer , "++++++++++++++++++");
+        console.log(pdfBuffer, '++++++++++++++++++');
 
         // Close browser
         await browser.close();
@@ -2899,824 +3093,11 @@ const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, exportTo
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    } else {
-
-      let totalCount = srspHrDamGateReportPos[0]?.totalCount[0]?.count
-      const totalPage = Math.ceil(totalCount / perPage);
-  
-      return {
-        data: mergedData,
-        currentPage,
-        perPage,
-        totalCount,
-        totalPage
-      };
-    }
-
-   
-  } catch (error) {
-    console.error("Error:", error);
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const sevenDayReport = async (user) => {
-  try {
-    const checkPermission = await Permission.findOne({ name: 'srspReport' });
-    if (user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
-
-      const currentDate = new Date();
-      const sevenDaysAgo = new Date(currentDate);
-      sevenDaysAgo.setDate(currentDate.getDate() - 6);
-
-      const pondLevelSevenDayReport = await SRSP_POND_LEVEL_OVERVIEW.find({
-        dateTime: { $gte: sevenDaysAgo, $lte: currentDate },
-      });
-
-      const groupedByDate = {};
-      pondLevelSevenDayReport.forEach((entry) => {
-        const dateKey = entry.dateTime.toISOString().split('T')[0];
-        if (!groupedByDate[dateKey]) {
-          groupedByDate[dateKey] = {
-            date: dateKey,
-            maxPondLevel: entry.pondLevel,
-            minPondLevel: entry.pondLevel,
-            sumPondLevel: entry.pondLevel,
-            count: 1,
-            maxInflow1Level: entry.inflow1Level,
-            minInflow1Level: entry.inflow1Level,
-            sumInflow1Level: entry.inflow1Level,
-            maxInflow2Level: entry.inflow2Level,
-            minInflow2Level: entry.inflow2Level,
-            sumInflow2Level: entry.inflow2Level,
-          };
-        } else {
-          groupedByDate[dateKey].maxPondLevel = Math.max(groupedByDate[dateKey].maxPondLevel, entry.pondLevel);
-          groupedByDate[dateKey].minPondLevel = Math.min(groupedByDate[dateKey].minPondLevel, entry.pondLevel);
-          groupedByDate[dateKey].sumPondLevel += entry.pondLevel;
-          groupedByDate[dateKey].count++;
-
-          groupedByDate[dateKey].maxInflow1Level = Math.max(groupedByDate[dateKey].maxInflow1Level, entry.inflow1Level);
-          groupedByDate[dateKey].minInflow1Level = Math.min(groupedByDate[dateKey].minInflow1Level, entry.inflow1Level);
-          groupedByDate[dateKey].sumInflow1Level += entry.inflow1Level;
-
-          groupedByDate[dateKey].maxInflow2Level = Math.max(groupedByDate[dateKey].maxInflow2Level, entry.inflow2Level);
-          groupedByDate[dateKey].minInflow2Level = Math.min(groupedByDate[dateKey].minInflow2Level, entry.inflow2Level);
-          groupedByDate[dateKey].sumInflow2Level += entry.inflow2Level;
-        }
-      });
-
-      const result = [];
-      const daysInRange = Array.from({ length: 7 }, (_, index) => {
-        const date = new Date(sevenDaysAgo);
-        date.setDate(sevenDaysAgo.getDate() + index);
-        return date.toISOString().split('T')[0];
-      });
-
-      daysInRange.forEach((dateKey) => {
-        if (groupedByDate[dateKey]) {
-          const record = groupedByDate[dateKey];
-          const avgPondLevel = record.sumPondLevel / record.count;
-          const avgInflow1Level = record.sumInflow1Level / record.count;
-          const avgInflow2Level = record.sumInflow2Level / record.count;
-
-          result.push({
-            date: record.date,
-            maxPondLevel: record.maxPondLevel,
-            minPondLevel: record.minPondLevel,
-            avgPondLevel: avgPondLevel,
-            maxInflow1Level: record.maxInflow1Level,
-            minInflow1Level: record.minInflow1Level,
-            avgInflow1Level: avgInflow1Level,
-            maxInflow2Level: record.maxInflow2Level,
-            minInflow2Level: record.minInflow2Level,
-            avgInflow2Level: avgInflow2Level,
-          });
-        } else {
-          result.push({
-            date: dateKey,
-            maxPondLevel: '',
-            minPondLevel: '',
-            avgPondLevel: '',
-            maxInflow1Level: '',
-            minInflow1Level: '',
-            avgInflow1Level: '',
-            maxInflow2Level: '',
-            minInflow2Level: '',
-            avgInflow2Level: '',
-          });
-        }
-      });
-
-      return result;
-    } else {
-      return 'You are not authorized to access this data';
+    }else{
+      res.send(mergedDataWithoutPagination)
     }
   } catch (error) {
     console.error('Error:', error);
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-
-//without pagination
-const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
-  try {
- 
-    const pipelineWithoutPagination = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          gate1Discharge: { $first: "$gate1Discharge" },
-          gate2Discharge: { $first: "$gate2Discharge" },
-          gate3Discharge: { $first: "$gate3Discharge" },
-          gate4Discharge: { $first: "$gate4Discharge" },
-          gate5Discharge: { $first: "$gate5Discharge" },
-          gate6Discharge: { $first: "$gate6Discharge" },
-          gate7Discharge: { $first: "$gate7Discharge" },
-          gate8Discharge: { $first: "$gate8Discharge" },
-          gate9Discharge: { $first: "$gate9Discharge" },
-          gate10Discharge: { $first: "$gate10Discharge" },
-          gate11Discharge: { $first: "$gate11Discharge" },
-          gate12Discharge: { $first: "$gate12Discharge" },
-          gate13Discharge: { $first: "$gate13Discharge" },
-          gate14Discharge: { $first: "$gate14Discharge" },
-          gate15Discharge: { $first: "$gate15Discharge" },
-          gate16Discharge: { $first: "$gate16Discharge" },
-          gate17Discharge: { $first: "$gate17Discharge" },
-          gate18Discharge: { $first: "$gate18Discharge" },
-          gate19Discharge: { $first: "$gate19Discharge" },
-          gate20Discharge: { $first: "$gate20Discharge" },
-          gate21Discharge: { $first: "$gate21Discharge" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          gate1Discharge: 1,
-          gate2Discharge: 1,
-          gate3Discharge: 1,
-          gate4Discharge: 1,
-          gate5Discharge: 1,
-          gate6Discharge: 1,
-          gate7Discharge: 1,
-          gate8Discharge: 1,
-          gate9Discharge: 1,
-          gate10Discharge: 1,
-          gate11Discharge: 1,
-          gate12Discharge: 1,
-          gate13Discharge: 1,
-          gate14Discharge: 1,
-          gate15Discharge: 1,
-          gate16Discharge: 1,
-          gate17Discharge: 1,
-          gate18Discharge: 1,
-          gate19Discharge: 1,
-          gate20Discharge: 1,
-          gate21Discharge: 1,
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-    ];
-
-    const srspDischargeGate1TO21ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_DICH.aggregate(pipelineWithoutPagination);
-      return srspDischargeGate1TO21ReportWithoutPagination
-
-  } catch (error) {
-    console.error("Error:", error);
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
-  try {
-   
-    const pipelineWithoutPagination = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          gate22Discharge: { $first: "$gate22Discharge" },
-          gate23Discharge: { $first: "$gate23Discharge" },
-          gate24Discharge: { $first: "$gate24Discharge" },
-          gate25Discharge: { $first: "$gate25Discharge" },
-          gate26Discharge: { $first: "$gate26Discharge" },
-          gate27Discharge: { $first: "$gate27Discharge" },
-          gate28Discharge: { $first: "$gate28Discharge" },
-          gate29Discharge: { $first: "$gate29Discharge" },
-          gate30Discharge: { $first: "$gate30Discharge" },
-          gate31Discharge: { $first: "$gate31Discharge" },
-          gate32Discharge: { $first: "$gate32Discharge" },
-          gate33Discharge: { $first: "$gate33Discharge" },
-          gate34Discharge: { $first: "$gate34Discharge" },
-          gate35Discharge: { $first: "$gate35Discharge" },
-          gate36Discharge: { $first: "$gate36Discharge" },
-          gate37Discharge: { $first: "$gate37Discharge" },
-          gate38Discharge: { $first: "$gate38Discharge" },
-          gate39Discharge: { $first: "$gate39Discharge" },
-          gate40Discharge: { $first: "$gate40Discharge" },
-          gate41Discharge: { $first: "$gate41Discharge" },
-          gate42Discharge: { $first: "$gate42Discharge" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          gate22Discharge: 1,
-          gate23Discharge: 1,
-          gate24Discharge: 1,
-          gate25Discharge: 1,
-          gate26Discharge: 1,
-          gate27Discharge: 1,
-          gate28Discharge: 1,
-          gate29Discharge: 1,
-          gate30Discharge: 1,
-          gate31Discharge: 1,
-          gate32Discharge: 1,
-          gate33Discharge: 1,
-          gate34Discharge: 1,
-          gate35Discharge: 1,
-          gate36Discharge: 1,
-          gate37Discharge: 1,
-          gate38Discharge: 1,
-          gate39Discharge: 1,
-          gate40Discharge: 1,
-          gate41Discharge: 1,
-          gate41Discharge: 1,
-          gate42Discharge: 1,
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-    ];
-
-    const srspDischargeGate22TO42ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_DICH.aggregate(pipelineWithoutPagination);
-      return srspDischargeGate22TO42ReportWithoutPagination
-
-  } catch (error) {
-    console.error("Error:", error);
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
-  try {
-  
-    const pipelineWithoutPagination = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          gate1Position: { $first: "$gate1Position" },
-          gate2Position: { $first: "$gate2Position" },
-          gate3Position: { $first: "$gate3Position" },
-          gate4Position: { $first: "$gate4Position" },
-          gate5Position: { $first: "$gate5Position" },
-          gate6Position: { $first: "$gate6Position" },
-          gate7Position: { $first: "$gate7Position" },
-          gate8Position: { $first: "$gate8Position" },
-          gate9Position: { $first: "$gate9Position" },
-          gate10Position: { $first: "$gate10Position" },
-          gate11Position: { $first: "$gate11Position" },
-          gate12Position: { $first: "$gate12Position" },
-          gate13Position: { $first: "$gate13Position" },
-          gate14Position: { $first: "$gate14Position" },
-          gate15Position: { $first: "$gate15Position" },
-          gate16Position: { $first: "$gate16Position" },
-          gate17Position: { $first: "$gate17Position" },
-          gate18Position: { $first: "$gate18Position" },
-          gate19Position: { $first: "$gate19Position" },
-          gate20Position: { $first: "$gate20Position" },
-          gate21Position: { $first: "$gate21Position" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          gate1Position: 1,
-          gate2Position: 1,
-          gate3Position: 1,
-          gate4Position: 1,
-          gate5Position: 1,
-          gate6Position: 1,
-          gate7Position: 1,
-          gate8Position: 1,
-          gate9Position: 1,
-          gate10Position: 1,
-          gate11Position: 1,
-          gate12Position: 1,
-          gate13Position: 1,
-          gate14Position: 1,
-          gate15Position: 1,
-          gate16Position: 1,
-          gate17Position: 1,
-          gate18Position: 1,
-          gate19Position: 1,
-          gate20Position: 1,
-          gate21Position: 1,
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-    ];
-
-    const srspOpeningGate1TO21ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
-      return srspOpeningGate1TO21ReportWithoutPagination
-
-  } catch (error) {
-    console.error("Error:", error);
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
-  try {
-
-    const pipelineWithoutPagination = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          gate22Position: { $first: "$gate22Position" },
-          gate23Position: { $first: "$gate23Position" },
-          gate24Position: { $first: "$gate24Position" },
-          gate25Position: { $first: "$gate25Position" },
-          gate26Position: { $first: "$gate26Position" },
-          gate27Position: { $first: "$gate27Position" },
-          gate28Position: { $first: "$gate28Position" },
-          gate29Position: { $first: "$gate29Position" },
-          gate30Position: { $first: "$gate30Position" },
-          gate31Position: { $first: "$gate31Position" },
-          gate32Position: { $first: "$gate32Position" },
-          gate33Position: { $first: "$gate33Position" },
-          gate34Position: { $first: "$gate34Position" },
-          gate35Position: { $first: "$gate35Position" },
-          gate36Position: { $first: "$gate36Position" },
-          gate37Position: { $first: "$gate37Position" },
-          gate38Position: { $first: "$gate38Position" },
-          gate39Position: { $first: "$gate39Position" },
-          gate40Position: { $first: "$gate40Position" },
-          gate41Position: { $first: "$gate41Position" },
-          gate42Position: { $first: "$gate42Position" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          gate22Position: 1,
-          gate23Position: 1,
-          gate24Position: 1,
-          gate25Position: 1,
-          gate26Position: 1,
-          gate27Position: 1,
-          gate28Position: 1,
-          gate29Position: 1,
-          gate30Position: 1,
-          gate31Position: 1,
-          gate32Position: 1,
-          gate33Position: 1,
-          gate34Position: 1,
-          gate35Position: 1,
-          gate36Position: 1,
-          gate37Position: 1,
-          gate38Position: 1,
-          gate39Position: 1,
-          gate40Position: 1,
-          gate41Position: 1,
-          gate41Position: 1,
-          gate42Position: 1,
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-    ];
-
-    const srspOpeningGate22TO42ReportWithoutPagination = await SRSP_SSD_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
-      return srspOpeningGate22TO42ReportWithoutPagination
-       
-  } catch (error) {
-    console.error("Error:", error);
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
-  try {
-
-    const pipelineWithoutPagination = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          inflow1Level: { $first: "$inflow1Level" },
-          inflow1Discharge: { $first: "$inflow1Discharge" },
-          inflow2Level: { $first: "$inflow2Level" },
-          inflow2Discharge: { $first: "$inflow2Discharge" },
-          damDownstreamLevel: { $first: "$damDownstreamLevel" },
-          damDownstreamDischarge: { $first: "$damDownstreamDischarge" },
-          pondLevel: { $first: "$pondLevel" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          inflow1Level: 1,
-          inflow1Discharge: 1,
-          inflow2Level: 1,
-          inflow2Discharge: 1,
-          damDownstreamLevel: 1,
-          damDownstreamDischarge: 1,
-          pondLevel: 1
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-    ];
-
-    const srspInflowOutflowPondLevelReportWithoutPagination = await SRSP_POND_LEVEL_OVERVIEW.aggregate(pipelineWithoutPagination);
-      return srspInflowOutflowPondLevelReportWithoutPagination
-
-  } catch (error) {
-    console.error("Error:", error);
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
-  try {
-
-    const pipelineWithoutPagination = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          pondLevel: { $first: "$pondLevel" },
-          liveCapacity: { $first: "$liveCapacity" },
-          grossStorage: { $first: "$grossStorage" },
-          fullReservoirLevel: { $first: "$fullReservoirLevel" },
-          contourArea: { $first: "$contourArea" },
-          catchmentArea: { $first: "$catchmentArea" },
-          ayacutArea: { $first: "$ayacutArea" },
-          filling: { $first: "$filling" },
-          instantaneousGateDischarge: { $first: "$instantaneousGateDischarge" },
-          instantaneousCanalDischarge: { $first: "$instantaneousCanalDischarge" },
-          totalDamDischarge: { $first: "$totalDamDischarge" },
-          cumulativeDamDischarge: { $first: "$cumulativeDamDischarge" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          pondLevel: 1,
-          liveCapacity: 1,
-          grossStorage: 1,
-          fullReservoirLevel: 1,
-          contourArea: 1,
-          catchmentArea: 1,
-          ayacutArea: 1,
-          filling: 1,
-          instantaneousGateDischarge: 1,
-          instantaneousCanalDischarge: 1,
-          totalDamDischarge: 1,
-          cumulativeDamDischarge: 1
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-    ];
-
-    const srspParameterOverviewReportWithoutPagination = await SRSP_POND_LEVEL_OVERVIEW.aggregate(pipelineWithoutPagination);
-      return srspParameterOverviewReportWithoutPagination
-
-  } catch (error) {
-    console.error("Error:", error);
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
-const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, currentPage, perPage, startIndex, res, req) => {
-  try {
-
-    const pipelineWithoutPagination = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          hrkGate1Position: { $first: "$hrkGate1Position" },
-          hrkGate2Position: { $first: "$hrkGate2Position" },
-          hrkGate3Position: { $first: "$hrkGate3Position" },
-          hrkGate4Position: { $first: "$hrkGate4Position" },
-          hrsGate1Position: { $first: "$hrsGate1Position" },
-          hrsGate2Position: { $first: "$hrsGate2Position" },
-          hrfGate1Position: { $first: "$hrfGate1Position" },
-          hrfGate2Position: { $first: "$hrfGate2Position" },
-          hrfGate3Position: { $first: "$hrfGate3Position" },
-          hrfGate4Position: { $first: "$hrfGate4Position" },
-          hrfGate5Position: { $first: "$hrfGate5Position" },
-          hrfGate6Position: { $first: "$hrfGate6Position" },
-          hrlManGate1Position: { $first: "$hrlManGate1Position" },
-          hrlManGate2Position: { $first: "$hrlManGate2Position" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          hrkGate1Position: 1,
-          hrkGate2Position: 1,
-          hrkGate3Position: 1,
-          hrkGate4Position: 1,
-          hrsGate1Position: 1,
-          hrsGate2Position: 1,
-          hrfGate1Position: 1,
-          hrfGate2Position: 1,
-          hrfGate3Position: 1,
-          hrfGate4Position: 1,
-          hrfGate5Position: 1,
-          hrfGate6Position: 1,
-          hrlManGate1Position: 1,
-          hrlManGate2Position: 1,
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-    ];
-
-    const pipeline1WithoutPagination = [
-      {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [
-                  { $toLong: "$dateTime" },
-                  { $mod: [{ $toLong: "$dateTime" }, intervalMinutes * 60 * 1000] },
-                ],
-              },
-            },
-          },
-          hrkGate1Discharge: { $first: "$hrkGate1Discharge" },
-          hrkGate2Discharge: { $first: "$hrkGate2Discharge" },
-          hrkGate3Discharge: { $first: "$hrkGate3Discharge" },
-          hrkGate4Discharge: { $first: "$hrkGate4Discharge" },
-          hrsGate1Discharge: { $first: "$hrsGate1Discharge" },
-          hrsGate2Discharge: { $first: "$hrsGate2Discharge" },
-          hrfGate1Discharge: { $first: "$hrfGate1Discharge" },
-          hrfGate2Discharge: { $first: "$hrfGate2Discharge" },
-          hrfGate3Discharge: { $first: "$hrfGate3Discharge" },
-          hrfGate4Discharge: { $first: "$hrfGate4Discharge" },
-          hrfGate5Discharge: { $first: "$hrfGate5Discharge" },
-          hrfGate6Discharge: { $first: "$hrfGate6Discharge" },
-          hrlManGate1Discharge: { $first: "$hrlManGate1Discharge" },
-          hrlManGate2Discharge: { $first: "$hrlManGate2Discharge" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: "$_id.interval",
-          hrkGate1Discharge: 1,
-          hrkGate2Discharge: 1,
-          hrkGate3Discharge: 1,
-          hrkGate4Discharge: 1,
-          hrsGate1Discharge: 1,
-          hrsGate2Discharge: 1,
-          hrfGate1Discharge: 1,
-          hrfGate2Discharge: 1,
-          hrfGate3Discharge: 1,
-          hrfGate4Discharge: 1,
-          hrfGate5Discharge: 1,
-          hrfGate6Discharge: 1,
-          hrlManGate1Discharge: 1,
-          hrlManGate2Discharge: 1,
-        },
-      },
-      {
-        $sort: {
-          dateTime: 1
-        }
-      },
-    ];
-
-    const srspHrDamGateReportPosWithoutPagination = await SRSP_HR_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
-    const srspHrDamGateReportDisWithoutPagination = await SRSP_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1WithoutPagination);
-    let posDataWithoutPagination = srspHrDamGateReportPosWithoutPagination || [];
-    let disDataWithoutPagination = srspHrDamGateReportDisWithoutPagination || [];
-    let minLengthWithoutPagination = Math.max(posDataWithoutPagination.length, disDataWithoutPagination.length);
-
-    let mergedDataWithoutPagination = Array.from({ length: minLengthWithoutPagination }, (_, index) => {
-      const hrkGate1Discharge = disDataWithoutPagination[index]?.hrkGate1Discharge || 0;
-      const hrkGate2Discharge = disDataWithoutPagination[index]?.hrkGate2Discharge || 0;
-      const hrkGate3Discharge = disDataWithoutPagination[index]?.hrkGate3Discharge || 0;
-      const hrkGate4Discharge = disDataWithoutPagination[index]?.hrkGate4Discharge || 0;
-      const hrsGate1Discharge = disDataWithoutPagination[index]?.hrsGate1Discharge || 0;
-      const hrsGate2Discharge = disDataWithoutPagination[index]?.hrsGate2Discharge || 0;
-      const hrfGate1Discharge = disDataWithoutPagination[index]?.hrfGate1Discharge || 0;
-      const hrfGate2Discharge = disDataWithoutPagination[index]?.hrfGate2Discharge || 0;
-      const hrfGate3Discharge = disDataWithoutPagination[index]?.hrfGate3Discharge || 0;
-      const hrfGate4Discharge = disDataWithoutPagination[index]?.hrfGate4Discharge || 0;
-      const hrfGate5Discharge = disDataWithoutPagination[index]?.hrfGate5Discharge || 0;
-      const hrfGate6Discharge = disDataWithoutPagination[index]?.hrfGate6Discharge || 0;
-      const hrlManGate1Discharge = disDataWithoutPagination[index]?.hrlManGate1Discharge || 0;
-      const hrlManGate2Discharge = disDataWithoutPagination[index]?.hrlManGate2Discharge || 0;
-
-      const kakatiyaTotalDischarge = hrkGate1Discharge + hrkGate2Discharge + hrkGate3Discharge + hrkGate4Discharge;
-      const saraswatiTotalDischarge = hrsGate1Discharge + hrsGate2Discharge;
-      const floodFlowTotalDischarge = hrfGate1Discharge + hrfGate2Discharge + hrfGate3Discharge + hrfGate4Discharge + hrfGate5Discharge + hrfGate6Discharge;
-      const lakshmiGateTotalDischarge = hrlManGate1Discharge + hrlManGate2Discharge;
-
-
-      return {
-        hrkGate1Position: posDataWithoutPagination[index]?.hrkGate1Position || 0,
-        hrkGate2Position: posDataWithoutPagination[index]?.hrkGate2Position || 0,
-        hrkGate3Position: posDataWithoutPagination[index]?.hrkGate3Position || 0,
-        hrkGate4Position: posDataWithoutPagination[index]?.hrkGate4Position || 0,
-        hrsGate1Position: posDataWithoutPagination[index]?.hrsGate1Position || 0,
-        hrsGate2Position: posDataWithoutPagination[index]?.hrsGate2Position || 0,
-        hrfGate1Position: posDataWithoutPagination[index]?.hrfGate1Position || 0,
-        hrfGate2Position: posDataWithoutPagination[index]?.hrfGate2Position || 0,
-        hrfGate3Position: posDataWithoutPagination[index]?.hrfGate3Position || 0,
-        hrfGate4Position: posDataWithoutPagination[index]?.hrfGate4Position || 0,
-        hrfGate5Position: posDataWithoutPagination[index]?.hrfGate5Position || 0,
-        hrfGate6Position: posDataWithoutPagination[index]?.hrfGate6Position || 0,
-        hrlManGate1Position: posDataWithoutPagination[index]?.hrlManGate1Position || 0,
-        hrlManGate2Position: posDataWithoutPagination[index]?.hrlManGate2Position || 0,
-        dateTime: posDataWithoutPagination[index]?.dateTime || disDataWithoutPagination[index]?.dateTime || null,
-
-        hrkGate1Discharge: hrkGate1Discharge,
-        hrkGate2Discharge: hrkGate2Discharge,
-        hrkGate3Discharge: hrkGate3Discharge,
-        hrkGate4Discharge: hrkGate4Discharge,
-        kakatiyaTotalDischarge: kakatiyaTotalDischarge,
-        hrsGate1Discharge: hrsGate1Discharge,
-        hrsGate2Discharge: hrsGate2Discharge,
-        saraswatiTotalDischarge: saraswatiTotalDischarge,
-        hrfGate1Discharge: hrfGate1Discharge,
-        hrfGate2Discharge: hrfGate2Discharge,
-        hrfGate3Discharge: hrfGate3Discharge,
-        hrfGate4Discharge: hrfGate4Discharge,
-        hrfGate5Discharge: hrfGate5Discharge,
-        hrfGate6Discharge: hrfGate6Discharge,
-        floodFlowTotalDischarge: floodFlowTotalDischarge,
-        hrlManGate1Discharge: hrlManGate1Discharge,
-        hrlManGate2Discharge: hrlManGate2Discharge,
-        lakshmiGateTotalDischarge: lakshmiGateTotalDischarge
-      };
-    });
-
-      return mergedDataWithoutPagination
-   
-  } catch (error) {
-    console.error("Error:", error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
@@ -3742,5 +3123,5 @@ module.exports = {
   srspOpeningGate22TO42ReportWp,
   srspInflowOutflowPondLevelReportWp,
   srspParameterOverviewReportWp,
-  srspHrDamGateReportWp
+  srspHrDamGateReportWp,
 };
