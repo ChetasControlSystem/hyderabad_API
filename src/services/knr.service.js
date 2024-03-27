@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const puppeteer = require('puppeteer');
+const fastCsv = require('fast-csv');
 const path = require('path');
 const ejs = require('ejs');
 const ExcelJS = require('exceljs');
@@ -17,6 +18,9 @@ const {
   KNR_SPARE_ADVM,
   Permission,
 } = require('../models');
+
+const hyderabadImagePath = path.join(__dirname, '../../views/hyderabad.png');
+const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
 const createSalientFeature = async (userBody) => {
   try {
@@ -851,16 +855,18 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [15, 18]);
+      addImageToWorksheet(hyderabadImagePath, [1, 4]);
+      addImageToWorksheet(chetasImagePath, [15, 17]);
 
-      worksheet.getCell('I9').value = 'KADDAM Dam Gate 1 To 18 Opening Report';
+      worksheet.getCell('G9').value = 'KADDAM Dam Gate 1 To 18 Opening Report';
+      const cell = worksheet.getCell('G9');
+      cell.font = { bold: true, size: 20 };
 
       const headers = ['DateTime', ...Array.from({ length: 18 }, (_, i) => `Gate ${i + 1} \n (Feet)`)];
       worksheet.addRow([]);
@@ -875,20 +881,59 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(15).eachCell((cell) => {
+      worksheet.getRow(11).eachCell((cell) => {
         cell.font = { bold: true };
       });
 
-      worksheet.mergeCells('B4:T8');
-      worksheet.mergeCells('B10:T13');
-      worksheet.mergeCells('B9:H9');
-      worksheet.mergeCells('M9:T9');
+      worksheet.mergeCells('A1:S8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Opening_Report.xlsx');
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+
+      const csvStream = fastCsv.format({ headers: true });
+
+      kadamOpeningGate1To18ReportWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          'Gate_1': row.gate1Position,
+          'Gate_2': row.gate2Position,
+          'Gate_3': row.gate3Position,
+          'Gate_4': row.gate4Position,
+          'Gate_5': row.gate5Position,
+          'Gate_6': row.gate6Position,
+          'Gate_7': row.gate7Position,
+          'Gate_8': row.gate8Position,
+          'Gate_9': row.gate9Position,
+          'Gate_10': row.gate10Position,
+          'Gate_11': row.gate11Position,
+          'Gate_12': row.gate12Position,
+          'Gate_13': row.gate13Position,
+          'Gate_14': row.gate14Position,
+          'Gate_15': row.gate15Position,
+          'Gate_16': row.gate16Position,
+          'Gate_17': row.gate17Position,
+          'Gate_18': row.gate18Position,
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Opening_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
+
     } else if (exportToExcel == 3) {
       const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
       const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
@@ -1047,8 +1092,8 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    }else{
-      res.send(kadamOpeningGate1To18ReportWithoutPagination)
+    } else {
+      res.send(kadamOpeningGate1To18ReportWithoutPagination);
     }
   } catch (error) {
     console.error('Error:', error);
@@ -1141,16 +1186,18 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [15, 18]);
+      addImageToWorksheet(hyderabadImagePath, [1, 4]);
+      addImageToWorksheet(chetasImagePath, [15, 17]);
 
-      worksheet.getCell('I9').value = 'KADDA Dam Gate 1 To 18 Discharge Report';
+      worksheet.getCell('G9').value = 'KADDAM Dam Gate 1 To 18 Discharge Report';
+      const cell = worksheet.getCell('G9');
+      cell.font = { bold: true, size: 20 };
 
       const headers = ['DateTime', ...Array.from({ length: 18 }, (_, i) => `Gate ${i + 1} \n (Cusecs)`)];
       worksheet.addRow([]);
@@ -1165,19 +1212,57 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(15).eachCell((cell) => {
+      worksheet.getRow(11).eachCell((cell) => {
         cell.font = { bold: true };
       });
 
-      worksheet.mergeCells('B4:T13');
-      // worksheet.mergeCells('B10:T13');
-      // worksheet.mergeCells('B9:H9');
-      // worksheet.mergeCells('M9:T9');
+      worksheet.mergeCells('A1:S8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Discharge_Report.xlsx');
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+
+      const csvStream = fastCsv.format({ headers: true });
+
+      kadamDishchargeGate1To18ReportWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          'Gate_1': row.gate1Discharge,
+          'Gate_2': row.gate2Discharge,
+          'Gate_3': row.gate3Discharge,
+          'Gate_4': row.gate4Discharge,
+          'Gate_5': row.gate5Discharge,
+          'Gate_6': row.gate6Discharge,
+          'Gate_7': row.gate7Discharge,
+          'Gate_8': row.gate8Discharge,
+          'Gate_9': row.gate9Discharge,
+          'Gate_10': row.gate10Discharge,
+          'Gate_11': row.gate11Discharge,
+          'Gate_12': row.gate12Discharge,
+          'Gate_13': row.gate13Discharge,
+          'Gate_14': row.gate14Discharge,
+          'Gate_15': row.gate15Discharge,
+          'Gate_16': row.gate16Discharge,
+          'Gate_17': row.gate17Discharge,
+          'Gate_18': row.gate18Discharge
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Disharge_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
     } else if (exportToExcel == 3) {
       const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
       const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
@@ -1336,9 +1421,8 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    }else{
-      res.send(kadamDishchargeGate1To18ReportWithoutPagination)
-
+    } else {
+      res.send(kadamDishchargeGate1To18ReportWithoutPagination);
     }
   } catch (error) {
     console.error('Error:', error);
@@ -1415,17 +1499,18 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
+      addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
+      addImageToWorksheet(chetasImagePath, [8, 9]);
 
-      worksheet.getCell('I9').value = 'KADDAM Dam Inflow Outflow PondLevel Report';
-      // worksheet.mergeCells('B9:T9');
+      worksheet.getCell('D9').value = 'KADDAM Dam Inflow Outflow PondLevel Report';
+      const cell = worksheet.getCell('D9');
+      cell.font = { bold: true, size: 20 };
 
       const headers = [
         'DateTime',
@@ -1459,30 +1544,57 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
       });
 
       const dateTimeColumn = worksheet.getColumn(1);
-      dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
       worksheet.getRow(3).height = 20;
 
-      worksheet.getRow(15).eachCell((cell) => {
+      worksheet.columns.forEach((column) => {
+        column.width = 20;
+      });
+
+      worksheet.getRow(11).eachCell((cell) => {
         cell.font = { bold: true };
       });
 
-      // worksheet.getRow(15).eachCell((cell) => {
-      //   cell.font = { bold: true };
-      // });
+      worksheet.mergeCells('A1:J8');
+      const mergedCell = worksheet.getCell('A1');
 
-      worksheet.getCell('B3').font = { bold: true };
-
-      worksheet.mergeCells('B4:T13');
-      // worksheet.mergeCells('B10:T13');
-      // worksheet.mergeCells('B9:H9');
-      // worksheet.mergeCells('M9:T9');
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Inflow_Outflow_PondLevel_Report.xlsx');
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+
+      const csvStream = fastCsv.format({ headers: true });
+
+      kadamInflowOutflowPondLevelReportWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          'Mendapelly Inflow Level (Feet)': row.inflow1Level,
+          'Itikyal Inflow Level (Feet)': row.inflow2Level,
+          'Sikkumanu Inflow Level (Feet)': row.inflow3Level,
+          'Mendapelly Inflow Discharge (Cusecs)': row.inflow1Discharge,
+          'Itikyal Inflow Discharge (Cusecs)': row.inflow2Discharge,
+          'Sikkumanu Inflow Discharge (Cusecs)': row.inflow3Discharge,
+          'Pandawapur Bridge Outflow Level (Feet)': row.damOutflowLevel,
+          'Pandawapur Bridge Outflow Discharge (Cusecs)': row.damOutflowDischarge,
+          'Pond Level (Feet)': row.pondLevel,
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Inflow_Outflow_PondLevel_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
+
     } else if (exportToExcel == 3) {
       const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
       const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
@@ -1633,9 +1745,8 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    }else{
-      res.send(kadamInflowOutflowPondLevelReportWithoutPagination)
-
+    } else {
+      res.send(kadamInflowOutflowPondLevelReportWithoutPagination);
     }
   } catch (error) {
     console.error('Error:', error);
@@ -1718,16 +1829,18 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
+      addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
+      addImageToWorksheet(chetasImagePath, [8, 9]);
 
-      worksheet.getCell('I9').value = 'KADDAM Dam Paramete Overview Report';
+      worksheet.getCell('E9').value = 'KADDAM Dam Paramete Overview Report';
+      const cell = worksheet.getCell('E9');
+      cell.font = { bold: true, size: 20 };
 
       const headers = [
         'DateTime',
@@ -1767,27 +1880,59 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
       });
 
       const dateTimeColumn = worksheet.getColumn(1);
-      dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
       worksheet.getRow(3).height = 20;
 
-      worksheet.getRow(15).eachCell((cell) => {
-        cell.font = { bold: true };
-        cell.height = { size: 10 };
+      worksheet.columns.forEach((column) => {
+        column.width = 20;
       });
 
-      worksheet.getCell('B3').font = { bold: true };
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
 
-      worksheet.mergeCells('B4:T13');
-      // worksheet.mergeCells('B10:T13');
-      // worksheet.mergeCells('B9:H9');
-      // worksheet.mergeCells('M9:T9');
+      worksheet.mergeCells('A1:J8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Parameter_Overview_Report.xlsx');
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+
+      const csvStream = fastCsv.format({ headers: true });
+
+      kadamGateParameterOverviewReportWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          'Pond Level (Feet)': row.pondLevel,
+          'Live Capacity (MCFT)': row.liveCapacity,
+          'Gross Storage (MCFT)': row.grossStorage,
+          'Full Reserve Water (Feet)': row.fullReservoirLevel,
+          'Contour Area (M.SqFt)': row.contourArea,
+          'Cathment Area (Sq.Km)': row.catchmentArea,
+          'Ayucut Area (Acres)': row.ayacutArea,
+          'Filing Percentage (%)': row.filling,
+          'Inst. Gate Discharge (Cusecs)': row.instantaneousGateDischarge,
+          'Inst. canal Discharge (Cusecs)': row.instantaneousCanalDischarge,
+          'Total Dam Discharge (Cusecs)': row.totalDamDischarge,
+          'Cumulative Dam Discharge (Cusecs)': row.cumulativeDamDischarge
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Parameter_Overview_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
     } else if (exportToExcel == 3) {
       const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
       const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
@@ -1946,8 +2091,8 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    }else{
-      res.send(kadamGateParameterOverviewReportWithoutPagination)
+    } else {
+      res.send(kadamGateParameterOverviewReportWithoutPagination);
     }
   } catch (error) {
     console.error('Error:', error);
@@ -2087,20 +2232,18 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
         const imageId = workbook.addImage({
           filename: imagePath,
           extension: 'png',
+          dimensions: { height: 100, width: 100 },
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
-
-      worksheet.getCell('I9').value = 'KADDAM HR Gate Report';
-      worksheet.getCell('I15').value = 'Kaddam Dam Canal';
+      addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
+      addImageToWorksheet(chetasImagePath, [8, 9]);
 
       const headers = [
         'DateTime',
@@ -2118,8 +2261,23 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
       ];
       worksheet.addRow([]);
       worksheet.addRow([]);
-      worksheet.addRow([]);
+   
       worksheet.addRow(headers);
+
+
+      // Add headers and apply styling
+worksheet.addRow(headers).eachCell((cell) => {
+  // Apply border to all sides of the cell
+  cell.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+  };
+
+  // Center align text
+  cell.alignment = { horizontal: 'center' };
+});
 
       mergedDataWithoutPagination.forEach((row) => {
         const rowData = [
@@ -2140,55 +2298,97 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
       });
 
       const dateTimeColumn = worksheet.getColumn(1);
-      dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
-      // worksheet.getRow(3).height = 20;
+      worksheet.getRow(3).height = 20;
 
-      worksheet.getRow(19).eachCell((cell) => {
+      worksheet.getRow(13).eachCell((cell) => {
         cell.font = { bold: true };
         cell.height = { size: 10 };
       });
 
-      // worksheet.getCell('B3').font = { bold: true };
+      worksheet.columns.forEach((column) => {
+        column.width = 20;
+      });
 
-      worksheet.mergeCells('B4:T13');
+      worksheet.mergeCells('A1:J8');
+      const mergedCell = worksheet.getCell('A1');
 
-      worksheet.mergeCells(`B15:T15`);
-      const mergedCell = worksheet.getCell('B15');
-      mergedCell.value = "Kaddam Dam's Canal";
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, 
+        left: { style: 'thin', color: { argb: 'FF000000' } },
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, 
+        right: { style: 'thin', color: { argb: 'FF000000' } },
+      };
+
+      mergedCell.value = 'KADDAM HR Gate Report';
       mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
       mergedCell.font = { bold: true };
-      worksheet.getRow(15).height = 30;
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(13).height = 30;
 
-      const mergedCellB16C17 = worksheet.getCell('B16');
-      mergedCellB16C17.value = 'Gate 1';
-      worksheet.mergeCells('B16:C17');
-      applyBorder(mergedCellB16C17);
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
 
-      const mergedCellD16E17 = worksheet.getCell('D16');
-      mergedCellD16E17.value = 'Gate 2';
-      worksheet.mergeCells('D16:E17');
-      applyBorder(mergedCellD16E17);
+      // Apply border to the left side of column
+      ['A','B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
 
-      const mergedCellF16G17 = worksheet.getCell('F16');
-      mergedCellF16G17.value = 'Gate 3';
-      worksheet.mergeCells('F16:G17');
-      applyBorder(mergedCellF16G17);
+      const mergedCellA11B12 = worksheet.getCell('A11');
+      mergedCellA11B12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellA11B12.font = { bold: true };
+      mergedCellA11B12.value = 'Date-Time';
+      worksheet.mergeCells('A11:A13');
+      applyBorder(mergedCellA11B12);
 
-      const mergedCellH16I17 = worksheet.getCell('H16');
-      mergedCellH16I17.value = 'Gate 4';
-      worksheet.mergeCells('H16:I17');
-      applyBorder(mergedCellH16I17);
+      const mergedCellB11C12 = worksheet.getCell('B11');
+      mergedCellB11C12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellB11C12.font = { bold: true };
+      mergedCellB11C12.value = 'Gate 1';
+      worksheet.mergeCells('B11:C12');
+      applyBorder(mergedCellB11C12);
 
-      const mergedCellJ16K17 = worksheet.getCell('J16');
-      mergedCellJ16K17.value = 'Gate 5';
-      worksheet.mergeCells('J16:K17');
-      applyBorder(mergedCellJ16K17);
+      const mergedCellD11E12 = worksheet.getCell('D11');
+      mergedCellD11E12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellD11E12.font = { bold: true };
+      mergedCellD11E12.value = 'Gate 2';
+      worksheet.mergeCells('D11:E12');
+      applyBorder(mergedCellD11E12);
 
-      const mergedCellL16M17 = worksheet.getCell('L16');
-      mergedCellL16M17.value = `Total Discharge (C/S)`;
-      worksheet.mergeCells('L16:M17');
-      applyBorder(mergedCellL16M17);
+      const mergedCellF11G12 = worksheet.getCell('F11');
+      mergedCellF11G12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellF11G12.font = { bold: true };
+      mergedCellF11G12.value = 'Gate 3';
+      worksheet.mergeCells('F11:G12');
+      applyBorder(mergedCellF11G12);
+
+      const mergedCellH11I12 = worksheet.getCell('H11');
+      mergedCellH11I12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellH11I12.font = { bold: true };
+      mergedCellH11I12.value = 'Gate 4';
+      worksheet.mergeCells('H11:I12');
+      applyBorder(mergedCellH11I12);
+
+      const mergedCellJ11K12 = worksheet.getCell('J11');
+      mergedCellJ11K12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellJ11K12.font = { bold: true };
+      mergedCellJ11K12.value = 'Gate 5';
+      worksheet.mergeCells('J11:K12');
+      applyBorder(mergedCellJ11K12);
+
+      const mergedCellL11L13 = worksheet.getCell('L11');
+      mergedCellL11L13.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellL11L13.font = { bold: true };
+      mergedCellL11L13.value = 'Total Discharge (C/S)';
+      worksheet.mergeCells('L11:L13');
+      applyBorder(mergedCellL11L13);
 
       function applyBorder(cell) {
         cell.border = {
@@ -2199,14 +2399,38 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
         };
       }
 
-      // worksheet.mergeCells('B9:H9');
-      // worksheet.mergeCells('M9:T9');
-
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_HR_Gate_Report.xlsx');
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+
+      const csvStream = fastCsv.format({ headers: true });
+
+      mergedDataWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          'Gete 1 Opening (Feet)': row.hrklManGate1Position,
+          'Gate 1 Discharge (C/S)': row.hrklManGate1Discharge,
+          'Gete 2 Opening (Feet)': row.hrklManGate2Position,
+          'Gate 2 Discharge (C/S)': row.hrklManGate2Discharge,
+          'Gete 3 Opening (Feet)': row.hrklManGate3Position,
+          'Gate 3 Discharge (C/S)': row.hrklManGate3Discharge,
+          'Gete 4 Opening (Feet)': row.hrklManGate4Position,
+          'Gate 4 Discharge (C/S)': row.hrklManGate4Discharge,
+          'Gete 5 Opening (Feet)': row.hrklManGate5Position,
+          'Gate 5 Discharge (C/S)': row.hrklManGate5Discharge, 
+          'Total Discharge(C/S)': row.totalDischarge,
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADAM_HR_Dam_Gate_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
+
     } else if (exportToExcel == 3) {
       const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
       const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
@@ -2363,8 +2587,8 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    }else{
-      res.send(mergedDataWithoutPagination)
+    } else {
+      res.send(mergedDataWithoutPagination);
     }
   } catch (error) {
     console.error('Error:', error);

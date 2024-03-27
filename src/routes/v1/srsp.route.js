@@ -28,5 +28,8 @@ router.get('/srsp-22to42-opn-gatereport-download',  srspController.srspOpeningGa
 router.get('/srsp-pondlevel-gatereport-download',  srspController.srspInflowOutflowPondLevelReportWp);
 router.get('/srsp-parameter-overview-gatereport-download',  srspController.srspParameterOverviewReportWp);
 router.get('/srsp-hr-dam-gatereport-download', srspController.srspHrDamGateReportWp);
+router.get('/srsp-hr-KS-dam-gatereport-download', srspController.srspHrKakatitaAndSaraswatiDamGateReportWp);
+router.get('/srsp-hr-FL-dam-gatereport-download', srspController.srspHrFloodFlowAndLakshmiDamGateReportWp);
+router.get('/srsp-hr-dam-gatereport-download', srspController.srspHrDamGateReportWp);
 
 module.exports = router;

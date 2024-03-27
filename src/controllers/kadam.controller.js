@@ -610,7 +610,7 @@ const kadamHrDamGateReport = catchAsync(async (req, res) => {
 
   res.json(kadamHrDamGateReport);
 });
-
+ 
 
 ///Report Download
 const kadamOpeningGate1To18ReportWp = catchAsync(async (req, res) => {

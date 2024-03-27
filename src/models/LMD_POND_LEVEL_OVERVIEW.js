@@ -114,10 +114,6 @@ const lmdHrDamPondLevel = mongoose.Schema(
             type: Number,
             require: true
         },
-        D28: {
-            type: Number,
-            require: true
-        },
         D29: {
             type: Number,
             require: true

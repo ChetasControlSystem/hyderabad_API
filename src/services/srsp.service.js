@@ -18,6 +18,9 @@ const {
 } = require('../models');
 const ApiError = require('../utils/ApiError');
 
+const hyderabadImagePath = path.join(__dirname, '../../views/hyderabad.png');
+const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
+
 const createSalientFeature = async (userBody) => {
   try {
     return SRSPS.create(userBody);
@@ -1151,16 +1154,18 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [15, 18]);
+      addImageToWorksheet(hyderabadImagePath, [1, 4]);
+      addImageToWorksheet(chetasImagePath, [18, 20]);
 
-      worksheet.getCell('I9').value = 'SRSP Dam Gate 1 To 21 Discharge Report';
+      worksheet.getCell('H9').value = 'SRSP Dam Gate 1 To 21 Discharge Report';
+      const cell = worksheet.getCell('H9');
+      cell.font = { bold: true, size: 20 };
 
       const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 1} \n (Cusecs)`)];
       worksheet.addRow([]);
@@ -1175,14 +1180,19 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(15).eachCell((cell) => {
+      worksheet.getRow(11).eachCell((cell) => {
         cell.font = { bold: true };
       });
 
-      worksheet.mergeCells('B4:T8');
-      worksheet.mergeCells('B10:T13');
-      worksheet.mergeCells('B9:H9');
-      worksheet.mergeCells('M9:T9');
+      worksheet.mergeCells('A1:V8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21__Discharge_Report.xlsx');
@@ -1353,8 +1363,8 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    }else{
-      res.send(srspDischargeGate1TO21ReportWithoutPagination)
+    } else {
+      res.send(srspDischargeGate1TO21ReportWithoutPagination);
     }
   } catch (error) {
     console.error('Error:', error);
@@ -1456,16 +1466,18 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [15, 18]);
+      addImageToWorksheet(hyderabadImagePath, [1, 4]);
+      addImageToWorksheet(chetasImagePath, [18, 20]);
 
-      worksheet.getCell('I9').value = 'SRSP Dam Gate 22 To 42 Discharge Report';
+      worksheet.getCell('H9').value = 'SRSP Dam Gate 22 To 42 Discharge Report';
+      const cell = worksheet.getCell('H9');
+      cell.font = { bold: true, size: 20 };
 
       const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 22} \n (Cusecs)`)];
       worksheet.addRow([]);
@@ -1480,14 +1492,19 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(15).eachCell((cell) => {
+      worksheet.getRow(11).eachCell((cell) => {
         cell.font = { bold: true };
       });
 
-      worksheet.mergeCells('B4:T8');
-      worksheet.mergeCells('B10:T13');
-      worksheet.mergeCells('B9:H9');
-      worksheet.mergeCells('M9:T9');
+      worksheet.mergeCells('A1:V8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42__Discharge_Report.xlsx');
@@ -1660,8 +1677,8 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    }else{
-      res.send(srspDischargeGate22TO42ReportWithoutPagination)
+    } else {
+      res.send(srspDischargeGate22TO42ReportWithoutPagination);
     }
   } catch (error) {
     console.error('Error:', error);
@@ -1760,16 +1777,18 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [15, 18]);
+      addImageToWorksheet(hyderabadImagePath, [1, 4]);
+      addImageToWorksheet(chetasImagePath, [18, 20]);
 
-      worksheet.getCell('I9').value = 'SRSP Dam Gate 1 To 21 Opening Report';
+      worksheet.getCell('H9').value = 'SRSP Dam Gate 1 To 21 Opening Report';
+      const cell = worksheet.getCell('H9');
+      cell.font = { bold: true, size: 20 };
 
       const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 1} \n (Feet)`)];
       worksheet.addRow([]);
@@ -1784,14 +1803,19 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(15).eachCell((cell) => {
+      worksheet.getRow(11).eachCell((cell) => {
         cell.font = { bold: true };
       });
 
-      worksheet.mergeCells('B4:T8');
-      worksheet.mergeCells('B10:T13');
-      worksheet.mergeCells('B9:H9');
-      worksheet.mergeCells('M9:T9');
+      worksheet.mergeCells('A1:V8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21__Opening_Report.xlsx');
@@ -1963,8 +1987,8 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    }else{
-      res.send(srspOpeningGate1TO21ReportWithoutPagination)
+    } else {
+      res.send(srspOpeningGate1TO21ReportWithoutPagination);
     }
   } catch (error) {
     console.error('Error:', error);
@@ -2066,16 +2090,18 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C:/Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [15, 18]);
+      addImageToWorksheet(hyderabadImagePath, [1, 4]);
+      addImageToWorksheet(chetasImagePath, [18, 20]);
 
-      worksheet.getCell('I9').value = 'SRSP Dam Gate 22 To 42 Opening Report';
+      worksheet.getCell('H9').value = 'SRSP Dam Gate 22 To 42 Opening Report';
+      const cell = worksheet.getCell('H9');
+      cell.font = { bold: true, size: 20 };
 
       const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 22} \n (Feet)`)];
       worksheet.addRow([]);
@@ -2090,14 +2116,19 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(15).eachCell((cell) => {
+      worksheet.getRow(11).eachCell((cell) => {
         cell.font = { bold: true };
       });
 
-      worksheet.mergeCells('B4:T8');
-      worksheet.mergeCells('B10:T13');
-      worksheet.mergeCells('B9:H9');
-      worksheet.mergeCells('M9:T9');
+      worksheet.mergeCells('A1:V8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42__Opening_Report.xlsx');
@@ -2269,9 +2300,8 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    }else{
-      res.send(srspOpeningGate22TO42ReportWithoutPagination)
-
+    } else {
+      res.send(srspOpeningGate22TO42ReportWithoutPagination);
     }
   } catch (error) {
     console.error('Error:', error);
@@ -2344,16 +2374,18 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
+      addImageToWorksheet(hyderabadImagePath, [1, 2.5]);
+      addImageToWorksheet(chetasImagePath, [6, 7]);
 
-      worksheet.getCell('I9').value = 'SRSP Dam Inflow Outflow Pond-Level Report';
+      worksheet.getCell('C9').value = 'SRSP Dam Gate 1 To 21 Opening Report';
+      const cell = worksheet.getCell('C9');
+      cell.font = { bold: true, size: 20 };
 
       const headers = [
         'DateTime',
@@ -2385,19 +2417,24 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
       const dateTimeColumn = worksheet.getColumn(1);
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
-      worksheet.getRow(3).height = 20;
 
-      worksheet.getRow(15).eachCell((cell) => {
+      worksheet.getRow(11).eachCell((cell) => {
         cell.font = { bold: true };
-        cell.height = { size: 10 };
       });
 
-      worksheet.getCell('B3').font = { bold: true };
+      worksheet.columns.forEach((column) => {
+        column.width = 20;
+    });
+      
+      worksheet.mergeCells('A1:H8');
+      const mergedCell = worksheet.getCell('A1');
 
-      worksheet.mergeCells('B4:T13');
-      // worksheet.mergeCells('B10:T13');
-      // worksheet.mergeCells('B9:H9');
-      // worksheet.mergeCells('M9:T9');
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Inflow_Outflow_PondLevel_Report.xlsx');
@@ -2550,8 +2587,8 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    }else{
-      res.send(srspInflowOutflowPondLevelReportWithoutPagination)
+    } else {
+      res.send(srspInflowOutflowPondLevelReportWithoutPagination);
     }
   } catch (error) {
     console.error('Error:', error);
@@ -2632,16 +2669,18 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
+      addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
+      addImageToWorksheet(chetasImagePath, [8, 9]);
 
-      worksheet.getCell('I9').value = 'SRSP Dam Parameter Overview Report';
+      worksheet.getCell('E9').value = 'SRSP Dam Parameter Overview Report';
+      const cell = worksheet.getCell('E9');
+      cell.font = { bold: true, size: 20 };
 
       const headers = [
         'DateTime',
@@ -2679,23 +2718,29 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
         ];
         worksheet.addRow(rowData);
       });
-
+   
       const dateTimeColumn = worksheet.getColumn(1);
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
-      worksheet.getRow(3).height = 20;
 
-      worksheet.getRow(15).eachCell((cell) => {
+      worksheet.getRow(11).eachCell((cell) => {
         cell.font = { bold: true };
-        cell.height = { size: 10 };
       });
 
-      worksheet.getCell('B3').font = { bold: true };
+      worksheet.columns.forEach((column) => {
+        column.width = 20;
+    });
+      
+      worksheet.mergeCells('A1:J8');
+      const mergedCell = worksheet.getCell('A1');
 
-      worksheet.mergeCells('B4:T13');
-      // worksheet.mergeCells('B10:T13');
-      // worksheet.mergeCells('B9:H9');
-      // worksheet.mergeCells('M9:T9');
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
+
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Parameter_Overview_Report.xlsx');
@@ -2860,8 +2905,620 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
       } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
-    }else{
-      res.send(srspParameterOverviewReportWithoutPagination)
+    } else {
+      res.send(srspParameterOverviewReportWithoutPagination);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+  try {
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          hrkGate1Position: { $first: '$hrkGate1Position' },
+          hrkGate2Position: { $first: '$hrkGate2Position' },
+          hrkGate3Position: { $first: '$hrkGate3Position' },
+          hrkGate4Position: { $first: '$hrkGate4Position' },
+          hrsGate1Position: { $first: '$hrsGate1Position' },
+          hrsGate2Position: { $first: '$hrsGate2Position' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrkGate1Position: 1,
+          hrkGate2Position: 1,
+          hrkGate3Position: 1,
+          hrkGate4Position: 1,
+          hrsGate1Position: 1,
+          hrsGate2Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const pipeline1WithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          hrkGate1Discharge: { $first: '$hrkGate1Discharge' },
+          hrkGate2Discharge: { $first: '$hrkGate2Discharge' },
+          hrkGate3Discharge: { $first: '$hrkGate3Discharge' },
+          hrkGate4Discharge: { $first: '$hrkGate4Discharge' },
+          hrsGate1Discharge: { $first: '$hrsGate1Discharge' },
+          hrsGate2Discharge: { $first: '$hrsGate2Discharge' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrkGate1Discharge: 1,
+          hrkGate2Discharge: 1,
+          hrkGate3Discharge: 1,
+          hrkGate4Discharge: 1,
+          hrsGate1Discharge: 1,
+          hrsGate2Discharge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const srspHrDamGateReportPosWithoutPagination = await SRSP_HR_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
+    const srspHrDamGateReportDisWithoutPagination = await SRSP_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1WithoutPagination);
+
+    let posDataWithoutPagination = srspHrDamGateReportPosWithoutPagination || [];
+    let disDataWithoutPagination = srspHrDamGateReportDisWithoutPagination || [];
+
+    let minLengthWithoutPagination = Math.max(posDataWithoutPagination.length, disDataWithoutPagination.length);
+
+    let mergedDataWithoutPagination = Array.from({ length: minLengthWithoutPagination }, (_, index) => {
+      const hrkGate1Discharge = disDataWithoutPagination[index]?.hrkGate1Discharge || 0;
+      const hrkGate2Discharge = disDataWithoutPagination[index]?.hrkGate2Discharge || 0;
+      const hrkGate3Discharge = disDataWithoutPagination[index]?.hrkGate3Discharge || 0;
+      const hrkGate4Discharge = disDataWithoutPagination[index]?.hrkGate4Discharge || 0;
+      const hrsGate1Discharge = disDataWithoutPagination[index]?.hrsGate1Discharge || 0;
+      const hrsGate2Discharge = disDataWithoutPagination[index]?.hrsGate2Discharge || 0;
+
+      const kakatiyaTotalDischarge = hrkGate1Discharge + hrkGate2Discharge + hrkGate3Discharge + hrkGate4Discharge;
+      const saraswatiTotalDischarge = hrsGate1Discharge + hrsGate2Discharge;
+
+      return {
+        hrkGate1Position: posDataWithoutPagination[index]?.hrkGate1Position || 0,
+        hrkGate2Position: posDataWithoutPagination[index]?.hrkGate2Position || 0,
+        hrkGate3Position: posDataWithoutPagination[index]?.hrkGate3Position || 0,
+        hrkGate4Position: posDataWithoutPagination[index]?.hrkGate4Position || 0,
+        hrsGate1Position: posDataWithoutPagination[index]?.hrsGate1Position || 0,
+        hrsGate2Position: posDataWithoutPagination[index]?.hrsGate2Position || 0,
+        dateTime: posDataWithoutPagination[index]?.dateTime || disDataWithoutPagination[index]?.dateTime || null,
+
+        hrkGate1Discharge: hrkGate1Discharge,
+        hrkGate2Discharge: hrkGate2Discharge,
+        hrkGate3Discharge: hrkGate3Discharge,
+        hrkGate4Discharge: hrkGate4Discharge,
+        kakatiyaTotalDischarge: kakatiyaTotalDischarge,
+        hrsGate1Discharge: hrsGate1Discharge,
+        hrsGate2Discharge: hrsGate2Discharge,
+        saraswatiTotalDischarge: saraswatiTotalDischarge,
+      };
+    });
+
+    if (exportToExcel == 1) {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('SRSP HR Kakatiya & Saraswati canal Gate Report');
+
+      const addImageToWorksheet = (imagePath, colRange) => {
+        const imageId = workbook.addImage({
+          filename: imagePath,
+          extension: 'png',
+          dimensions: { height: 100, width: 100 },
+        });
+
+        worksheet.addImage(imageId, {
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
+          editAs: 'oneCell',
+        });
+      };
+
+      addImageToWorksheet(hyderabadImagePath, [1, 4]);
+      addImageToWorksheet(chetasImagePath, [17, 19]);
+
+      worksheet.getCell('H9').value = 'SRSP HR Kakatiya & Saraswati canal Gate Report';
+      const cell = worksheet.getCell('H9');
+      cell.font = { bold: true, size: 20 };
+
+      const headers = [
+        'DateTime',
+        'Kakatiya Gate 1 Opening (Feet)',
+        'Kakatiya Gate 1 Discharge (C/S)',
+        'Kakatiya Gate 2 Opening (Feet)',
+        'Kakatiya Gate 2 Discharge (C/S)',
+        'Kakatiya Gate 3 Opening (Feet)',
+        'Kakatiya Gate 3 Discharge (C/S)',
+        'Kakatiya Gate 4 Opening (Feet)',
+        'Kakatiya Gate 4 Discharge (C/S)',
+        'Kakatiya Total Discharge (C/S)',
+        'Saraswati Gate 1 Opening (Feet)',
+        'Saraswati Gate 1 Discharge (C/S)',
+        'Saraswati Gate 2 Opening (Feet)',
+        'Saraswati Gate 2 Discharge (C/S)',
+        'Saraswati Total Discharge (C/S)',
+      ];
+      worksheet.addRow([]);
+      worksheet.addRow(headers);
+
+      mergedDataWithoutPagination.forEach((row) => {
+        const rowData = [
+          row.dateTime,
+          row.hrkGate1Position,
+          row.hrkGate1Discharge,
+          row.hrkGate2Position,
+          row.hrkGate2Discharge,
+          row.hrkGate3Position,
+          row.hrkGate3Discharge,
+          row.hrkGate4Position,
+          row.hrkGate4Discharge,
+          row.kakatiyaTotalDischarge,
+          row.hrsGate1Position,
+          row.hrsGate1Discharge,
+          row.hrsGate2Position,
+          row.hrsGate2Discharge,
+          row.saraswatiTotalDischarge,
+        ];
+        worksheet.addRow(rowData);
+      });
+
+      const dateTimeColumn = worksheet.getColumn(1);
+      dateTimeColumn.width = 20;
+      dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      worksheet.columns.forEach((column) => {
+        column.width = 20;
+    });
+      
+
+      worksheet.mergeCells('A1:U8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Kakatiya_Saraswati_Dam_Gate_Report.xlsx');
+      await workbook.xlsx.write(res);
+    } else if (exportToExcel == 2) {
+      const csvStream = fastCsv.format({ headers: true });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Discharge_Gate_Report.csv');
+
+      lmdDischargeGateReport1.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          'Gate 1 Discharge': row.gate1Discharge,
+          'Gate 2 Discharge': row.gate2Discharge,
+          'Gate 3 Discharge': row.gate3Discharge,
+          'Gate 4 Discharge': row.gate4Discharge,
+          'Gate 5 Discharge': row.gate5Discharge,
+          'Gate 6 Discharge': row.gate6Discharge,
+          'Gate 7 Discharge': row.gate7Discharge,
+          'Gate 8 Discharge': row.gate8Discharge,
+          'Gate 9 Discharge': row.gate9Discharge,
+          'Gate 10 Discharge': row.gate10Discharge,
+          'Gate 11 Discharge': row.gate11Discharge,
+          'Gate 12 Discharge': row.gate12Discharge,
+          'Gate 13 Discharge': row.gate13Discharge,
+          'Gate 14 Discharge': row.gate14Discharge,
+          'Gate 15 Discharge': row.gate15Discharge,
+          'Gate 16 Discharge': row.gate16Discharge,
+          'Gate 17 Discharge': row.gate17Discharge,
+          'Gate 18 Discharge': row.gate18Discharge,
+          'Gate 19 Discharge': row.gate19Discharge,
+          'Gate 20 Discharge': row.gate20Discharge,
+        });
+      });
+
+      csvStream.pipe(res);
+      csvStream.end();
+    } else if (exportToExcel == 3) {
+      try {
+        const itemsPerPage = 26; // Number of dates to print per page
+        const totalItems = lmdDischargeGateReport1.length; // Total number of dates
+        const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+        const sections = [];
+        for (let page = 0; page < totalPages; page++) {
+          const startIndex = page * itemsPerPage;
+          const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+          const pageData = lmdDischargeGateReport1.slice(startIndex, endIndex);
+
+          sections.push({
+            properties: {
+              page: {
+                margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+                size: {
+                  orientation: Docx.PageOrientation.PORTRAIT,
+                  width: 12240,
+                  height: 15840,
+                },
+              },
+            },
+            children: [
+              // Add your images and heading here at the top of every page
+              new Docx.Paragraph({
+                children: [
+                  // Left image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(hyderabadImagePath),
+                    transformation: {
+                      width: 100,
+                      height: 100,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.LEFT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                  // Right image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(chetasImagePath),
+                    transformation: {
+                      width: 100,
+                      height: 100,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.RIGHT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                ],
+              }),
+
+              // Heading
+              new Docx.Paragraph({
+                text: 'LMD Discharge Gate Report',
+                heading: Docx.HeadingLevel.HEADING_1,
+                alignment: Docx.AlignmentType.CENTER,
+              }),
+
+              // Table
+              new Docx.Table({
+                width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+                rows: [
+                  // Table header
+                  new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph('Date Time')],
+                        alignment: { horizontal: Docx.AlignmentType.CENTER },
+                        // Adjusted width for Date Time column
+                      }),
+                      // Adjust the width for each gate column
+                      ...Array.from(
+                        { length: 20 },
+                        (_, i) =>
+                          new Docx.TableCell({
+                            children: [new Docx.Paragraph(`Gate ${i + 1}`)],
+                            alignment: { horizontal: Docx.AlignmentType.CENTER },
+                            // Adjusted width for gate columns
+                          })
+                      ),
+                    ],
+                  }),
+
+                  // Table rows
+                  ...pageData.map((item) => {
+                    const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                    return new Docx.TableRow({
+                      children: [
+                        new Docx.TableCell({
+                          children: [new Docx.Paragraph(formattedDate)],
+                          alignment: { horizontal: Docx.AlignmentType.CENTER },
+                          // Adjusted width for Date Time column
+                        }),
+                        // Include each gate discharge value
+                        ...Array.from(
+                          { length: 20 },
+                          (_, i) =>
+                            new Docx.TableCell({
+                              children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toString())],
+                              alignment: { horizontal: Docx.AlignmentType.CENTER },
+                              // Adjusted width for gate columns
+                            })
+                        ),
+                      ],
+                    });
+                  }),
+                ],
+              }),
+            ],
+          });
+        }
+
+        const doc = new Docx.Document({ sections: sections });
+
+        // Set response headers
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        res.setHeader('Content-Disposition', 'attachment; filename=LMD_Discharge_Gate_Report.docx');
+
+        // Stream the Word document to the response
+        const buffer = await Docx.Packer.toBuffer(doc);
+        res.end(buffer);
+      } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
+      }
+    } else if (exportToExcel == 4) {
+      try {
+        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspKakatiyaAndSaraswatiGate.ejs'), {
+          mergedDataWithoutPagination: mergedDataWithoutPagination,
+        });
+
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+        await page.setContent(dynamicHtml);
+
+        const pdfBuffer = await page.pdf({ format: 'Letter' });
+
+        // Close browser
+        await browser.close();
+
+        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Kakatiya_Saraswati_Dam_Gate_Report.pdf');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(pdfBuffer);
+      } catch (error) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+      }
+    } else {
+      res.send(mergedDataWithoutPagination);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+  try {
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          hrfGate1Position: { $first: '$hrfGate1Position' },
+          hrfGate2Position: { $first: '$hrfGate2Position' },
+          hrfGate3Position: { $first: '$hrfGate3Position' },
+          hrfGate4Position: { $first: '$hrfGate4Position' },
+          hrfGate5Position: { $first: '$hrfGate5Position' },
+          hrfGate6Position: { $first: '$hrfGate6Position' },
+          hrlManGate1Position: { $first: '$hrlManGate1Position' },
+          hrlManGate2Position: { $first: '$hrlManGate2Position' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrfGate1Position: 1,
+          hrfGate2Position: 1,
+          hrfGate3Position: 1,
+          hrfGate4Position: 1,
+          hrfGate5Position: 1,
+          hrfGate6Position: 1,
+          hrlManGate1Position: 1,
+          hrlManGate2Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const pipeline1WithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gte: new Date(new Date(startDate).setSeconds(0)),
+            $lt: new Date(new Date(endDate).setSeconds(59)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          hrfGate1Discharge: { $first: '$hrfGate1Discharge' },
+          hrfGate2Discharge: { $first: '$hrfGate2Discharge' },
+          hrfGate3Discharge: { $first: '$hrfGate3Discharge' },
+          hrfGate4Discharge: { $first: '$hrfGate4Discharge' },
+          hrfGate5Discharge: { $first: '$hrfGate5Discharge' },
+          hrfGate6Discharge: { $first: '$hrfGate6Discharge' },
+          hrlManGate1Discharge: { $first: '$hrlManGate1Discharge' },
+          hrlManGate2Discharge: { $first: '$hrlManGate2Discharge' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrfGate1Discharge: 1,
+          hrfGate2Discharge: 1,
+          hrfGate3Discharge: 1,
+          hrfGate4Discharge: 1,
+          hrfGate5Discharge: 1,
+          hrfGate6Discharge: 1,
+          hrlManGate1Discharge: 1,
+          hrlManGate2Discharge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const srspHrDamGateReportPosWithoutPagination = await SRSP_HR_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
+    const srspHrDamGateReportDisWithoutPagination = await SRSP_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1WithoutPagination);
+
+    let posDataWithoutPagination = srspHrDamGateReportPosWithoutPagination || [];
+    let disDataWithoutPagination = srspHrDamGateReportDisWithoutPagination || [];
+
+    let minLengthWithoutPagination = Math.max(posDataWithoutPagination.length, disDataWithoutPagination.length);
+
+    let mergedDataWithoutPagination = Array.from({ length: minLengthWithoutPagination }, (_, index) => {
+      const hrfGate1Discharge = disDataWithoutPagination[index]?.hrfGate1Discharge || 0;
+      const hrfGate2Discharge = disDataWithoutPagination[index]?.hrfGate2Discharge || 0;
+      const hrfGate3Discharge = disDataWithoutPagination[index]?.hrfGate3Discharge || 0;
+      const hrfGate4Discharge = disDataWithoutPagination[index]?.hrfGate4Discharge || 0;
+      const hrfGate5Discharge = disDataWithoutPagination[index]?.hrfGate5Discharge || 0;
+      const hrfGate6Discharge = disDataWithoutPagination[index]?.hrfGate6Discharge || 0;
+      const hrlManGate1Discharge = disDataWithoutPagination[index]?.hrlManGate1Discharge || 0;
+      const hrlManGate2Discharge = disDataWithoutPagination[index]?.hrlManGate2Discharge || 0;
+
+      const floodFlowTotalDischarge =
+        hrfGate1Discharge +
+        hrfGate2Discharge +
+        hrfGate3Discharge +
+        hrfGate4Discharge +
+        hrfGate5Discharge +
+        hrfGate6Discharge;
+      const lakshmiGateTotalDischarge = hrlManGate1Discharge + hrlManGate2Discharge;
+
+      return {
+        hrfGate1Position: posDataWithoutPagination[index]?.hrfGate1Position || 0,
+        hrfGate2Position: posDataWithoutPagination[index]?.hrfGate2Position || 0,
+        hrfGate3Position: posDataWithoutPagination[index]?.hrfGate3Position || 0,
+        hrfGate4Position: posDataWithoutPagination[index]?.hrfGate4Position || 0,
+        hrfGate5Position: posDataWithoutPagination[index]?.hrfGate5Position || 0,
+        hrfGate6Position: posDataWithoutPagination[index]?.hrfGate6Position || 0,
+        hrlManGate1Position: posDataWithoutPagination[index]?.hrlManGate1Position || 0,
+        hrlManGate2Position: posDataWithoutPagination[index]?.hrlManGate2Position || 0,
+        dateTime: posDataWithoutPagination[index]?.dateTime || disDataWithoutPagination[index]?.dateTime || null,
+
+        hrfGate1Discharge: hrfGate1Discharge,
+        hrfGate2Discharge: hrfGate2Discharge,
+        hrfGate3Discharge: hrfGate3Discharge,
+        hrfGate4Discharge: hrfGate4Discharge,
+        hrfGate5Discharge: hrfGate5Discharge,
+        hrfGate6Discharge: hrfGate6Discharge,
+        floodFlowTotalDischarge: floodFlowTotalDischarge,
+        hrlManGate1Discharge: hrlManGate1Discharge,
+        hrlManGate2Discharge: hrlManGate2Discharge,
+        lakshmiGateTotalDischarge: lakshmiGateTotalDischarge,
+      };
+    });
+
+    if (exportToExcel == 1) {
+    } else if (exportToExcel == 2) {
+    } else if (exportToExcel == 3) {
+    } else if (exportToExcel == 4) {
+      try {
+        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspFloodFlowAndLakshmiGate.ejs'), {
+          mergedDataWithoutPagination: mergedDataWithoutPagination,
+        });
+
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.setContent(dynamicHtml);
+        const pdfBuffer = await page.pdf({ format: 'Letter' });
+
+        // Close browser
+        await browser.close();
+
+        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Flood_Flow_And_Lakshmi_Dam_Gate_Report.pdf');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(pdfBuffer);
+      } catch (error) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+      }
+    } else {
+      res.send(mergedDataWithoutPagination);
     }
   } catch (error) {
     console.error('Error:', error);
@@ -2871,7 +3528,7 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
 
 const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
   try {
-    const pipelineWithoutPagination = [
+    const pipeline = [
       {
         $match: {
           dateTime: {
@@ -2932,7 +3589,7 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
       },
     ];
 
-    const pipeline1WithoutPagination = [
+    const pipeline1 = [
       {
         $match: {
           dateTime: {
@@ -2993,29 +3650,27 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
       },
     ];
 
-    const srspHrDamGateReportPosWithoutPagination = await SRSP_HR_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
-    const srspHrDamGateReportDisWithoutPagination = await SRSP_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1WithoutPagination);
+    const srspHrDamGateReportPos = await SRSP_HR_DAM_OVERVIEW_POS.aggregate(pipeline);
+    const srspHrDamGateReportDis = await SRSP_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1);
+    let posData = srspHrDamGateReportPos || [];
+    let disData = srspHrDamGateReportDis || [];
+    let minLength = Math.max(posData.length, disData.length);
 
-    let posDataWithoutPagination = srspHrDamGateReportPosWithoutPagination || [];
-    let disDataWithoutPagination = srspHrDamGateReportDisWithoutPagination || [];
-
-    let minLengthWithoutPagination = Math.max(posDataWithoutPagination.length, disDataWithoutPagination.length);
-
-    let mergedDataWithoutPagination = Array.from({ length: minLengthWithoutPagination }, (_, index) => {
-      const hrkGate1Discharge = disDataWithoutPagination[index]?.hrkGate1Discharge || 0;
-      const hrkGate2Discharge = disDataWithoutPagination[index]?.hrkGate2Discharge || 0;
-      const hrkGate3Discharge = disDataWithoutPagination[index]?.hrkGate3Discharge || 0;
-      const hrkGate4Discharge = disDataWithoutPagination[index]?.hrkGate4Discharge || 0;
-      const hrsGate1Discharge = disDataWithoutPagination[index]?.hrsGate1Discharge || 0;
-      const hrsGate2Discharge = disDataWithoutPagination[index]?.hrsGate2Discharge || 0;
-      const hrfGate1Discharge = disDataWithoutPagination[index]?.hrfGate1Discharge || 0;
-      const hrfGate2Discharge = disDataWithoutPagination[index]?.hrfGate2Discharge || 0;
-      const hrfGate3Discharge = disDataWithoutPagination[index]?.hrfGate3Discharge || 0;
-      const hrfGate4Discharge = disDataWithoutPagination[index]?.hrfGate4Discharge || 0;
-      const hrfGate5Discharge = disDataWithoutPagination[index]?.hrfGate5Discharge || 0;
-      const hrfGate6Discharge = disDataWithoutPagination[index]?.hrfGate6Discharge || 0;
-      const hrlManGate1Discharge = disDataWithoutPagination[index]?.hrlManGate1Discharge || 0;
-      const hrlManGate2Discharge = disDataWithoutPagination[index]?.hrlManGate2Discharge || 0;
+    let mergedDataWithoutPagination = Array.from({ length: minLength }, (_, index) => {
+      const hrkGate1Discharge = disData[index]?.hrkGate1Discharge || 0;
+      const hrkGate2Discharge = disData[index]?.hrkGate2Discharge || 0;
+      const hrkGate3Discharge = disData[index]?.hrkGate3Discharge || 0;
+      const hrkGate4Discharge = disData[index]?.hrkGate4Discharge || 0;
+      const hrsGate1Discharge = disData[index]?.hrsGate1Discharge || 0;
+      const hrsGate2Discharge = disData[index]?.hrsGate2Discharge || 0;
+      const hrfGate1Discharge = disData[index]?.hrfGate1Discharge || 0;
+      const hrfGate2Discharge = disData[index]?.hrfGate2Discharge || 0;
+      const hrfGate3Discharge = disData[index]?.hrfGate3Discharge || 0;
+      const hrfGate4Discharge = disData[index]?.hrfGate4Discharge || 0;
+      const hrfGate5Discharge = disData[index]?.hrfGate5Discharge || 0;
+      const hrfGate6Discharge = disData[index]?.hrfGate6Discharge || 0;
+      const hrlManGate1Discharge = disData[index]?.hrlManGate1Discharge || 0;
+      const hrlManGate2Discharge = disData[index]?.hrlManGate2Discharge || 0;
 
       const kakatiyaTotalDischarge = hrkGate1Discharge + hrkGate2Discharge + hrkGate3Discharge + hrkGate4Discharge;
       const saraswatiTotalDischarge = hrsGate1Discharge + hrsGate2Discharge;
@@ -3029,21 +3684,21 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
       const lakshmiGateTotalDischarge = hrlManGate1Discharge + hrlManGate2Discharge;
 
       return {
-        hrkGate1Position: posDataWithoutPagination[index]?.hrkGate1Position || 0,
-        hrkGate2Position: posDataWithoutPagination[index]?.hrkGate2Position || 0,
-        hrkGate3Position: posDataWithoutPagination[index]?.hrkGate3Position || 0,
-        hrkGate4Position: posDataWithoutPagination[index]?.hrkGate4Position || 0,
-        hrsGate1Position: posDataWithoutPagination[index]?.hrsGate1Position || 0,
-        hrsGate2Position: posDataWithoutPagination[index]?.hrsGate2Position || 0,
-        hrfGate1Position: posDataWithoutPagination[index]?.hrfGate1Position || 0,
-        hrfGate2Position: posDataWithoutPagination[index]?.hrfGate2Position || 0,
-        hrfGate3Position: posDataWithoutPagination[index]?.hrfGate3Position || 0,
-        hrfGate4Position: posDataWithoutPagination[index]?.hrfGate4Position || 0,
-        hrfGate5Position: posDataWithoutPagination[index]?.hrfGate5Position || 0,
-        hrfGate6Position: posDataWithoutPagination[index]?.hrfGate6Position || 0,
-        hrlManGate1Position: posDataWithoutPagination[index]?.hrlManGate1Position || 0,
-        hrlManGate2Position: posDataWithoutPagination[index]?.hrlManGate2Position || 0,
-        dateTime: posDataWithoutPagination[index]?.dateTime || disDataWithoutPagination[index]?.dateTime || null,
+        hrkGate1Position: posData[index]?.hrkGate1Position || 0,
+        hrkGate2Position: posData[index]?.hrkGate2Position || 0,
+        hrkGate3Position: posData[index]?.hrkGate3Position || 0,
+        hrkGate4Position: posData[index]?.hrkGate4Position || 0,
+        hrsGate1Position: posData[index]?.hrsGate1Position || 0,
+        hrsGate2Position: posData[index]?.hrsGate2Position || 0,
+        hrfGate1Position: posData[index]?.hrfGate1Position || 0,
+        hrfGate2Position: posData[index]?.hrfGate2Position || 0,
+        hrfGate3Position: posData[index]?.hrfGate3Position || 0,
+        hrfGate4Position: posData[index]?.hrfGate4Position || 0,
+        hrfGate5Position: posData[index]?.hrfGate5Position || 0,
+        hrfGate6Position: posData[index]?.hrfGate6Position || 0,
+        hrlManGate1Position: posData[index]?.hrlManGate1Position || 0,
+        hrlManGate2Position: posData[index]?.hrlManGate2Position || 0,
+        dateTime: posData[index]?.dateTime || disData[index]?.dateTime || null,
 
         hrkGate1Discharge: hrkGate1Discharge,
         hrkGate2Discharge: hrkGate2Discharge,
@@ -3066,36 +3721,336 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
       };
     });
 
+
     if (exportToExcel == 1) {
-    } else if (exportToExcel == 2) {
-    } else if (exportToExcel == 3) {
-    } else if (exportToExcel == 4) {
-      try {
-        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspHrDamGateReport.ejs'), {
-          mergedDataWithoutPagination: mergedDataWithoutPagination,
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('SRSP HR canal Gate Report');
+
+      const addImageToWorksheet = (imagePath, colRange) => {
+        const imageId = workbook.addImage({
+          filename: imagePath,
+          extension: 'png',
+          dimensions: { height: 100, width: 100 },
         });
 
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
+        worksheet.addImage(imageId, {
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
+          editAs: 'oneCell',
+        });
+      };
 
-        await page.setContent(dynamicHtml);
+      addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
+      addImageToWorksheet(chetasImagePath, [8, 9]);
 
-        const pdfBuffer = await page.pdf({ format: 'Letter' });
+      worksheet.getCell('E9').value = 'SRSP HR canal Gate Report';
+      const cell = worksheet.getCell('E9');
+      cell.font = { bold: true, size: 20 };
 
-        console.log(pdfBuffer, '++++++++++++++++++');
+      const headers = [
+        'DateTime',
+        'Kakatiya Gate 1 Opening (Feet)',
+        'Kakatiya Gate 1 Discharge (C/S)',
+        'Kakatiya Gate 2 Opening (Feet)',
+        'Kakatiya Gate 2 Discharge (C/S)',
+        'Kakatiya Gate 3 Opening (Feet)',
+        'Kakatiya Gate 3 Discharge (C/S)',
+        'Kakatiya Gate 4 Opening (Feet)',
+        'Kakatiya Gate 4 Discharge (C/S)',
+        'Kakatiya Total Discharge (C/S)',
+        'Saraswati Gate 1 Opening (Feet)',
+        'Saraswati Gate 1 Discharge (C/S)',
+        'Saraswati Gate 2 Opening (Feet)',
+        'Saraswati Gate 2 Discharge (C/S)',
+        'Saraswati Total Discharge (C/S)',
+        'Flood Flow gate 1 Opening (Feet)',
+        'Flood Flow gate 1 Discharge (C/S)',
+        'Flood Flow gate 2 Opening (Feet)',
+        'Flood Flow gate 2 Discharge (C/S)',
+        'Flood Flow gate 3 Opening (Feet)',
+        'Flood Flow gate 3 Discharge (C/S)',
+        'Flood Flow gate 4 Opening (Feet)',
+        'Flood Flow gate 4 Discharge (C/S)',
+        'Flood Flow gate 5 Opening (Feet)',
+        'Flood Flow gate 5 Discharge (C/S)',
+        'Flood Flow gate 6 Opening (Feet)',
+        'Flood Flow gate 6 Discharge (C/S)',
+        'Flood Flow Total Discharge (C/S)',
+        'Lakshmi gate 1 Opening (Feet)',
+        'Lakshmi gate 1 Discharge (C/S)',
+        'Lakshmi gate 2 Opening (Feet)',
+        'Lakshmi gate 2 Discharge (C/S)',
+        'Lakshmi Total Discharge (C/S)',
+      ];
+      worksheet.addRow([]);
+      worksheet.addRow(headers);
 
-        // Close browser
-        await browser.close();
+      mergedDataWithoutPagination.forEach((row) => {
+        const rowData = [
+          row.dateTime,
+          row.hrkGate1Position,
+          row.hrkGate1Discharge,
+          row.hrkGate2Position,
+          row.hrkGate2Discharge,
+          row.hrkGate3Position,
+          row.hrkGate3Discharge,
+          row.hrkGate4Position,
+          row.hrkGate4Discharge,
+          row.kakatiyaTotalDischarge,
+          row.hrsGate1Position,
+          row.hrsGate1Discharge,
+          row.hrsGate2Position,
+          row.hrsGate2Discharge,
+          row.saraswatiTotalDischarge,
+        row.hrfGate1Position,
+        row.hrfGate1Discharge,
+        row.hrfGate2Position,
+        row.hrfGate2Discharge,
+        row.hrfGate3Position,
+        row.hrfGate3Discharge,
+        row.hrfGate4Position,
+        row.hrfGate4Discharge,
+        row.hrfGate5Position,
+        row.hrfGate5Discharge,
+        row.hrfGate6Position,
+        row.hrfGate6Discharge,
+        row.floodFlowTotalDischarge,
+        row.hrlManGate1Position,
+        row.hrlManGate1Discharge,
+        row.hrlManGate2Position,
+        row.hrlManGate2Discharge,
+        row.lakshmiGateTotalDischarge,
+        ];
+        worksheet.addRow(rowData);
+      });
 
-        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Dam_Gate_Report.pdf');
-        res.setHeader('Content-Type', 'application/pdf');
-        res.send(pdfBuffer);
-      } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-      }
-    }else{
-      res.send(mergedDataWithoutPagination)
+      const dateTimeColumn = worksheet.getColumn(1);
+      dateTimeColumn.width = 20;
+      dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      worksheet.columns.forEach((column) => {
+        column.width = 20;
+    });
+      
+
+      worksheet.mergeCells('A1:J8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Dam_Gate_Report.xlsx');
+      await workbook.xlsx.write(res);
+    } else if (exportToExcel == 2) {
+      const csvStream = fastCsv.format({ headers: true });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Discharge_Gate_Report.csv');
+
+      lmdDischargeGateReport1.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          'Gate 1 Discharge': row.gate1Discharge,
+          'Gate 2 Discharge': row.gate2Discharge,
+          'Gate 3 Discharge': row.gate3Discharge,
+          'Gate 4 Discharge': row.gate4Discharge,
+          'Gate 5 Discharge': row.gate5Discharge,
+          'Gate 6 Discharge': row.gate6Discharge,
+          'Gate 7 Discharge': row.gate7Discharge,
+          'Gate 8 Discharge': row.gate8Discharge,
+          'Gate 9 Discharge': row.gate9Discharge,
+          'Gate 10 Discharge': row.gate10Discharge,
+          'Gate 11 Discharge': row.gate11Discharge,
+          'Gate 12 Discharge': row.gate12Discharge,
+          'Gate 13 Discharge': row.gate13Discharge,
+          'Gate 14 Discharge': row.gate14Discharge,
+          'Gate 15 Discharge': row.gate15Discharge,
+          'Gate 16 Discharge': row.gate16Discharge,
+          'Gate 17 Discharge': row.gate17Discharge,
+          'Gate 18 Discharge': row.gate18Discharge,
+          'Gate 19 Discharge': row.gate19Discharge,
+          'Gate 20 Discharge': row.gate20Discharge,
+        });
+      });
+
+      csvStream.pipe(res);
+      csvStream.end();
+    } else if (exportToExcel == 3) {
+      // try {
+      //   const itemsPerPage = 26; // Number of dates to print per page
+      //   const totalItems = lmdDischargeGateReport1.length; // Total number of dates
+      //   const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+      //   const sections = [];
+      //   for (let page = 0; page < totalPages; page++) {
+      //     const startIndex = page * itemsPerPage;
+      //     const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+      //     const pageData = lmdDischargeGateReport1.slice(startIndex, endIndex);
+
+      //     sections.push({
+      //       properties: {
+      //         page: {
+      //           margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+      //           size: {
+      //             orientation: Docx.PageOrientation.PORTRAIT,
+      //             width: 12240,
+      //             height: 15840,
+      //           },
+      //         },
+      //       },
+      //       children: [
+      //         // Add your images and heading here at the top of every page
+      //         new Docx.Paragraph({
+      //           children: [
+      //             // Left image
+      //             new Docx.ImageRun({
+      //               data: fs.readFileSync(hyderabadImagePath),
+      //               transformation: {
+      //                 width: 100,
+      //                 height: 100,
+      //               },
+      //               floating: {
+      //                 horizontalPosition: {
+      //                   relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+      //                   align: Docx.HorizontalPositionAlign.LEFT,
+      //                 },
+      //                 verticalPosition: {
+      //                   relative: Docx.VerticalPositionRelativeFrom.PAGE,
+      //                   align: Docx.VerticalPositionAlign.TOP,
+      //                 },
+      //               },
+      //             }),
+      //             // Right image
+      //             new Docx.ImageRun({
+      //               data: fs.readFileSync(chetasImagePath),
+      //               transformation: {
+      //                 width: 100,
+      //                 height: 100,
+      //               },
+      //               floating: {
+      //                 horizontalPosition: {
+      //                   relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+      //                   align: Docx.HorizontalPositionAlign.RIGHT,
+      //                 },
+      //                 verticalPosition: {
+      //                   relative: Docx.VerticalPositionRelativeFrom.PAGE,
+      //                   align: Docx.VerticalPositionAlign.TOP,
+      //                 },
+      //               },
+      //             }),
+      //           ],
+      //         }),
+
+      //         // Heading
+      //         new Docx.Paragraph({
+      //           text: 'LMD Discharge Gate Report',
+      //           heading: Docx.HeadingLevel.HEADING_1,
+      //           alignment: Docx.AlignmentType.CENTER,
+      //         }),
+
+      //         // Table
+      //         new Docx.Table({
+      //           width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+      //           rows: [
+      //             // Table header
+      //             new Docx.TableRow({
+      //               children: [
+      //                 new Docx.TableCell({
+      //                   children: [new Docx.Paragraph('Date Time')],
+      //                   alignment: { horizontal: Docx.AlignmentType.CENTER },
+      //                   // Adjusted width for Date Time column
+      //                 }),
+      //                 // Adjust the width for each gate column
+      //                 ...Array.from(
+      //                   { length: 20 },
+      //                   (_, i) =>
+      //                     new Docx.TableCell({
+      //                       children: [new Docx.Paragraph(`Gate ${i + 1}`)],
+      //                       alignment: { horizontal: Docx.AlignmentType.CENTER },
+      //                       // Adjusted width for gate columns
+      //                     })
+      //                 ),
+      //               ],
+      //             }),
+
+      //             // Table rows
+      //             ...pageData.map((item) => {
+      //               const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+      //               return new Docx.TableRow({
+      //                 children: [
+      //                   new Docx.TableCell({
+      //                     children: [new Docx.Paragraph(formattedDate)],
+      //                     alignment: { horizontal: Docx.AlignmentType.CENTER },
+      //                     // Adjusted width for Date Time column
+      //                   }),
+      //                   // Include each gate discharge value
+      //                   ...Array.from(
+      //                     { length: 20 },
+      //                     (_, i) =>
+      //                       new Docx.TableCell({
+      //                         children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toString())],
+      //                         alignment: { horizontal: Docx.AlignmentType.CENTER },
+      //                         // Adjusted width for gate columns
+      //                       })
+      //                   ),
+      //                 ],
+      //               });
+      //             }),
+      //           ],
+      //         }),
+      //       ],
+      //     });
+      //   }
+
+      //   const doc = new Docx.Document({ sections: sections });
+
+      //   // Set response headers
+      //   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      //   res.setHeader('Content-Disposition', 'attachment; filename=LMD_Discharge_Gate_Report.docx');
+
+      //   // Stream the Word document to the response
+      //   const buffer = await Docx.Packer.toBuffer(doc);
+      //   res.end(buffer);
+      // } catch (error) {
+      //   console.error('Error:', error);
+      //   res.status(500).send('Internal Server Error');
+      // }
+    } else if (exportToExcel == 4) {
+      // try {
+      //   const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspKakatiyaAndSaraswatiGate.ejs'), {
+      //     mergedDataWithoutPagination: mergedDataWithoutPagination,
+      //   });
+
+      //   const browser = await puppeteer.launch();
+      //   const page = await browser.newPage();
+
+      //   await page.setContent(dynamicHtml);
+
+      //   const pdfBuffer = await page.pdf({ format: 'Letter' });
+
+      //   // Close browser
+      //   await browser.close();
+
+      //   res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Kakatiya_Saraswati_Dam_Gate_Report.pdf');
+      //   res.setHeader('Content-Type', 'application/pdf');
+      //   res.send(pdfBuffer);
+      // } catch (error) {
+      //   throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+      // }
+    } else {
+      res.send(mergedDataWithoutPagination);
     }
+
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -3123,5 +4078,7 @@ module.exports = {
   srspOpeningGate22TO42ReportWp,
   srspInflowOutflowPondLevelReportWp,
   srspParameterOverviewReportWp,
-  srspHrDamGateReportWp,
+  srspHrFloodFlowAndLakshmiDamGateReportWp,
+  srspHrKakatitaAndSaraswatiDamGateReportWp,
+  srspHrDamGateReportWp
 };

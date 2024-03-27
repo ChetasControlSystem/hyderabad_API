@@ -22,7 +22,7 @@ const ApiError = require('../utils/ApiError');
 
 
 const hyderabadImagePath = path.join(__dirname, '../../views/hyderabad.png');
-const chetasImagePath = path.join(__dirname, '../../views/chetas1.png');
+const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
 
 
@@ -803,11 +803,6 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
 
     const lmdDischargeGateReport1 = await LMD_DAM_OVERVIEW_DICH.aggregate(pipeline1);
 
-   
-
-    const hyderabadImagePath = path.join(__dirname, '../../views/hyderabad.png');
-    const chetasImagePath = path.join(__dirname, '../../views/chetas1.png');
-
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('LMD Discharge Gate Report');
@@ -861,40 +856,40 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
       };
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Discharge_Gate_Report.xlsx');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Gate_1_To_20_Discharge_Report.xlsx');
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
       const csvStream = fastCsv.format({ headers: true });
-
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Discharge_Gate_Report.csv');
 
       lmdDischargeGateReport1.forEach((row) => {
         const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
         csvStream.write({
           DateTime: formattedDate,
-          'Gate 1 Discharge': row.gate1Discharge,
-          'Gate 2 Discharge': row.gate2Discharge,
-          'Gate 3 Discharge': row.gate3Discharge,
-          'Gate 4 Discharge': row.gate4Discharge,
-          'Gate 5 Discharge': row.gate5Discharge,
-          'Gate 6 Discharge': row.gate6Discharge,
-          'Gate 7 Discharge': row.gate7Discharge,
-          'Gate 8 Discharge': row.gate8Discharge,
-          'Gate 9 Discharge': row.gate9Discharge,
-          'Gate 10 Discharge': row.gate10Discharge,
-          'Gate 11 Discharge': row.gate11Discharge,
-          'Gate 12 Discharge': row.gate12Discharge,
-          'Gate 13 Discharge': row.gate13Discharge,
-          'Gate 14 Discharge': row.gate14Discharge,
-          'Gate 15 Discharge': row.gate15Discharge,
-          'Gate 16 Discharge': row.gate16Discharge,
-          'Gate 17 Discharge': row.gate17Discharge,
-          'Gate 18 Discharge': row.gate18Discharge,
-          'Gate 19 Discharge': row.gate19Discharge,
-          'Gate 20 Discharge': row.gate20Discharge,
+          'Gate_1': row.gate1Discharge,
+          'Gate_2': row.gate2Discharge,
+          'Gate_3': row.gate3Discharge,
+          'Gate_4': row.gate4Discharge,
+          'Gate_5': row.gate5Discharge,
+          'Gate_6': row.gate6Discharge,
+          'Gate_7': row.gate7Discharge,
+          'Gate_8': row.gate8Discharge,
+          'Gate_9': row.gate9Discharge,
+          'Gate_10': row.gate10Discharge,
+          'Gate_11': row.gate11Discharge,
+          'Gate_12': row.gate12Discharge,
+          'Gate_13': row.gate13Discharge,
+          'Gate_14': row.gate14Discharge,
+          'Gate_15': row.gate15Discharge,
+          'Gate_16': row.gate16Discharge,
+          'Gate_17': row.gate17Discharge,
+          'Gate_18': row.gate18Discharge,
+          'Gate_19': row.gate19Discharge,
+          'Gate_20': row.gate20Discharge,
         });
       });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Gate_1_To_20_Discharge_Report.csv');
 
       csvStream.pipe(res);
       csvStream.end();
@@ -1146,9 +1141,6 @@ const lmdOpeningGateReportWp = async (startDate, endDate, intervalMinutes, expor
 
     const lmdOpeningGateReportWithoutPagination = await LMD_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
 
-    const hyderabadImagePath = path.join(__dirname, '../../views/hyderabad.png');
-    const chetasImagePath = path.join(__dirname, '../../views/chetas1.png');
-
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('LMD Position Gate Report');
@@ -1206,6 +1198,42 @@ const lmdOpeningGateReportWp = async (startDate, endDate, intervalMinutes, expor
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+
+      const csvStream = fastCsv.format({ headers: true });
+
+      lmdOpeningGateReportWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          'Gate_1': row.gate1Position,
+          'Gate_2': row.gate2Position,
+          'Gate_3': row.gate3Position,
+          'Gate_4': row.gate4Position,
+          'Gate_5': row.gate5Position,
+          'Gate_6': row.gate6Position,
+          'Gate_7': row.gate7Position,
+          'Gate_8': row.gate8Position,
+          'Gate_9': row.gate9Position,
+          'Gate_10': row.gate10Position,
+          'Gate_11': row.gate11Position,
+          'Gate_12': row.gate12Position,
+          'Gate_13': row.gate13Position,
+          'Gate_14': row.gate14Position,
+          'Gate_15': row.gate15Position,
+          'Gate_16': row.gate16Position,
+          'Gate_17': row.gate17Position,
+          'Gate_18': row.gate18Position,
+          'Gate_19': row.gate19Position,
+          'Gate_20': row.gate20Position,
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Gate_1_To_20_Opening_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
+
     } else if (exportToExcel == 3) {
 
       const itemsPerPage = 26; // Number of dates to print per page
@@ -1440,7 +1468,7 @@ const lmdPondlevelGateReportWp = async (startDate, endDate, intervalMinutes, exp
         });
       };
 
-      addImageToWorksheet(hyderabadImagePath, [1, 2]);
+      addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
       addImageToWorksheet(chetasImagePath, [8, 9]);
 
       worksheet.getCell('E9').value = 'LMD Dam Inflow Outflow Pond Level Report';
@@ -1506,6 +1534,31 @@ const lmdPondlevelGateReportWp = async (startDate, endDate, intervalMinutes, exp
       await workbook.xlsx.write(res);
 
     } else if (exportToExcel == 2) {
+
+      const csvStream = fastCsv.format({ headers: true });
+
+      lmdPondlevelGateReportsWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          'Gagillapur Inflow Level (Feet)': row.inflow1Level,
+          'Potour Inflow Level (Feet)': row.inflow2Level,
+          'Chintakunta Level (Feet)': row.inflow3Level,
+          'Gagillapur Inflow Discharge (Cusecs)': row.inflow1Discharge,
+          'Potour Inflow Discharge (Cusecs)': row.inflow2Discharge,
+          'Chintakunta Discharge (Cusecs)': row.inflow3Discharge,
+          'Alugunuru Level (Feet)': row.damDownstreamLevel,
+          'Alugunuru Discharge (Cusecs)': row.damDownstreamDischarge,
+          'Pond Level (Feet)': row.pondLevel
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Inflow_Outflow_PondLevel_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
+
     } else if (exportToExcel == 3) {
 
       const itemsPerPage = 25; // Number of dates to print per page
@@ -1734,16 +1787,18 @@ const lmdGateParameterOverviewReportWp = async (startDate, endDate, intervalMinu
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
+      addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
+      addImageToWorksheet(chetasImagePath, [8, 9]);
 
-      worksheet.getCell('I9').value = 'LMD Dam Paramete Overview Report';
+      worksheet.getCell('E9').value = 'LMD Dam Paramete Overview Report';
+      const cell = worksheet.getCell('E9');
+      cell.font = { bold: true, size: 20 };
 
       const headers = [
         'DateTime',
@@ -1783,27 +1838,59 @@ const lmdGateParameterOverviewReportWp = async (startDate, endDate, intervalMinu
       });
 
       const dateTimeColumn = worksheet.getColumn(1);
-      dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
       worksheet.getRow(3).height = 20;
 
-      worksheet.getRow(15).eachCell((cell) => {
+      worksheet.columns.forEach((column) => {
+        column.width = 20;
+    });
+
+      worksheet.getRow(11).eachCell((cell) => {
         cell.font = { bold: true };
-        cell.height = { size: 10 };
       });
 
-      worksheet.getCell('B3').font = { bold: true };
+      worksheet.mergeCells('A1:J8');
+      const mergedCell = worksheet.getCell('A1');
 
-      worksheet.mergeCells('B4:T13');
-      // worksheet.mergeCells('B10:T13');
-      // worksheet.mergeCells('B9:H9');
-      // worksheet.mergeCells('M9:T9');
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Parameter_Overview_Report.xlsx');
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+
+      const csvStream = fastCsv.format({ headers: true });
+
+      lmdPondlevelGateReportsWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          'Pond Level (Feet)': row.pondLevel,
+          'Live Capacity (MCFT)': row.liveCapacity,
+          'Gross Storage (MCFT)': row.grossStorage,
+          'Full Reserve Water (Feet)': row.fullReservoirLevel,
+          'Contour Area (M.SqFt)': row.contourArea,
+          'Cathment Area (Sq.Km)': row.catchmentArea,
+          'Ayucut Area (Acres)': row.ayacutArea,
+          'Filing Percentage (%)': row.filling,
+          'Inst. Gate Discharge (Cusecs)': row.instantaneousGateDischarge,
+          'Inst. canal Discharge (Cusecs)': row.instantaneousCanalDischarge,
+          'Total Dam Discharge (Cusecs)': row.totalDamDischarge,
+          'Cumulative Dam Discharge (Cusecs)': row.cumulativeDamDischarge
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Parameter_Overview_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
     } else if (exportToExcel == 3) {
       const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
       const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
@@ -2074,16 +2161,14 @@ const lmdGateReportWp = async (startDate, endDate, intervalMinutes, exportToExce
         });
 
         worksheet.addImage(imageId, {
-          tl: { col: colRange[0], row: 4 },
-          br: { col: colRange[1], row: 12 },
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
           editAs: 'oneCell',
         });
       };
 
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/hyderabad.png', [3, 6]);
-      addImageToWorksheet('C://Dhruvin/Project/NSP-Hyderabad/views/chetas.png', [16, 18]);
-
-      worksheet.getCell('I9').value = 'LMD HR Gate Report';
+      addImageToWorksheet(hyderabadImagePath, [1, 2]);
+      addImageToWorksheet(chetasImagePath, [4.4, 5]);
 
       const headers = [
         'DateTime',
@@ -2093,8 +2178,19 @@ const lmdGateReportWp = async (startDate, endDate, intervalMinutes, exportToExce
         'Gate 2 Discharge (C/S)',
         'Total Discharge (C/S)',
       ];
-      worksheet.addRow([]);
+
+      worksheet.addRows([[], headers]);
       worksheet.addRow(headers);
+
+      // Apply border to all sides of the cell
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
+
+
 
       mergedDataWithoutPagination.forEach((row) => {
         const rowData = [
@@ -2102,31 +2198,128 @@ const lmdGateReportWp = async (startDate, endDate, intervalMinutes, exportToExce
           row.hrrGate1Position,
           row.hrrGate1Discharge,
           row.hrrGate2Position,
-          row.hrrGate1Discharge,
+          row.hrrGate2Discharge,
           row.totalDischarge,
         ];
         worksheet.addRow(rowData);
       });
 
       const dateTimeColumn = worksheet.getColumn(1);
-      dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
       worksheet.getRow(3).height = 20;
 
-      worksheet.getRow(15).eachCell((cell) => {
+      worksheet.columns.forEach((column) => {
+        column.width = 25;
+    });
+
+     
+      worksheet.mergeCells('A1:F8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
+
+      mergedCell.value = 'LMD HR Gate Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(13).height = 30;
+
+      worksheet.getRow(13).eachCell((cell) => {
         cell.font = { bold: true };
-        cell.height = { size: 10 };
       });
 
-      worksheet.getCell('B3').font = { bold: true };
 
-      worksheet.mergeCells('B4:T13');
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      // Apply border to the right side of column B
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      // Apply border to the left side of column
+      ['B', 'C', 'D', 'E', 'F'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
+
+      const mergedCellA11B12 = worksheet.getCell('A11');
+      mergedCellA11B12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellA11B12.font = { bold: true };
+      mergedCellA11B12.value = 'Date-Time';
+      worksheet.mergeCells('A11:A13');
+      applyBorder(mergedCellA11B12);
+
+      const mergedCellB11C12 = worksheet.getCell('B11');
+      mergedCellB11C12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellB11C12.font = { bold: true };
+      mergedCellB11C12.value = 'Gate 1';
+      worksheet.mergeCells('B11:C12');
+      applyBorder(mergedCellB11C12);
+
+      const mergedCellD11E12 = worksheet.getCell('D11');
+      mergedCellD11E12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellD11E12.font = { bold: true };
+      mergedCellD11E12.value = 'Gate 2';
+      worksheet.mergeCells('D11:E12');
+      applyBorder(mergedCellD11E12);
+
+      const mergedCellF11G12 = worksheet.getCell('F11');
+      mergedCellF11G12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellF11G12.font = { bold: true };
+      mergedCellF11G12.value = 'Total Discharge (C/S)';
+      worksheet.mergeCells('F11:F13');
+      applyBorder(mergedCellF11G12);
+   
+
+      
+      function applyBorder(cell) {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      }
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=LMD_HR_Gate_Report.xlsx');
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+
+      const csvStream = fastCsv.format({ headers: true });
+      mergedDataWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          'Gete 1 Opening (Feet)': row.hrrGate1Position,
+          'Gate 1 Discharge (C/S)': row.hrrGate1Discharge,
+          'Gete 2 Opening (Feet)': row.hrrGate2Position,
+          'Gate 2 Discharge (C/S)': row.hrrGate2Discharge,
+          'Total Discharge(C/S)': row.totalDischarge
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=LMD_HR_Gate_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
     } else if (exportToExcel == 3) {
       const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
       const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
@@ -2261,7 +2454,7 @@ const lmdGateReportWp = async (startDate, endDate, intervalMinutes, exportToExce
         const pdfBuffer = await page.pdf({ format: 'Letter' });
         await browser.close();
 
-        res.setHeader('Content-Disposition', 'attachment; filename=.pdf');
+        res.setHeader('Content-Disposition', 'attachment; LMD_HR_Gate_Report=.pdf');
         res.setHeader('Content-Type', 'application/pdf');
         res.send(pdfBuffer);
       } catch (error) {

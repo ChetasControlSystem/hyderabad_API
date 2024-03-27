@@ -628,7 +628,7 @@ const sevenDayReport = catchAsync(async (req, res) => {
 
 
 
-//Without pagination
+//Download report
 
 const srspDischargeGate1TO21ReportWp = catchAsync(async (req, res) => {
   let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
@@ -725,6 +725,38 @@ const srspParameterOverviewReportWp = catchAsync(async (req, res) => {
   res.json(srspParameterOverviewReport);
 });
 
+const srspHrKakatitaAndSaraswatiDamGateReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const srspHrDamGateReport = await srspService.srspHrKakatitaAndSaraswatiDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+
+  res.json(srspHrDamGateReport);
+});
+
+const srspHrFloodFlowAndLakshmiDamGateReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const srspHrDamGateReport = await srspService.srspHrFloodFlowAndLakshmiDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+
+  res.json(srspHrDamGateReport);
+});
+
 const srspHrDamGateReportWp = catchAsync(async (req, res) => {
   let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
 
@@ -755,6 +787,7 @@ module.exports = {
   srspParameterOverviewReport,
   srspHrDamGateReport,
   sevenDayReport,
+  
 
   //without pagination
   srspDischargeGate1TO21ReportWp,
@@ -763,5 +796,8 @@ module.exports = {
   srspOpeningGate22TO42ReportWp,
   srspInflowOutflowPondLevelReportWp,
   srspParameterOverviewReportWp,
-  srspHrDamGateReportWp
+  srspHrDamGateReportWp,
+  srspHrKakatitaAndSaraswatiDamGateReportWp,
+  srspHrFloodFlowAndLakshmiDamGateReportWp,
+
 };
