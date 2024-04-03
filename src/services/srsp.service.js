@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const puppeteer = require('puppeteer');
 const path = require('path');
+const fastCsv = require('fast-csv');
 const ejs = require('ejs');
 const fs = require('fs');
 const Docx = require('docx');
@@ -135,8 +136,8 @@ const srspDischargeGate1TO21Report = async (
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -245,8 +246,8 @@ const srspDischargeGate22TO42Report = async (
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -356,8 +357,8 @@ const srspOpeningGate1TO21Report = async (
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -466,8 +467,8 @@ const srspOpeningGate22TO42Report = async (
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -577,8 +578,8 @@ const srspInflowOutflowPondLevelReport = async (
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -659,8 +660,8 @@ const srspParameterOverviewReport = async (
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -740,78 +741,79 @@ const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, currentP
   try {
     const pipeline = [
       {
-        $match: {
-          dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+          $match: {
+            dateTime: {
+              $gt: new Date(startDate),
+              $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
-        },
+          },
       },
       {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+          $group: {
+              _id: {
+                  interval: {
+                      $toDate: {
+                          $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+                      },
+                  },
               },
-            },
+              hrkGate1Position: { $first: '$hrkGate1Position' },
+              hrkGate2Position: { $first: '$hrkGate2Position' },
+              hrkGate3Position: { $first: '$hrkGate3Position' },
+              hrkGate4Position: { $first: '$hrkGate4Position' },
+              hrsGate1Position: { $first: '$hrsGate1Position' },
+              hrsGate2Position: { $first: '$hrsGate2Position' },
+              hrfGate1Position: { $first: '$hrfGate1Position' },
+              hrfGate2Position: { $first: '$hrfGate2Position' },
+              hrfGate3Position: { $first: '$hrfGate3Position' },
+              hrfGate4Position: { $first: '$hrfGate4Position' },
+              hrfGate5Position: { $first: '$hrfGate5Position' },
+              hrfGate6Position: { $first: '$hrfGate6Position' },
+              hrlManGate1Position: { $first: '$hrlManGate1Position' },
+              hrlManGate2Position: { $first: '$hrlManGate2Position' },
           },
-          hrkGate1Position: { $first: '$hrkGate1Position' },
-          hrkGate2Position: { $first: '$hrkGate2Position' },
-          hrkGate3Position: { $first: '$hrkGate3Position' },
-          hrkGate4Position: { $first: '$hrkGate4Position' },
-          hrsGate1Position: { $first: '$hrsGate1Position' },
-          hrsGate2Position: { $first: '$hrsGate2Position' },
-          hrfGate1Position: { $first: '$hrfGate1Position' },
-          hrfGate2Position: { $first: '$hrfGate2Position' },
-          hrfGate3Position: { $first: '$hrfGate3Position' },
-          hrfGate4Position: { $first: '$hrfGate4Position' },
-          hrfGate5Position: { $first: '$hrfGate5Position' },
-          hrfGate6Position: { $first: '$hrfGate6Position' },
-          hrlManGate1Position: { $first: '$hrlManGate1Position' },
-          hrlManGate2Position: { $first: '$hrlManGate2Position' },
-        },
       },
       {
-        $project: {
-          _id: 0,
-          dateTime: '$_id.interval',
-          hrkGate1Position: 1,
-          hrkGate2Position: 1,
-          hrkGate3Position: 1,
-          hrkGate4Position: 1,
-          hrsGate1Position: 1,
-          hrsGate2Position: 1,
-          hrfGate1Position: 1,
-          hrfGate2Position: 1,
-          hrfGate3Position: 1,
-          hrfGate4Position: 1,
-          hrfGate5Position: 1,
-          hrfGate6Position: 1,
-          hrlManGate1Position: 1,
-          hrlManGate2Position: 1,
-        },
+          $project: {
+              _id: 0,
+              dateTime: '$_id.interval',
+              hrkGate1Position: 1,
+              hrkGate2Position: 1,
+              hrkGate3Position: 1,
+              hrkGate4Position: 1,
+              hrsGate1Position: 1,
+              hrsGate2Position: 1,
+              hrfGate1Position: 1,
+              hrfGate2Position: 1,
+              hrfGate3Position: 1,
+              hrfGate4Position: 1,
+              hrfGate5Position: 1,
+              hrfGate6Position: 1,
+              hrlManGate1Position: 1,
+              hrlManGate2Position: 1,
+          },
       },
       {
-        $sort: {
-          dateTime: 1,
-        },
+          $sort: {
+              dateTime: 1,
+          },
       },
       {
-        $facet: {
-          data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: 'count' }],
-        },
+          $facet: {
+              data: [{ $skip: startIndex }, { $limit: perPage }],
+              totalCount: [{ $count: 'count' }],
+          },
       },
-    ];
+  ];
+  
 
     const pipeline1 = [
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
-          },
+            $gt: new Date(startDate),
+            $lt: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
+        },
         },
       },
       {
@@ -1067,8 +1069,8 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -1198,6 +1200,41 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21__Discharge_Report.xlsx');
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+      const csvStream = fastCsv.format({ headers: true });
+
+      srspDischargeGate1TO21ReportWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          Gate_1: row.gate1Discharge,
+          Gate_2: row.gate2Discharge,
+          Gate_3: row.gate3Discharge,
+          Gate_4: row.gate4Discharge,
+          Gate_5: row.gate5Discharge,
+          Gate_6: row.gate6Discharge,
+          Gate_7: row.gate7Discharge,
+          Gate_8: row.gate8Discharge,
+          Gate_9: row.gate9Discharge,
+          Gate_10: row.gate10Discharge,
+          Gate_11: row.gate11Discharge,
+          Gate_12: row.gate12Discharge,
+          Gate_13: row.gate13Discharge,
+          Gate_14: row.gate14Discharge,
+          Gate_15: row.gate15Discharge,
+          Gate_16: row.gate16Discharge,
+          Gate_17: row.gate17Discharge,
+          Gate_18: row.gate18Discharge,
+          Gate_19: row.gate19Discharge,
+          Gate_20: row.gate20Discharge,
+          Gate_21: row.gate21Discharge,
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21_Discharge_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
     } else if (exportToExcel == 3) {
       try {
         const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
@@ -1378,8 +1415,8 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -1510,6 +1547,48 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42__Discharge_Report.xlsx');
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+      const csvStream = fastCsv.format({ headers: true });
+
+      csvStream.on('error', (error) => {
+        console.error('CSV stream error:', error);
+        res.status(500).send('Internal Server Error');
+    });
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42_Discharge_Report.csv');
+
+    csvStream.pipe(res);
+
+     srspDischargeGate22TO42ReportWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          Gate_22: row.gate22Discharge,
+          Gate_23: row.gate23Discharge,
+          Gate_24: row.gate24Discharge,
+          Gate_25: row.gate25Discharge,
+          Gate_26: row.gate26Discharge,
+          Gate_27: row.gate27Discharge,
+          Gate_28: row.gate28Discharge,
+          Gate_29: row.gate29Discharge,
+          Gate_30: row.gate30Discharge,
+          Gate_31: row.gate31Discharge,
+          Gate_32: row.gate32Discharge,
+          Gate_33: row.gate33Discharge,
+          Gate_34: row.gate34Discharge,
+          Gate_35: row.gate35Discharge,
+          Gate_36: row.gate36Discharge,
+          Gate_37: row.gate37Discharge,
+          Gate_38: row.gate38Discharge,
+          Gate_39: row.gate39Discharge,
+          Gate_40: row.gate40Discharge,
+          Gate_41: row.gate41Discharge,
+          Gate_42: row.gate42Discharge,
+        });
+      });
+
+   
+      csvStream.end();
     } else if (exportToExcel == 3) {
       try {
         const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
@@ -1524,8 +1603,6 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
           const startIndex = page * itemsPerPage;
           const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
           const pageData = srspDischargeGate22TO42ReportWithoutPagination.slice(startIndex, endIndex);
-
-          console.log(pageData, '++++++++++++++');
 
           sections.push({
             properties: {
@@ -1692,8 +1769,8 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -1822,6 +1899,41 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+      const csvStream = fastCsv.format({ headers: true });
+
+      srspOpeningGate1TO21ReportWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          Gate_1: row.gate1Position,
+          Gate_2: row.gate2Position,
+          Gate_3: row.gate3Position,
+          Gate_4: row.gate4Position,
+          Gate_5: row.gate5Position,
+          Gate_6: row.gate6Position,
+          Gate_7: row.gate7Position,
+          Gate_8: row.gate8Position,
+          Gate_9: row.gate9Position,
+          Gate_10: row.gate10Position,
+          Gate_11: row.gate11Position,
+          Gate_12: row.gate12Position,
+          Gate_13: row.gate13Position,
+          Gate_14: row.gate14Position,
+          Gate_15: row.gate15Position,
+          Gate_16: row.gate16Position,
+          Gate_17: row.gate17Position,
+          Gate_18: row.gate18Position,
+          Gate_19: row.gate19Position,
+          Gate_20: row.gate20Position,
+          Gate_21: row.gate21Position,
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21_Position_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
     } else if (exportToExcel == 3) {
       try {
         const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
@@ -2002,8 +2114,8 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -2135,6 +2247,41 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+      const csvStream = fastCsv.format({ headers: true });
+
+      srspOpeningGate22TO42ReportWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          Gate_22: row.gate22Position,
+          Gate_23: row.gate23Position,
+          Gate_24: row.gate24Position,
+          Gate_25: row.gate25Position,
+          Gate_26: row.gate26Position,
+          Gate_27: row.gate27Position,
+          Gate_28: row.gate28Position,
+          Gate_29: row.gate29Position,
+          Gate_30: row.gate30Position,
+          Gate_31: row.gate31Position,
+          Gate_32: row.gate32Position,
+          Gate_33: row.gate33Position,
+          Gate_34: row.gate34Position,
+          Gate_35: row.gate35Position,
+          Gate_36: row.gate36Position,
+          Gate_37: row.gate37Position,
+          Gate_38: row.gate38Position,
+          Gate_39: row.gate39Position,
+          Gate_40: row.gate40Position,
+          Gate_41: row.gate41Position,
+          Gate_42: row.gate42Position,
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42_Position_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
     } else if (exportToExcel == 3) {
       try {
         const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
@@ -2315,8 +2462,8 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -2424,8 +2571,8 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
 
       worksheet.columns.forEach((column) => {
         column.width = 20;
-    });
-      
+      });
+
       worksheet.mergeCells('A1:H8');
       const mergedCell = worksheet.getCell('A1');
 
@@ -2441,6 +2588,27 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+      const csvStream = fastCsv.format({ headers: true });
+
+      srspInflowOutflowPondLevelReportWithoutPagination.forEach((row) => {
+        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+        csvStream.write({
+          DateTime: formattedDate,
+          'BASAR Inflow Level (Feet)': row.inflow1Level,
+          'BASAR Inflow Discharge (Cusecs)': row.inflow1Discharge,
+          'Pendapally Inflow Level (Feet)': row.inflow2Level,
+          'Pendapally Inflow Discharge (Cusecs)': row.inflow2Discharge,
+          'SOAN Outflow Level (Feet)': row.damDownstreamLevel,
+          'SOAN Outflow Discharge (Cusecs)': row.damDownstreamDischarge,
+          'Pond Level (Feet)': row.pondLevel,
+        });
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Inflow_Outflow_PondLevel_Report.csv');
+
+      csvStream.pipe(res);
+      csvStream.end();
     } else if (exportToExcel == 3) {
       const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
       const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
@@ -2602,8 +2770,8 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -2657,6 +2825,7 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
 
     const srspParameterOverviewReportWithoutPagination = await SRSP_POND_LEVEL_OVERVIEW.aggregate(pipelineWithoutPagination);
 
+    console.log(srspParameterOverviewReportWithoutPagination);
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('SRSP Dam Parameter Overview Report');
@@ -2718,7 +2887,7 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
         ];
         worksheet.addRow(rowData);
       });
-   
+
       const dateTimeColumn = worksheet.getColumn(1);
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
@@ -2729,8 +2898,8 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
 
       worksheet.columns.forEach((column) => {
         column.width = 20;
-    });
-      
+      });
+
       worksheet.mergeCells('A1:J8');
       const mergedCell = worksheet.getCell('A1');
 
@@ -2741,12 +2910,47 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
 
-
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Parameter_Overview_Report.xlsx');
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
+      const csvStream = fastCsv.format({ headers: true });
+
+      // Handle errors on the stream
+      csvStream.on('error', (error) => {
+          console.error('CSV stream error:', error);
+          res.status(500).send('Internal Server Error');
+      });
+      
+      // Pipe the CSV stream to the response
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Parameter_Overview_Report.csv');
+      
+      csvStream.pipe(res);
+      
+      // Iterate over your data and write to the CSV stream
+      srspParameterOverviewReportWithoutPagination.forEach((row) => {
+          const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
+          csvStream.write({
+              DateTime: formattedDate,
+              'Pond Level (Feet)': row.pondLevel,
+              'Live Capacity (MCFT)': row.liveCapacity,
+              'Gross Storage (MCFT)': row.grossStorage,
+              'Full Reserve Water (Feet)': row.fullReservoirLevel,
+              'Contour Area (M.SqFt)': row.contourArea,
+              'Cathment Area (Sq.Km)': row.catchmentArea,
+              'Ayucut Area (Acres)': row.ayacutArea,
+              'Filing Percentage (%)': row.filling,
+              'Inst. Gate Discharge (Cusecs)': row.instantaneousGateDischarge,
+              'Inst. canal Discharge (Cusecs)': row.instantaneousCanalDischarge,
+              'Total Dam Discharge (Cusecs)': row.totalDamDischarge,
+              'Cumulative Dam Discharge (Cusecs)': row.cumulativeDamDischarge,
+          });
+      });
+      
+      // End the CSV stream to complete the response
+      csvStream.end();
     } else if (exportToExcel == 3) {
       const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
       const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
@@ -2920,8 +3124,8 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -2965,8 +3169,8 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -3121,8 +3325,7 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
 
       worksheet.columns.forEach((column) => {
         column.width = 20;
-    });
-      
+      });
 
       worksheet.mergeCells('A1:U8');
       const mergedCell = worksheet.getCell('A1');
@@ -3349,8 +3552,8 @@ const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, inte
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -3398,8 +3601,8 @@ const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, inte
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -3532,8 +3735,8 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -3593,8 +3796,8 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -3721,7 +3924,6 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
       };
     });
 
-
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('SRSP HR canal Gate Report');
@@ -3802,24 +4004,24 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
           row.hrsGate2Position,
           row.hrsGate2Discharge,
           row.saraswatiTotalDischarge,
-        row.hrfGate1Position,
-        row.hrfGate1Discharge,
-        row.hrfGate2Position,
-        row.hrfGate2Discharge,
-        row.hrfGate3Position,
-        row.hrfGate3Discharge,
-        row.hrfGate4Position,
-        row.hrfGate4Discharge,
-        row.hrfGate5Position,
-        row.hrfGate5Discharge,
-        row.hrfGate6Position,
-        row.hrfGate6Discharge,
-        row.floodFlowTotalDischarge,
-        row.hrlManGate1Position,
-        row.hrlManGate1Discharge,
-        row.hrlManGate2Position,
-        row.hrlManGate2Discharge,
-        row.lakshmiGateTotalDischarge,
+          row.hrfGate1Position,
+          row.hrfGate1Discharge,
+          row.hrfGate2Position,
+          row.hrfGate2Discharge,
+          row.hrfGate3Position,
+          row.hrfGate3Discharge,
+          row.hrfGate4Position,
+          row.hrfGate4Discharge,
+          row.hrfGate5Position,
+          row.hrfGate5Discharge,
+          row.hrfGate6Position,
+          row.hrfGate6Discharge,
+          row.floodFlowTotalDischarge,
+          row.hrlManGate1Position,
+          row.hrlManGate1Discharge,
+          row.hrlManGate2Position,
+          row.hrlManGate2Discharge,
+          row.lakshmiGateTotalDischarge,
         ];
         worksheet.addRow(rowData);
       });
@@ -3834,8 +4036,7 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
 
       worksheet.columns.forEach((column) => {
         column.width = 20;
-    });
-      
+      });
 
       worksheet.mergeCells('A1:J8');
       const mergedCell = worksheet.getCell('A1');
@@ -3890,13 +4091,11 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
       //   const itemsPerPage = 26; // Number of dates to print per page
       //   const totalItems = lmdDischargeGateReport1.length; // Total number of dates
       //   const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
-
       //   const sections = [];
       //   for (let page = 0; page < totalPages; page++) {
       //     const startIndex = page * itemsPerPage;
       //     const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
       //     const pageData = lmdDischargeGateReport1.slice(startIndex, endIndex);
-
       //     sections.push({
       //       properties: {
       //         page: {
@@ -3950,14 +4149,12 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
       //             }),
       //           ],
       //         }),
-
       //         // Heading
       //         new Docx.Paragraph({
       //           text: 'LMD Discharge Gate Report',
       //           heading: Docx.HeadingLevel.HEADING_1,
       //           alignment: Docx.AlignmentType.CENTER,
       //         }),
-
       //         // Table
       //         new Docx.Table({
       //           width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
@@ -3982,7 +4179,6 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
       //                 ),
       //               ],
       //             }),
-
       //             // Table rows
       //             ...pageData.map((item) => {
       //               const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
@@ -4011,13 +4207,10 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
       //       ],
       //     });
       //   }
-
       //   const doc = new Docx.Document({ sections: sections });
-
       //   // Set response headers
       //   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
       //   res.setHeader('Content-Disposition', 'attachment; filename=LMD_Discharge_Gate_Report.docx');
-
       //   // Stream the Word document to the response
       //   const buffer = await Docx.Packer.toBuffer(doc);
       //   res.end(buffer);
@@ -4030,17 +4223,12 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
       //   const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspKakatiyaAndSaraswatiGate.ejs'), {
       //     mergedDataWithoutPagination: mergedDataWithoutPagination,
       //   });
-
       //   const browser = await puppeteer.launch();
       //   const page = await browser.newPage();
-
       //   await page.setContent(dynamicHtml);
-
       //   const pdfBuffer = await page.pdf({ format: 'Letter' });
-
       //   // Close browser
       //   await browser.close();
-
       //   res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Kakatiya_Saraswati_Dam_Gate_Report.pdf');
       //   res.setHeader('Content-Type', 'application/pdf');
       //   res.send(pdfBuffer);
@@ -4050,7 +4238,6 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
     } else {
       res.send(mergedDataWithoutPagination);
     }
-
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -4080,5 +4267,5 @@ module.exports = {
   srspParameterOverviewReportWp,
   srspHrFloodFlowAndLakshmiDamGateReportWp,
   srspHrKakatitaAndSaraswatiDamGateReportWp,
-  srspHrDamGateReportWp
+  srspHrDamGateReportWp,
 };

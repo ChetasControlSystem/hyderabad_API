@@ -130,8 +130,8 @@ const kadamOpeningGate1To18Report = async (
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -234,8 +234,8 @@ const kadamDishchargeGate1To18Report = async (
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -338,8 +338,8 @@ const kadamInflowOutflowPondLevelReport = async (
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -424,8 +424,8 @@ const kadamGateParameterOverviewReport = async (
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -507,8 +507,8 @@ const kadamHrDamGateReport = async (startDate, endDate, intervalMinutes, current
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -556,8 +556,8 @@ const kadamHrDamGateReport = async (startDate, endDate, intervalMinutes, current
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -776,8 +776,8 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -1107,8 +1107,8 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -1436,8 +1436,8 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -1760,8 +1760,8 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -2106,8 +2106,8 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -2149,8 +2149,8 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },

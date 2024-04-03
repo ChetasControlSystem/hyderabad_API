@@ -123,8 +123,8 @@ const lmdDischargeGateReport = async (startDate, endDate, intervalMinutes, curre
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -222,8 +222,8 @@ const lmdOpeningGateReport = async (startDate, endDate, intervalMinutes, current
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -321,8 +321,8 @@ const lmdPondlevelGateReport = async (startDate, endDate, intervalMinutes, curre
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -407,8 +407,8 @@ const lmdGateParameterOverviewReport = async (
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -490,8 +490,8 @@ const lmdGateReport = async (startDate, endDate, intervalMinutes, currentPage, p
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -534,8 +534,8 @@ const lmdGateReport = async (startDate, endDate, intervalMinutes, currentPage, p
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -732,8 +732,8 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -1070,8 +1070,8 @@ const lmdOpeningGateReportWp = async (startDate, endDate, intervalMinutes, expor
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -1401,8 +1401,8 @@ const lmdPondlevelGateReportWp = async (startDate, endDate, intervalMinutes, exp
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -1718,8 +1718,8 @@ const lmdGateParameterOverviewReportWp = async (startDate, endDate, intervalMinu
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -2060,8 +2060,8 @@ const lmdGateReportWp = async (startDate, endDate, intervalMinutes, exportToExce
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
@@ -2098,8 +2098,8 @@ const lmdGateReportWp = async (startDate, endDate, intervalMinutes, exportToExce
       {
         $match: {
           dateTime: {
-            $gte: new Date(new Date(startDate).setSeconds(0)),
-            $lt: new Date(new Date(endDate).setSeconds(59)),
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
           },
         },
       },
