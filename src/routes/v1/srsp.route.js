@@ -28,10 +28,10 @@ router.get('/srsp-1to21-opn-gatereport-download',  [ validate('srspReportDownloa
 router.get('/srsp-22to42-opn-gatereport-download',  [ validate('srspReportDownload'), srspController.srspOpeningGate22TO42ReportWp]);
 router.get('/srsp-pondlevel-gatereport-download',  [ validate('srspReportDownload'), srspController.srspInflowOutflowPondLevelReportWp]);
 router.get('/srsp-parameter-overview-gatereport-download',  [ validate('srspReportDownload'), srspController.srspParameterOverviewReportWp]);
-router.get('/srsp-hr-Kakatita-dam-gatereport-download', [ validate('srspReportDownload'), srspController.srspHrKakatitaDamGateReportWp]);
+router.get('/srsp-hr-kakatita-dam-gatereport-download', [ validate('srspReportDownload'), srspController.srspHrKakatitaDamGateReportWp]);
 router.get('/srsp-hr-saraswati-dam-gatereport-download', [ validate('srspReportDownload'), srspController.srspHrSaraswatiDamGateReportWp]);
 router.get('/srsp-hr-lakshmi-dam-gatereport-download', [ validate('srspReportDownload'), srspController.srspHrLakshmiDamGateReportWp]);
-router.get('/srsp-hr-Floodflow-dam-gatereport-download', [ validate('srspReportDownload'), srspController.srspHrFloodFlowDamGateReportWp]);
+router.get('/srsp-hr-floodflow-dam-gatereport-download', [ validate('srspReportDownload'), srspController.srspHrFloodFlowDamGateReportWp]);
 
 router.get('/srsp-hr-dam-gatereport-download', [ validate('srspReportDownload'), srspController.srspHrDamGateReportWp]);
 module.exports = router;
