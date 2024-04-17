@@ -464,7 +464,7 @@ async function handleMongoDBData(data) {
 
 const createSalientFeature = catchAsync(async (req, res) => {
   const createSalientFeature = await srspService.createSalientFeature(req.body);
-  res.status(httpStatus.CREATED).send(createSalientFeature);
+  res.status(httpStatus.CREATED).json(createSalientFeature);
 });
 
 const getSalientFeature = catchAsync(async (req, res) => {
@@ -479,7 +479,7 @@ const srspDamOverview = catchAsync(async (req, res) => {
 
 const getLastDataSrspDamSpareAdvm = catchAsync(async (req, res) => {
   const getLastDataLmdDamSpareAdvm = await srspService.getLastDataSrspDamSpareAdvm(req.user);
-  res.send(getLastDataLmdDamSpareAdvm);
+  res.json(getLastDataLmdDamSpareAdvm);
 });
 
 const srspDischargeGate1TO21Report = catchAsync(async (req, res) => {
@@ -497,7 +497,7 @@ const srspDischargeGate1TO21Report = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const srspDischargeGate1TO21Report = await srspService.srspDischargeGate1TO21Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
+  const srspDischargeGate1TO21Report = await srspService.srspDischargeGate1TO21Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user, res, req);
 
   res.json(srspDischargeGate1TO21Report);
 });
@@ -517,7 +517,7 @@ const srspDischargeGate22TO42Report = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const srspDischargeGate22TO42Report = await srspService.srspDischargeGate22TO42Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
+  const srspDischargeGate22TO42Report = await srspService.srspDischargeGate22TO42Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user, res, req);
   res.json(srspDischargeGate22TO42Report);
 });
 
@@ -536,7 +536,7 @@ const srspOpeningGate1TO21Report = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const srspOpeningGate1TO21Report = await srspService.srspOpeningGate1TO21Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
+  const srspOpeningGate1TO21Report = await srspService.srspOpeningGate1TO21Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user, res, req);
 
   res.json(srspOpeningGate1TO21Report);
 });
@@ -556,7 +556,7 @@ const srspOpeningGate22TO42Report = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const srspOpeningGate22TO42Report = await srspService.srspOpeningGate22TO42Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
+  const srspOpeningGate22TO42Report = await srspService.srspOpeningGate22TO42Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user, res, req);
 
   res.json(srspOpeningGate22TO42Report);
 });
@@ -576,7 +576,7 @@ const srspInflowOutflowPondLevelReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const srspInflowOutflowPondLevelReport = await srspService.srspInflowOutflowPondLevelReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
+  const srspInflowOutflowPondLevelReport = await srspService.srspInflowOutflowPondLevelReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user, res, req);
 
   res.json(srspInflowOutflowPondLevelReport);
 });
@@ -596,7 +596,7 @@ const srspParameterOverviewReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const srspParameterOverviewReport = await srspService.srspParameterOverviewReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
+  const srspParameterOverviewReport = await srspService.srspParameterOverviewReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user, res, req);
 
   res.json(srspParameterOverviewReport);
 });
@@ -616,14 +616,14 @@ const srspHrDamGateReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const srspHrDamGateReport = await srspService.srspHrDamGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
+  const srspHrDamGateReport = await srspService.srspHrDamGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user, res, req);
 
   res.json(srspHrDamGateReport);
 });
 
 const sevenDayReport = catchAsync(async (req, res) => {
   const sevenDayReport = await srspService.sevenDayReport(req.user);
-  res.send(sevenDayReport);
+  res.json(sevenDayReport);
 });
 
 
@@ -641,7 +641,7 @@ const srspDischargeGate1TO21ReportWp = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const srspDischargeGate1TO21Report = await srspService.srspDischargeGate1TO21ReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+  const srspDischargeGate1TO21Report = await srspService.srspDischargeGate1TO21ReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(srspDischargeGate1TO21Report);
 });
@@ -657,7 +657,7 @@ const srspDischargeGate22TO42ReportWp = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const srspDischargeGate22TO42Report = await srspService.srspDischargeGate22TO42ReportWp(startDate, endDate, intervalMinutes, exportToExcel,res, req, req.user);
+  const srspDischargeGate22TO42Report = await srspService.srspDischargeGate22TO42ReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user,res, req);
   res.json(srspDischargeGate22TO42Report);
 });
 
@@ -672,7 +672,7 @@ const srspOpeningGate1TO21ReportWp = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const srspOpeningGate1TO21Report = await srspService.srspOpeningGate1TO21ReportWp(startDate, endDate, intervalMinutes, exportToExcel,res, req, req.user);
+  const srspOpeningGate1TO21Report = await srspService.srspOpeningGate1TO21ReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(srspOpeningGate1TO21Report);
 });
@@ -688,7 +688,7 @@ const srspOpeningGate22TO42ReportWp = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const srspOpeningGate22TO42Report = await srspService.srspOpeningGate22TO42ReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+  const srspOpeningGate22TO42Report = await srspService.srspOpeningGate22TO42ReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(srspOpeningGate22TO42Report);
 });
@@ -704,7 +704,7 @@ const srspInflowOutflowPondLevelReportWp = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const srspInflowOutflowPondLevelReport = await srspService.srspInflowOutflowPondLevelReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+  const srspInflowOutflowPondLevelReport = await srspService.srspInflowOutflowPondLevelReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(srspInflowOutflowPondLevelReport);
 });
@@ -720,12 +720,12 @@ const srspParameterOverviewReportWp = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const srspParameterOverviewReport = await srspService.srspParameterOverviewReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+  const srspParameterOverviewReport = await srspService.srspParameterOverviewReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(srspParameterOverviewReport);
 });
 
-const srspHrKakatitaAndSaraswatiDamGateReportWp = catchAsync(async (req, res) => {
+const srspHrKakatitaDamGateReportWp = catchAsync(async (req, res) => {
   let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
 
   if (!startDate && !endDate) {
@@ -736,12 +736,12 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = catchAsync(async (req, res) =>
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const srspHrDamGateReport = await srspService.srspHrKakatitaAndSaraswatiDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+  const srspHrDamGateReport = await srspService.srspHrKakatitaDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(srspHrDamGateReport);
 });
 
-const srspHrFloodFlowAndLakshmiDamGateReportWp = catchAsync(async (req, res) => {
+const srspHrSaraswatiDamGateReportWp = catchAsync(async (req, res) => {
   let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
 
   if (!startDate && !endDate) {
@@ -752,7 +752,39 @@ const srspHrFloodFlowAndLakshmiDamGateReportWp = catchAsync(async (req, res) => 
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const srspHrDamGateReport = await srspService.srspHrFloodFlowAndLakshmiDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+  const srspHrDamGateReport = await srspService.srspHrSaraswatiDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
+
+  res.json(srspHrDamGateReport);
+});
+
+const srspHrFloodFlowDamGateReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const srspHrDamGateReport = await srspService.srspHrFloodFlowDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
+
+  res.json(srspHrDamGateReport);
+});
+
+const srspHrLakshmiDamGateReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes, exportToExcel} = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const srspHrDamGateReport = await srspService.srspHrLakshmiDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(srspHrDamGateReport);
 });
@@ -768,7 +800,7 @@ const srspHrDamGateReportWp = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const srspHrDamGateReport = await srspService.srspHrDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+  const srspHrDamGateReport = await srspService.srspHrDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(srspHrDamGateReport);
 });
@@ -797,7 +829,8 @@ module.exports = {
   srspInflowOutflowPondLevelReportWp,
   srspParameterOverviewReportWp,
   srspHrDamGateReportWp,
-  srspHrKakatitaAndSaraswatiDamGateReportWp,
-  srspHrFloodFlowAndLakshmiDamGateReportWp,
-
+  srspHrSaraswatiDamGateReportWp,
+  srspHrKakatitaDamGateReportWp,
+  srspHrFloodFlowDamGateReportWp,
+  srspHrLakshmiDamGateReportWp
 };

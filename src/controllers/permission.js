@@ -9,8 +9,6 @@ const createPermission = catchAsync(async (req, res) => {
 });
 
 const getPermission = catchAsync(async (req, res) => {
-  console.log(req.user, "++++++++++++111111111111111");
-
   const result = await permissionService.getPermission(req.user);
   res.json(result);
 });

@@ -18,6 +18,7 @@ const {
   KNR_SPARE_ADVM,
   Permission,
 } = require('../models');
+const { log } = require('winston');
 
 const hyderabadImagePath = path.join(__dirname, '../../views/hyderabad.png');
 const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
@@ -51,7 +52,7 @@ const getSalientFeature = async (user) => {
 
 const getLastDataKadamDamOverview = async (user) => {
   try {
-    const checkPermission = await Permission.findOne({ name: 'kadamSalientFeatures' });
+    const checkPermission = await Permission.findOne({ name: 'kadamOverview' });
 
     if (
       user.role === 'admin' ||
@@ -98,7 +99,7 @@ const getLastDataKadamDamOverview = async (user) => {
 
 const getLastDataKadamDamSpareAdvm = async (user) => {
   try {
-    const checkPermission = await Permission.findOne({ name: 'kadamSalientFeatures' });
+    const checkPermission = await Permission.findOne({ name: 'kadamOverview' });
 
     if (
       user.role === 'admin' ||
@@ -122,97 +123,108 @@ const kadamOpeningGate1To18Report = async (
   currentPage,
   perPage,
   startIndex,
+  user,
   res,
   req
 ) => {
   try {
-    const pipeline = [
-      {
-        $match: {
-          dateTime: {
-            $gt: new Date(startDate),
-            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            interval: {
-              $toDate: {
-                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
-              },
+    const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+
+    if (
+      user.role === 'admin' ||
+      user.role === 'kadamSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+      const pipeline = [
+        {
+          $match: {
+            dateTime: {
+              $gt: new Date(startDate),
+              $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
             },
           },
-          gate1Position: { $first: '$gate1Position' },
-          gate2Position: { $first: '$gate2Position' },
-          gate3Position: { $first: '$gate3Position' },
-          gate4Position: { $first: '$gate4Position' },
-          gate5Position: { $first: '$gate5Position' },
-          gate6Position: { $first: '$gate6Position' },
-          gate7Position: { $first: '$gate7Position' },
-          gate8Position: { $first: '$gate8Position' },
-          gate9Position: { $first: '$gate9Position' },
-          gate10Position: { $first: '$gate10Position' },
-          gate11Position: { $first: '$gate11Position' },
-          gate12Position: { $first: '$gate12Position' },
-          gate13Position: { $first: '$gate13Position' },
-          gate14Position: { $first: '$gate14Position' },
-          gate15Position: { $first: '$gate15Position' },
-          gate16Position: { $first: '$gate16Position' },
-          gate17Position: { $first: '$gate17Position' },
-          gate18Position: { $first: '$gate18Position' },
         },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateTime: '$_id.interval',
-          gate1Position: 1,
-          gate2Position: 1,
-          gate3Position: 1,
-          gate4Position: 1,
-          gate5Position: 1,
-          gate6Position: 1,
-          gate7Position: 1,
-          gate8Position: 1,
-          gate9Position: 1,
-          gate10Position: 1,
-          gate11Position: 1,
-          gate12Position: 1,
-          gate13Position: 1,
-          gate14Position: 1,
-          gate15Position: 1,
-          gate16Position: 1,
-          gate17Position: 1,
-          gate18Position: 1,
+        {
+          $group: {
+            _id: {
+              interval: {
+                $toDate: {
+                  $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+                },
+              },
+            },
+            gate1Position: { $first: '$gate1Position' },
+            gate2Position: { $first: '$gate2Position' },
+            gate3Position: { $first: '$gate3Position' },
+            gate4Position: { $first: '$gate4Position' },
+            gate5Position: { $first: '$gate5Position' },
+            gate6Position: { $first: '$gate6Position' },
+            gate7Position: { $first: '$gate7Position' },
+            gate8Position: { $first: '$gate8Position' },
+            gate9Position: { $first: '$gate9Position' },
+            gate10Position: { $first: '$gate10Position' },
+            gate11Position: { $first: '$gate11Position' },
+            gate12Position: { $first: '$gate12Position' },
+            gate13Position: { $first: '$gate13Position' },
+            gate14Position: { $first: '$gate14Position' },
+            gate15Position: { $first: '$gate15Position' },
+            gate16Position: { $first: '$gate16Position' },
+            gate17Position: { $first: '$gate17Position' },
+            gate18Position: { $first: '$gate18Position' },
+          },
         },
-      },
-      {
-        $sort: {
-          dateTime: 1,
+        {
+          $project: {
+            _id: 0,
+            dateTime: '$_id.interval',
+            gate1Position: 1,
+            gate2Position: 1,
+            gate3Position: 1,
+            gate4Position: 1,
+            gate5Position: 1,
+            gate6Position: 1,
+            gate7Position: 1,
+            gate8Position: 1,
+            gate9Position: 1,
+            gate10Position: 1,
+            gate11Position: 1,
+            gate12Position: 1,
+            gate13Position: 1,
+            gate14Position: 1,
+            gate15Position: 1,
+            gate16Position: 1,
+            gate17Position: 1,
+            gate18Position: 1,
+          },
         },
-      },
-      {
-        $facet: {
-          data: [{ $skip: startIndex }, { $limit: perPage }],
-          totalCount: [{ $count: 'count' }],
+        {
+          $sort: {
+            dateTime: 1,
+          },
         },
-      },
-    ];
+        {
+          $facet: {
+            data: [{ $skip: startIndex }, { $limit: perPage }],
+            totalCount: [{ $count: 'count' }],
+          },
+        },
+      ];
 
-    const kadamOpeningGate1To18Report = await KNR_DAM_OVERVIEW_POS.aggregate(pipeline);
+      const kadamOpeningGate1To18Report = await KNR_DAM_OVERVIEW_POS.aggregate(pipeline);
 
-    let totalCount = kadamOpeningGate1To18Report[0]?.totalCount[0]?.count;
-    const totalPage = Math.ceil(totalCount / perPage);
+      let totalCount = kadamOpeningGate1To18Report[0]?.totalCount[0]?.count;
+      const totalPage = Math.ceil(totalCount / perPage);
 
-    return {
-      data: kadamOpeningGate1To18Report[0]?.data,
-      currentPage,
-      perPage,
-      totalCount,
-      totalPage,
-    };
+      return {
+        data: kadamOpeningGate1To18Report[0]?.data,
+        currentPage,
+        perPage,
+        totalCount,
+        totalPage,
+      };
+    } else {
+      return 'You are not authorized to access this data';
+    }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -226,10 +238,20 @@ const kadamDishchargeGate1To18Report = async (
   currentPage,
   perPage,
   startIndex,
+  user,
   res,
   req
 ) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+
+    if (
+      user.role === 'admin' ||
+      user.role === 'kadamSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+    
     const pipeline = [
       {
         $match: {
@@ -317,6 +339,9 @@ const kadamDishchargeGate1To18Report = async (
       totalCount,
       totalPage,
     };
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -330,10 +355,19 @@ const kadamInflowOutflowPondLevelReport = async (
   currentPage,
   perPage,
   startIndex,
+  user,
   res,
   req
 ) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+
+    if (
+      user.role === 'admin' ||
+      user.role === 'kadamSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
     const pipeline = [
       {
         $match: {
@@ -403,6 +437,9 @@ const kadamInflowOutflowPondLevelReport = async (
       totalCount,
       totalPage,
     };
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -416,10 +453,18 @@ const kadamGateParameterOverviewReport = async (
   currentPage,
   perPage,
   startIndex,
+  user,
   res,
   req
 ) => {
   try {
+    const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+
+    if (
+      user.role === 'admin' ||
+      user.role === 'kadamSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
     const pipeline = [
       {
         $match: {
@@ -495,14 +540,25 @@ const kadamGateParameterOverviewReport = async (
       totalCount,
       totalPage,
     };
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const kadamHrDamGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req) => {
+const kadamHrDamGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+
+    if (
+      user.role === 'admin' ||
+      user.role === 'kadamSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
     const pipeline = [
       {
         $match: {
@@ -647,6 +703,9 @@ const kadamHrDamGateReport = async (startDate, endDate, intervalMinutes, current
       totalCount,
       totalPage,
     };
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -770,8 +829,17 @@ const sevenDayReport = async (user) => {
 };
 
 //Report Download
-const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    // console.log(user , "+++++++++++++++++++");
+    // const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+
+    // if (
+    //   user.role === 'admin' ||
+    //   user.role === 'kadamSuperuser' ||
+    //   (checkPermission && checkPermission.roleName.includes(user.role))
+    // ) {
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -900,31 +968,30 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
-
       const csvStream = fastCsv.format({ headers: true });
 
       kadamOpeningGate1To18ReportWithoutPagination.forEach((row) => {
         const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
         csvStream.write({
           DateTime: formattedDate,
-          'Gate_1': row.gate1Position,
-          'Gate_2': row.gate2Position,
-          'Gate_3': row.gate3Position,
-          'Gate_4': row.gate4Position,
-          'Gate_5': row.gate5Position,
-          'Gate_6': row.gate6Position,
-          'Gate_7': row.gate7Position,
-          'Gate_8': row.gate8Position,
-          'Gate_9': row.gate9Position,
-          'Gate_10': row.gate10Position,
-          'Gate_11': row.gate11Position,
-          'Gate_12': row.gate12Position,
-          'Gate_13': row.gate13Position,
-          'Gate_14': row.gate14Position,
-          'Gate_15': row.gate15Position,
-          'Gate_16': row.gate16Position,
-          'Gate_17': row.gate17Position,
-          'Gate_18': row.gate18Position,
+          Gate_1: row.gate1Position,
+          Gate_2: row.gate2Position,
+          Gate_3: row.gate3Position,
+          Gate_4: row.gate4Position,
+          Gate_5: row.gate5Position,
+          Gate_6: row.gate6Position,
+          Gate_7: row.gate7Position,
+          Gate_8: row.gate8Position,
+          Gate_9: row.gate9Position,
+          Gate_10: row.gate10Position,
+          Gate_11: row.gate11Position,
+          Gate_12: row.gate12Position,
+          Gate_13: row.gate13Position,
+          Gate_14: row.gate14Position,
+          Gate_15: row.gate15Position,
+          Gate_16: row.gate16Position,
+          Gate_17: row.gate17Position,
+          Gate_18: row.gate18Position,
         });
       });
 
@@ -933,10 +1000,7 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
 
       csvStream.pipe(res);
       csvStream.end();
-
     } else if (exportToExcel == 3) {
-      const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
-      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
       const itemsPerPage = 26; // Number of dates to print per page
       const totalItems = kadamOpeningGate1To18ReportWithoutPagination.length; // Total number of dates
@@ -965,10 +1029,10 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
               children: [
                 // Left image
                 new Docx.ImageRun({
-                  data: fs.readFileSync(logoImagePath),
+                  data: fs.readFileSync(hyderabadImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 140,
+                    height: 105,
                   },
                   floating: {
                     horizontalPosition: {
@@ -1047,7 +1111,7 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
                         { length: 18 },
                         (_, i) =>
                           new Docx.TableCell({
-                            children: [new Docx.Paragraph(item[`gate${i + 1}Position`].toString())],
+                            children: [new Docx.Paragraph(item[`gate${i + 1}Position`].toFixed(2))],
                             alignment: { horizontal: Docx.AlignmentType.CENTER },
                             // Adjusted width for gate columns
                           })
@@ -1095,14 +1159,24 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
     } else {
       res.send(kadamOpeningGate1To18ReportWithoutPagination);
     }
+  // } else {
+  //   return 'You are not authorized to access this data';
+  // }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+    // const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+
+    // if (
+    //   user.role === 'admin' ||
+    //   user.role === 'kadamSuperuser' ||
+    //   (checkPermission && checkPermission.roleName.includes(user.role))
+    // ) {
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -1230,31 +1304,30 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Discharge_Report.xlsx');
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
-
       const csvStream = fastCsv.format({ headers: true });
 
       kadamDishchargeGate1To18ReportWithoutPagination.forEach((row) => {
         const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
         csvStream.write({
           DateTime: formattedDate,
-          'Gate_1': row.gate1Discharge,
-          'Gate_2': row.gate2Discharge,
-          'Gate_3': row.gate3Discharge,
-          'Gate_4': row.gate4Discharge,
-          'Gate_5': row.gate5Discharge,
-          'Gate_6': row.gate6Discharge,
-          'Gate_7': row.gate7Discharge,
-          'Gate_8': row.gate8Discharge,
-          'Gate_9': row.gate9Discharge,
-          'Gate_10': row.gate10Discharge,
-          'Gate_11': row.gate11Discharge,
-          'Gate_12': row.gate12Discharge,
-          'Gate_13': row.gate13Discharge,
-          'Gate_14': row.gate14Discharge,
-          'Gate_15': row.gate15Discharge,
-          'Gate_16': row.gate16Discharge,
-          'Gate_17': row.gate17Discharge,
-          'Gate_18': row.gate18Discharge
+          Gate_1: row.gate1Discharge,
+          Gate_2: row.gate2Discharge,
+          Gate_3: row.gate3Discharge,
+          Gate_4: row.gate4Discharge,
+          Gate_5: row.gate5Discharge,
+          Gate_6: row.gate6Discharge,
+          Gate_7: row.gate7Discharge,
+          Gate_8: row.gate8Discharge,
+          Gate_9: row.gate9Discharge,
+          Gate_10: row.gate10Discharge,
+          Gate_11: row.gate11Discharge,
+          Gate_12: row.gate12Discharge,
+          Gate_13: row.gate13Discharge,
+          Gate_14: row.gate14Discharge,
+          Gate_15: row.gate15Discharge,
+          Gate_16: row.gate16Discharge,
+          Gate_17: row.gate17Discharge,
+          Gate_18: row.gate18Discharge,
         });
       });
 
@@ -1264,9 +1337,7 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
       csvStream.pipe(res);
       csvStream.end();
     } else if (exportToExcel == 3) {
-      const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
-      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
-
+   
       const itemsPerPage = 26; // Number of dates to print per page
       const totalItems = kadamDishchargeGate1To18ReportWithoutPagination.length; // Total number of dates
       const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
@@ -1294,10 +1365,10 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
               children: [
                 // Left image
                 new Docx.ImageRun({
-                  data: fs.readFileSync(logoImagePath),
+                  data: fs.readFileSync(hyderabadImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 140,
+                    height: 105,
                   },
                   floating: {
                     horizontalPosition: {
@@ -1376,7 +1447,7 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
                         { length: 18 },
                         (_, i) =>
                           new Docx.TableCell({
-                            children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toString())],
+                            children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toFixed(2))],
                             alignment: { horizontal: Docx.AlignmentType.CENTER },
                             // Adjusted width for gate columns
                           })
@@ -1424,14 +1495,25 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
     } else {
       res.send(kadamDishchargeGate1To18ReportWithoutPagination);
     }
+  // } else {
+  //   return 'You are not authorized to access this data';
+  // }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+    // const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+
+    // if (
+    //   user.role === 'admin' ||
+    //   user.role === 'kadamSuperuser' ||
+    //   (checkPermission && checkPermission.roleName.includes(user.role))
+    // ) {
+
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -1570,7 +1652,6 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
-
       const csvStream = fastCsv.format({ headers: true });
 
       kadamInflowOutflowPondLevelReportWithoutPagination.forEach((row) => {
@@ -1594,10 +1675,7 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
 
       csvStream.pipe(res);
       csvStream.end();
-
     } else if (exportToExcel == 3) {
-      const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
-      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
       const itemsPerPage = 25; // Number of dates to print per page
       const totalItems = kadamInflowOutflowPondLevelReportWithoutPagination.length; // Total number of dates
@@ -1626,10 +1704,10 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
               children: [
                 // Left image
                 new Docx.ImageRun({
-                  data: fs.readFileSync(logoImagePath),
+                  data: fs.readFileSync(hyderabadImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 140,
+                    height: 105,
                   },
                   floating: {
                     horizontalPosition: {
@@ -1748,14 +1826,25 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
     } else {
       res.send(kadamInflowOutflowPondLevelReportWithoutPagination);
     }
+  // } else {
+  //   return 'You are not authorized to access this data';
+  // }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    // const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+
+    // if (
+    //   user.role === 'admin' ||
+    //   user.role === 'kadamSuperuser' ||
+    //   (checkPermission && checkPermission.roleName.includes(user.role))
+    // ) {
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -1906,7 +1995,6 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
-
       const csvStream = fastCsv.format({ headers: true });
 
       kadamGateParameterOverviewReportWithoutPagination.forEach((row) => {
@@ -1924,7 +2012,7 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
           'Inst. Gate Discharge (Cusecs)': row.instantaneousGateDischarge,
           'Inst. canal Discharge (Cusecs)': row.instantaneousCanalDischarge,
           'Total Dam Discharge (Cusecs)': row.totalDamDischarge,
-          'Cumulative Dam Discharge (Cusecs)': row.cumulativeDamDischarge
+          'Cumulative Dam Discharge (Cusecs)': row.cumulativeDamDischarge,
         });
       });
 
@@ -1934,8 +2022,6 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
       csvStream.pipe(res);
       csvStream.end();
     } else if (exportToExcel == 3) {
-      const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
-      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
       const itemsPerPage = 25; // Number of dates to print per page
       const totalItems = kadamGateParameterOverviewReportWithoutPagination.length; // Total number of dates
@@ -1964,10 +2050,10 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
               children: [
                 // Left image
                 new Docx.ImageRun({
-                  data: fs.readFileSync(logoImagePath),
+                  data: fs.readFileSync(hyderabadImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 140,
+                    height: 105,
                   },
                   floating: {
                     horizontalPosition: {
@@ -2094,14 +2180,25 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
     } else {
       res.send(kadamGateParameterOverviewReportWithoutPagination);
     }
+  // } else {
+  //   return 'You are not authorized to access this data';
+  // }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    // const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+
+    // if (
+    //   user.role === 'admin' ||
+    //   user.role === 'kadamSuperuser' ||
+    //   (checkPermission && checkPermission.roleName.includes(user.role))
+    // ) {
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -2261,23 +2358,22 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
       ];
       worksheet.addRow([]);
       worksheet.addRow([]);
-   
+
       worksheet.addRow(headers);
 
-
       // Add headers and apply styling
-worksheet.addRow(headers).eachCell((cell) => {
-  // Apply border to all sides of the cell
-  cell.border = {
-      top: { style: 'thin' },
-      left: { style: 'thin' },
-      bottom: { style: 'thin' },
-      right: { style: 'thin' },
-  };
+      worksheet.addRow(headers).eachCell((cell) => {
+        // Apply border to all sides of the cell
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
 
-  // Center align text
-  cell.alignment = { horizontal: 'center' };
-});
+        // Center align text
+        cell.alignment = { horizontal: 'center' };
+      });
 
       mergedDataWithoutPagination.forEach((row) => {
         const rowData = [
@@ -2314,9 +2410,9 @@ worksheet.addRow(headers).eachCell((cell) => {
       const mergedCell = worksheet.getCell('A1');
 
       mergedCell.border = {
-        top: { style: 'thin', color: { argb: 'FF000000' } }, 
+        top: { style: 'thin', color: { argb: 'FF000000' } },
         left: { style: 'thin', color: { argb: 'FF000000' } },
-        bottom: { style: 'thin', color: { argb: 'FF000000' } }, 
+        bottom: { style: 'thin', color: { argb: 'FF000000' } },
         right: { style: 'thin', color: { argb: 'FF000000' } },
       };
 
@@ -2328,11 +2424,11 @@ worksheet.addRow(headers).eachCell((cell) => {
 
       const borderStyle = {
         style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
-        color: { argb: 'FF000000' }, 
+        color: { argb: 'FF000000' },
       };
 
       // Apply border to the left side of column
-      ['A','B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'].forEach((column) => {
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'].forEach((column) => {
         worksheet.getColumn(column).eachCell((cell) => {
           cell.border = {
             ...cell.border,
@@ -2404,7 +2500,6 @@ worksheet.addRow(headers).eachCell((cell) => {
 
       await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
-
       const csvStream = fastCsv.format({ headers: true });
 
       mergedDataWithoutPagination.forEach((row) => {
@@ -2420,7 +2515,7 @@ worksheet.addRow(headers).eachCell((cell) => {
           'Gete 4 Opening (Feet)': row.hrklManGate4Position,
           'Gate 4 Discharge (C/S)': row.hrklManGate4Discharge,
           'Gete 5 Opening (Feet)': row.hrklManGate5Position,
-          'Gate 5 Discharge (C/S)': row.hrklManGate5Discharge, 
+          'Gate 5 Discharge (C/S)': row.hrklManGate5Discharge,
           'Total Discharge(C/S)': row.totalDischarge,
         });
       });
@@ -2430,21 +2525,19 @@ worksheet.addRow(headers).eachCell((cell) => {
 
       csvStream.pipe(res);
       csvStream.end();
-
     } else if (exportToExcel == 3) {
-      const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
-      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
       const itemsPerPage = 25;
       const totalItems = mergedDataWithoutPagination.length;
       const totalPages = Math.ceil(totalItems / itemsPerPage);
 
+      
       const sections = [];
       for (let page = 0; page < totalPages; page++) {
         const startIndex = page * itemsPerPage;
         const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
         const pageData = mergedDataWithoutPagination.slice(startIndex, endIndex);
-
+        
         sections.push({
           properties: {
             page: {
@@ -2462,10 +2555,10 @@ worksheet.addRow(headers).eachCell((cell) => {
               children: [
                 // Left image
                 new Docx.ImageRun({
-                  data: fs.readFileSync(logoImagePath),
+                  data: fs.readFileSync(hyderabadImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 140,
+                    height: 105,
                   },
                   floating: {
                     horizontalPosition: {
@@ -2530,6 +2623,7 @@ worksheet.addRow(headers).eachCell((cell) => {
 
                 // Table rows
                 ...pageData.map((item) => {
+                  console.log('Item:111111111111111111111111', item); // Add this line to log the item
                   const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
                   return new Docx.TableRow({
                     children: [
@@ -2538,16 +2632,16 @@ worksheet.addRow(headers).eachCell((cell) => {
                         width: { size: 12, type: Docx.WidthType.PERCENTAGE },
                       }),
                       new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate1Position.toFixed(2))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate1Discharge.toFixed(2))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate2Position.toFixed(2))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate2Discharge.toFixed(2))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate3Position.toFixed(2))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate3Discharge.toFixed(2))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate4Position.toFixed(2))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate4Discharge.toFixed(2))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate5Position.toFixed(2))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate5Discharge.toFixed(2))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.totalDischarge.toFixed(2))] }),
+                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate1Discharge.toFixed(2))] }),
+                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate2Position.toFixed(2))] }),
+                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate2Discharge.toFixed(2))] }),
+                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate3Position.toFixed(2))] }),
+                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate3Discharge.toFixed(2))] }),
+                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate4Position.toFixed(2))] }),
+                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate4Discharge.toFixed(2))] }),
+                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate5Position.toFixed(2))] }),
+                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate5Discharge.toFixed(2))] }),
+                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.totalDischarge.toFixed(2))] }),
                     ],
                   });
                 }),
@@ -2555,7 +2649,7 @@ worksheet.addRow(headers).eachCell((cell) => {
             }),
           ],
         });
-      }
+      } 
 
       const doc = new Docx.Document({
         sections: sections,
@@ -2590,6 +2684,9 @@ worksheet.addRow(headers).eachCell((cell) => {
     } else {
       res.send(mergedDataWithoutPagination);
     }
+  // } else {
+  //   return 'You are not authorized to access this data';
+  // }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);

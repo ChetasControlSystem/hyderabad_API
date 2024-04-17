@@ -117,8 +117,17 @@ const getLastDataLmdDamSpareAdvm = async (user) => {
   }
 };
 
-const lmdDischargeGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req) => {
+const lmdDischargeGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'lmdReport' });
+
+    if (
+      user.role === 'admin' ||
+      user.role === 'lmdSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+      
     const pipeline = [
       {
         $match: {
@@ -210,14 +219,26 @@ const lmdDischargeGateReport = async (startDate, endDate, intervalMinutes, curre
       totalCount,
       totalPage,
     };
+  }else {
+      return 'You are not authorized to access this data';
+    }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const lmdOpeningGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req) => {
+const lmdOpeningGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'lmdReport' });
+
+    if (
+      user.role === 'admin' ||
+      user.role === 'lmdSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+
     const pipeline = [
       {
         $match: {
@@ -309,14 +330,25 @@ const lmdOpeningGateReport = async (startDate, endDate, intervalMinutes, current
       totalCount,
       totalPage,
     };
+  }else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const lmdPondlevelGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req) => {
+const lmdPondlevelGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, user, res, req) => {
   try {
+    const checkPermission = await Permission.findOne({ name: 'lmdReport' });
+
+    if(
+      user.role === 'admin' ||
+      user.role === 'lmdSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+
     const pipeline = [
       {
         $match: {
@@ -386,6 +418,9 @@ const lmdPondlevelGateReport = async (startDate, endDate, intervalMinutes, curre
       totalCount,
       totalPage,
     };
+  }else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -399,10 +434,19 @@ const lmdGateParameterOverviewReport = async (
   currentPage,
   perPage,
   startIndex,
+  user,
   res,
   req
 ) => {
   try {
+    const checkPermission = await Permission.findOne({ name: 'lmdReport' });
+
+    if (
+      user.role === 'admin' ||
+      user.role === 'lmdSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+
     const pipeline = [
       {
         $match: {
@@ -478,14 +522,26 @@ const lmdGateParameterOverviewReport = async (
       totalCount,
       totalPage,
     };
+  }else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const lmdGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req) => {
+const lmdGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'lmdReport' });
+
+    if (
+      user.role === 'admin' ||
+      user.role === 'lmdSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) { 
+
     const pipeline = [
       {
         $match: {
@@ -602,6 +658,9 @@ const lmdGateReport = async (startDate, endDate, intervalMinutes, currentPage, p
       totalCount,
       totalPage,
     };
+  }else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -726,7 +785,7 @@ const sevenDayReport = async (user) => {
 
 //Report Download
 
-const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipeline1 = [
       {
@@ -805,7 +864,7 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
 
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet('LMD Discharge Gate Report');
+      const worksheet = workbook.addWorksheet('LMD DAM Gate 1 To 20 Discharge Report');
 
       const addImageToWorksheet = (imagePath, colRange) => {
         const imageId = workbook.addImage({
@@ -822,15 +881,17 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
-      addImageToWorksheet(chetasImagePath, [17, 19]);
-
-      worksheet.getCell('H9').value = 'LMD DAM Gate 1 To 20 Discharge Report';
-      const cell = worksheet.getCell('H9');
-      cell.font = { bold: true, size: 20 };
+      addImageToWorksheet(chetasImagePath, [17.5, 19]);
 
       const headers = ['DateTime', ...Array.from({ length: 20 }, (_, i) => `Gate ${i + 1} \n (Cusecs)`)];
-      worksheet.addRow([]);
-      worksheet.addRow(headers);
+      worksheet.addRows([[]]);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       lmdDischargeGateReport1.forEach((row) => {
         const rowData = [row.dateTime, ...Array.from({ length: 20 }, (_, i) => row[`gate${i + 1}Discharge`])];
@@ -841,9 +902,6 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
 
       worksheet.mergeCells('A1:U8');
       const mergedCell = worksheet.getCell('A1');
@@ -855,9 +913,43 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
 
+      mergedCell.value = 'LMD DAM Gate 1 To 20 Discharge Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
+      
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Gate_1_To_20_Discharge_Report.xlsx');
-      await workbook.xlsx.write(res);
+
+      // res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      // res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Gate_1_To_20_Discharge_Report.xlsx');
+    await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
       const csvStream = fastCsv.format({ headers: true });
 
@@ -924,8 +1016,8 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
                   new Docx.ImageRun({
                     data: fs.readFileSync(hyderabadImagePath),
                     transformation: {
-                      width: 100,
-                      height: 100,
+                      width: 140,
+                      height: 105,
                     },
                     floating: {
                       horizontalPosition: {
@@ -1006,7 +1098,7 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
                           { length: 20 },
                           (_, i) =>
                             new Docx.TableCell({
-                              children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toString())],
+                              children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toFixed(2))],
                               alignment: { horizontal: Docx.AlignmentType.CENTER },
                               // Adjusted width for gate columns
                             })
@@ -1064,7 +1156,7 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
   }
 };
 
-const lmdOpeningGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const lmdOpeningGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipelineWithoutPagination = [
       {
@@ -1143,7 +1235,7 @@ const lmdOpeningGateReportWp = async (startDate, endDate, intervalMinutes, expor
 
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet('LMD Position Gate Report');
+      const worksheet = workbook.addWorksheet('LMD Dam Gate 1 To 20 Opening Report');
 
       const addImageToWorksheet = (imagePath, colRange) => {
         const imageId = workbook.addImage({
@@ -1160,15 +1252,17 @@ const lmdOpeningGateReportWp = async (startDate, endDate, intervalMinutes, expor
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
-      addImageToWorksheet(chetasImagePath, [17, 19]);
+      addImageToWorksheet(chetasImagePath, [17.5, 19]);
 
-      worksheet.getCell('H9').value = 'LMD DAM Gate 1 To 20 Opening Report';
-      const cell = worksheet.getCell('H9');
-      cell.font = { bold: true, size: 20 };
-
-      const headers = ['DateTime', ...Array.from({ length: 20 }, (_, i) => `Gate ${i + 1} \n (Feet)`)];
+         const headers = ['DateTime', ...Array.from({ length: 20 }, (_, i) => `Gate ${i + 1} \n (Feet)`)];
       worksheet.addRow([]);
-      worksheet.addRow(headers);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       lmdOpeningGateReportWithoutPagination.forEach((row) => {
         const rowData = [row.dateTime, ...Array.from({ length: 20 }, (_, i) => row[`gate${i + 1}Position`])];
@@ -1179,10 +1273,6 @@ const lmdOpeningGateReportWp = async (startDate, endDate, intervalMinutes, expor
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
-
       worksheet.mergeCells('A1:U8');
       const mergedCell = worksheet.getCell('A1');
 
@@ -1192,6 +1282,37 @@ const lmdOpeningGateReportWp = async (startDate, endDate, intervalMinutes, expor
         bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
+
+      mergedCell.value = 'LMD Dam Gate 1 To 20 Opening Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Gate_1_To_20_Opening_Report.xlsx');
@@ -1395,7 +1516,7 @@ const lmdOpeningGateReportWp = async (startDate, endDate, intervalMinutes, expor
   }
 };
 
-const lmdPondlevelGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const lmdPondlevelGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipelineWithoutPagination = [
       {
@@ -1469,11 +1590,8 @@ const lmdPondlevelGateReportWp = async (startDate, endDate, intervalMinutes, exp
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
-      addImageToWorksheet(chetasImagePath, [8, 9]);
+      addImageToWorksheet(chetasImagePath, [8.7, 9]);
 
-      worksheet.getCell('E9').value = 'LMD Dam Inflow Outflow Pond Level Report';
-      const cell = worksheet.getCell('E9');
-      cell.font = { bold: true, size: 20 };
 
       const headers = [
         'DateTime',
@@ -1488,7 +1606,13 @@ const lmdPondlevelGateReportWp = async (startDate, endDate, intervalMinutes, exp
         'Pond Level\n (Feet)',
       ];
       worksheet.addRow([]);
-      worksheet.addRow(headers);
+   
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       lmdPondlevelGateReportsWithoutPagination.forEach((row) => {
         const rowData = [
@@ -1514,10 +1638,6 @@ const lmdPondlevelGateReportWp = async (startDate, endDate, intervalMinutes, exp
         column.width = 20;
     });
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
-
       worksheet.mergeCells('A1:J8');
       const mergedCell = worksheet.getCell('A1');
 
@@ -1527,6 +1647,37 @@ const lmdPondlevelGateReportWp = async (startDate, endDate, intervalMinutes, exp
         bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
+
+      mergedCell.value = 'LMD Dam Inflow Outflow Pond Level Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Inflow_Outflow_PondLevel_Report.xlsx');
@@ -1712,7 +1863,7 @@ const lmdPondlevelGateReportWp = async (startDate, endDate, intervalMinutes, exp
   }
 };
 
-const lmdGateParameterOverviewReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const lmdGateParameterOverviewReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipelineWithoutPagination = [
       {
@@ -1794,11 +1945,7 @@ const lmdGateParameterOverviewReportWp = async (startDate, endDate, intervalMinu
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
-      addImageToWorksheet(chetasImagePath, [8, 9]);
-
-      worksheet.getCell('E9').value = 'LMD Dam Paramete Overview Report';
-      const cell = worksheet.getCell('E9');
-      cell.font = { bold: true, size: 20 };
+      addImageToWorksheet(chetasImagePath, [8.5, 9]);
 
       const headers = [
         'DateTime',
@@ -1816,7 +1963,13 @@ const lmdGateParameterOverviewReportWp = async (startDate, endDate, intervalMinu
         'Cumulative Dam Discharge (Cusecs)',
       ];
       worksheet.addRow([]);
-      worksheet.addRow(headers);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       lmdGateParameterOverviewReportWithoutPagination.forEach((row) => {
         const rowData = [
@@ -1845,10 +1998,6 @@ const lmdGateParameterOverviewReportWp = async (startDate, endDate, intervalMinu
         column.width = 20;
     });
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
-
       worksheet.mergeCells('A1:J8');
       const mergedCell = worksheet.getCell('A1');
 
@@ -1858,6 +2007,37 @@ const lmdGateParameterOverviewReportWp = async (startDate, endDate, intervalMinu
         bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
+
+      mergedCell.value = 'LMD Dam Paramete Overview Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Parameter_Overview_Report.xlsx');
@@ -2054,7 +2234,7 @@ const lmdGateParameterOverviewReportWp = async (startDate, endDate, intervalMinu
   }
 };
 
-const lmdGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const lmdGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipelineWithoutPagination = [
       {
@@ -2168,7 +2348,7 @@ const lmdGateReportWp = async (startDate, endDate, intervalMinutes, exportToExce
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 2]);
-      addImageToWorksheet(chetasImagePath, [4.4, 5]);
+      addImageToWorksheet(chetasImagePath, [4.9, 5]);
 
       const headers = [
         'DateTime',

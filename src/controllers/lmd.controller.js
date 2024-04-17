@@ -485,12 +485,12 @@ async function lmdMongoDBData(data) {
 
 const createSalientFeature = catchAsync(async (req, res) => {
   const createSalientFeature = await lmdService.createSalientFeature(req.body, req.user);
-  res.status(httpStatus.CREATED).send(createSalientFeature);
+  res.status(httpStatus.CREATED).json(createSalientFeature);
 });
 
 const getSalientFeature = catchAsync(async (req, res) => {
   const getSalientFeature = await lmdService.getSalientFeature(req.user);
-  res.send(getSalientFeature);
+  res.json(getSalientFeature);
 });
 
 const lmdDamOverview = catchAsync(async (req, res) => {
@@ -500,7 +500,7 @@ const lmdDamOverview = catchAsync(async (req, res) => {
 
 const getLastDataLmdDamSpareAdvm = catchAsync(async (req, res) => {
   const getLastDataLmdDamSpareAdvm = await lmdService.getLastDataLmdDamSpareAdvm(req.user);
-  res.send(getLastDataLmdDamSpareAdvm);
+  res.json(getLastDataLmdDamSpareAdvm);
 });
 
 const lmdDischargeGateReport = catchAsync(async (req, res) => {
@@ -525,9 +525,9 @@ const lmdDischargeGateReport = catchAsync(async (req, res) => {
     currentPage,
     perPage,
     startIndex,
+    req.user,
     res,
     req,
-    req.user
   );
 
   return res.json(lmdDischargeGateReport);
@@ -555,9 +555,9 @@ const lmdOpeningGateReport = catchAsync(async (req, res) => {
     currentPage,
     perPage,
     startIndex,
+    req.user,
     res,
-    req,
-    req.user
+    req
   );
 
   res.json(lmdOpeningGateReport);
@@ -585,9 +585,9 @@ const lmdPondlevelGateReport = catchAsync(async (req, res) => {
     currentPage,
     perPage,
     startIndex,
+    req.user,
     res,
     req,
-    req.user
   );
 
   res.json(lmdPondlevelGateReport);
@@ -615,9 +615,9 @@ const lmdGateParameterOverviewReport = catchAsync(async (req, res) => {
     currentPage,
     perPage,
     startIndex,
+    req.user,
     res,
     req,
-    req.user
   );
 
   res.json(lmdGateParameterOverviewReport);
@@ -645,9 +645,9 @@ const lmdHrGateReport = catchAsync(async (req, res) => {
     currentPage,
     perPage,
     startIndex,
+    req.user,
     res,
     req,
-    req.user
   );
 
   res.json(lmdGateParameterOverviewReport);
@@ -655,7 +655,7 @@ const lmdHrGateReport = catchAsync(async (req, res) => {
 
 const sevenDayReport = catchAsync(async (req, res) => {
   const sevenDayReport = await lmdService.sevenDayReport(req.user);
-  res.send(sevenDayReport);
+  res.json(sevenDayReport);
 });
 
 ///Report Download
@@ -675,9 +675,9 @@ const lmdDischargeGateReportWp = catchAsync(async (req, res) => {
     endDate,
     intervalMinutes,
     exportToExcel,
+    req.user,
     res,
     req,
-    req.user
   );
   return res.json(lmdDischargeGateReport);
 });
@@ -698,9 +698,9 @@ const lmdOpeningGateReportWp = catchAsync(async (req, res) => {
     endDate,
     intervalMinutes,
     exportToExcel,
+    req.user,
     res,
-    req,
-    req.user
+    req
   );
 
   res.json(lmdOpeningGateReport);
@@ -722,9 +722,9 @@ const lmdPondlevelGateReportWp = catchAsync(async (req, res) => {
     endDate,
     intervalMinutes,
     exportToExcel,
+    req.user,
     res,
-    req,
-    req.user
+    req
   );
 
   res.json(lmdPondlevelGateReport);
@@ -746,9 +746,9 @@ const lmdGateParameterOverviewReportWp = catchAsync(async (req, res) => {
     endDate,
     intervalMinutes,
     exportToExcel,
+    req.user,
     res,
-    req,
-    req.user
+    req
   );
 
   res.json(lmdGateParameterOverviewReport);
@@ -770,9 +770,9 @@ const lmdHrGateReportWp = catchAsync(async (req, res) => {
     endDate,
     intervalMinutes,
     exportToExcel,
+    req.user,
     res,
-    req,
-    req.user
+    req
   );
 
   res.json(lmdHrGateReportWp);

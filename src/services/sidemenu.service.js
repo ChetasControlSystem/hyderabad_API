@@ -24,8 +24,7 @@ const showSidemenu = async (user) => {
     }else if(user.role === "lmdSuperuser"){
       sidemenu = await Sidemenu.findOne({title : "LMD DAM"});
 
-      const checkPermission = await Permission.find({ roleName: { $in: user.role } }).select('name').exec();
-
+      const checkPermission = await Permission.find({ roleName: { $in: user.role } }).select('name');
       const permissionNames = checkPermission.map(permission => permission.name);
 
       sidemenu = await Sidemenu.aggregate([
@@ -54,7 +53,7 @@ const showSidemenu = async (user) => {
     }else if(user.role === "srspSuperuser"){
       sidemenu = await Sidemenu.findOne({title : "SRSP DAM"});
 
-      const checkPermission = await Permission.find({ roleName: { $in: user.role } }).select('name').exec();
+      const checkPermission = await Permission.find({ roleName: { $in: user.role } }).select('name');
 
       const permissionNames = checkPermission.map(permission => permission.name);
 
@@ -84,7 +83,7 @@ const showSidemenu = async (user) => {
     }else if(user.role === "kadamSuperuser"){
       sidemenu = await Sidemenu.findOne({title : "KADAM DAM"});
 
-      const checkPermission = await Permission.find({ roleName: { $in: user.role } }).select('name').exec();
+      const checkPermission = await Permission.find({ roleName: { $in: user.role } }).select('name');
 
       const permissionNames = checkPermission.map(permission => permission.name);
 
@@ -112,7 +111,7 @@ const showSidemenu = async (user) => {
       ]);
 
     }else {
-      const checkPermission = await Permission.find({ roleName: { $in: user.role } }).select('name').exec();
+      const checkPermission = await Permission.find({ roleName: { $in: user.role } }).select('name');
 
       const permissionNames = checkPermission.map(permission => permission.name);
 

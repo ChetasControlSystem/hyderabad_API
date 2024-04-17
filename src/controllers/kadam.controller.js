@@ -488,12 +488,12 @@ async function kadamMongoDBData(data) {
 
 const createSalientFeature = catchAsync(async (req, res) => {
   const createSalientFeature = await knrService.createSalientFeature(req.body, req.user);
-  res.status(httpStatus.CREATED).send(createSalientFeature);
+  res.status(httpStatus.CREATED).json(createSalientFeature);
 });
 
 const getSalientFeature = catchAsync(async (req, res) => {
   const getSalientFeature = await knrService.getSalientFeature(req.user);
-  res.send(getSalientFeature);
+  res.json(getSalientFeature);
 });
 
 const kadamDamOverview = catchAsync(async (req, res) => {
@@ -503,12 +503,12 @@ const kadamDamOverview = catchAsync(async (req, res) => {
 
 const getLastDataKadamDamSpareAdvm = catchAsync(async (req, res) => {
   const getLastDataKadamDamSpareAdvm = await knrService.getLastDataKadamDamSpareAdvm(req.user);
-  res.send(getLastDataKadamDamSpareAdvm);
+  res.json(getLastDataKadamDamSpareAdvm);
 });
 
 const sevenDayReport = catchAsync(async (req, res) => {
   const sevenDayReport = await knrService.sevenDayReport(req.user);
-  res.send(sevenDayReport);
+  res.json(sevenDayReport);
 });
 
 const kadamOpeningGate1To18Report = catchAsync(async (req, res) => {
@@ -526,7 +526,7 @@ const kadamOpeningGate1To18Report = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamOpeningGate1To18Report = await knrService.kadamOpeningGate1To18Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
+  const kadamOpeningGate1To18Report = await knrService.kadamOpeningGate1To18Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user, res, req);
 
   res.json(kadamOpeningGate1To18Report);
 });
@@ -546,7 +546,7 @@ const kadamDishchargeGate1To18Report = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamDishchargeGate1To18Report = await knrService.kadamDishchargeGate1To18Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
+  const kadamDishchargeGate1To18Report = await knrService.kadamDishchargeGate1To18Report(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user, res, req);
 
   res.json(kadamDishchargeGate1To18Report);
 });
@@ -566,7 +566,7 @@ const kadamInflowOutflowPondLevelReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamInflowOutflowPondLevelReport = await knrService.kadamInflowOutflowPondLevelReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
+  const kadamInflowOutflowPondLevelReport = await knrService.kadamInflowOutflowPondLevelReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user, res, req);
 
   res.json(kadamInflowOutflowPondLevelReport);
 });
@@ -586,7 +586,7 @@ const kadamGateParameterOverviewReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamGateParameterOverviewReport = await knrService.kadamGateParameterOverviewReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
+  const kadamGateParameterOverviewReport = await knrService.kadamGateParameterOverviewReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user, res, req);
 
   res.json(kadamGateParameterOverviewReport);
 });
@@ -606,7 +606,7 @@ const kadamHrDamGateReport = catchAsync(async (req, res) => {
   const perPage = parseInt(req.query.perPage) || 10;
   let startIndex = (currentPage - 1) * perPage;
 
-  const kadamHrDamGateReport = await knrService.kadamHrDamGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req, req.user);
+  const kadamHrDamGateReport = await knrService.kadamHrDamGateReport(startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, req.user, res, req);
 
   res.json(kadamHrDamGateReport);
 });
@@ -624,7 +624,7 @@ const kadamOpeningGate1To18ReportWp = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const kadamOpeningGate1To18Report = await knrService.kadamOpeningGate1To18ReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+  const kadamOpeningGate1To18Report = await knrService.kadamOpeningGate1To18ReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(kadamOpeningGate1To18Report);
 });
@@ -640,7 +640,7 @@ const kadamDishchargeGate1To18ReportWp = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const kadamDishchargeGate1To18Report = await knrService.kadamDishchargeGate1To18ReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+  const kadamDishchargeGate1To18Report = await knrService.kadamDishchargeGate1To18ReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(kadamDishchargeGate1To18Report);
 });
@@ -656,7 +656,7 @@ const kadamInflowOutflowPondLevelReportWp = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const kadamInflowOutflowPondLevelReport = await knrService.kadamInflowOutflowPondLevelReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+  const kadamInflowOutflowPondLevelReport = await knrService.kadamInflowOutflowPondLevelReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(kadamInflowOutflowPondLevelReport);
 });
@@ -672,7 +672,7 @@ const kadamGateParameterOverviewReportWp = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const kadamGateParameterOverviewReport = await knrService.kadamGateParameterOverviewReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+  const kadamGateParameterOverviewReport = await knrService.kadamGateParameterOverviewReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(kadamGateParameterOverviewReport);
 });
@@ -688,7 +688,7 @@ const kadamHrDamGateReportWp = catchAsync(async (req, res) => {
     return res.status(400).json({ message: 'Please ensure you pick two dates' });
   }
 
-  const kadamHrDamGateReport = await knrService.kadamHrDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, res, req, req.user);
+  const kadamHrDamGateReport = await knrService.kadamHrDamGateReportWp(startDate, endDate, intervalMinutes, exportToExcel, req.user, res, req);
 
   res.json(kadamHrDamGateReport);
 });

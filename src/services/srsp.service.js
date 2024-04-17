@@ -128,10 +128,19 @@ const srspDischargeGate1TO21Report = async (
   currentPage,
   perPage,
   startIndex,
+  user,
   res,
   req
 ) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if (
+      user.role === 'admin' ||
+      user.role === 'srspSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+
     const pipeline = [
       {
         $match: {
@@ -225,6 +234,9 @@ const srspDischargeGate1TO21Report = async (
       totalCount,
       totalPage,
     };
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -238,10 +250,18 @@ const srspDischargeGate22TO42Report = async (
   currentPage,
   perPage,
   startIndex,
+  user,
   res,
   req
 ) => {
   try {
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if (
+      user.role === 'admin' ||
+      user.role === 'srspSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+
     const pipeline = [
       {
         $match: {
@@ -336,6 +356,9 @@ const srspDischargeGate22TO42Report = async (
       totalCount,
       totalPage,
     };
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -349,10 +372,18 @@ const srspOpeningGate1TO21Report = async (
   currentPage,
   perPage,
   startIndex,
+  user,
   res,
   req
 ) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if (
+      user.role === 'admin' ||
+      user.role === 'srspSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
     const pipeline = [
       {
         $match: {
@@ -446,6 +477,9 @@ const srspOpeningGate1TO21Report = async (
       totalCount,
       totalPage,
     };
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -459,10 +493,19 @@ const srspOpeningGate22TO42Report = async (
   currentPage,
   perPage,
   startIndex,
+  user,
   res,
   req
 ) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if (
+      user.role === 'admin' ||
+      user.role === 'srspSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+
     const pipeline = [
       {
         $match: {
@@ -557,6 +600,9 @@ const srspOpeningGate22TO42Report = async (
       totalCount,
       totalPage,
     };
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -570,10 +616,19 @@ const srspInflowOutflowPondLevelReport = async (
   currentPage,
   perPage,
   startIndex,
+  user,
   res,
   req
 ) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if (
+      user.role === 'admin' ||
+      user.role === 'srspSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+
     const pipeline = [
       {
         $match: {
@@ -639,6 +694,9 @@ const srspInflowOutflowPondLevelReport = async (
       totalCount,
       totalPage,
     };
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -652,10 +710,19 @@ const srspParameterOverviewReport = async (
   currentPage,
   perPage,
   startIndex,
+  user,
   res,
   req
 ) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if (
+      user.role === 'admin' ||
+      user.role === 'srspSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+
     const pipeline = [
       {
         $match: {
@@ -731,14 +798,25 @@ const srspParameterOverviewReport = async (
       totalCount,
       totalPage,
     };
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
-const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, res, req) => {
+const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if (
+      user.role === 'admin' ||
+      user.role === 'srspSuperuser' ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+
     const pipeline = [
       {
           $match: {
@@ -955,6 +1033,9 @@ const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, currentP
       totalCount,
       totalPage,
     };
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -1063,7 +1144,7 @@ const sevenDayReport = async (user) => {
 };
 
 //Report Download
-const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipelineWithoutPagination = [
       {
@@ -1163,15 +1244,17 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
-      addImageToWorksheet(chetasImagePath, [18, 20]);
-
-      worksheet.getCell('H9').value = 'SRSP Dam Gate 1 To 21 Discharge Report';
-      const cell = worksheet.getCell('H9');
-      cell.font = { bold: true, size: 20 };
+      addImageToWorksheet(chetasImagePath, [18.6, 20]);
 
       const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 1} \n (Cusecs)`)];
-      worksheet.addRow([]);
-      worksheet.addRow(headers);
+      worksheet.addRows([[]]);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       srspDischargeGate1TO21ReportWithoutPagination.forEach((row) => {
         const rowData = [row.dateTime, ...Array.from({ length: 21 }, (_, i) => row[`gate${i + 1}Discharge`])];
@@ -1182,9 +1265,6 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
 
       worksheet.mergeCells('A1:V8');
       const mergedCell = worksheet.getCell('A1');
@@ -1195,6 +1275,37 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
         bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
+
+      mergedCell.value = 'SRSP Dam Gate 1 To 21 Discharge Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21__Discharge_Report.xlsx');
@@ -1237,8 +1348,6 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
       csvStream.end();
     } else if (exportToExcel == 3) {
       try {
-        const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
-        const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
         const itemsPerPage = 26; // Number of dates to print per page
         const totalItems = srspDischargeGate1TO21ReportWithoutPagination.length; // Total number of dates
@@ -1267,10 +1376,10 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
                 children: [
                   // Left image
                   new Docx.ImageRun({
-                    data: fs.readFileSync(logoImagePath),
+                    data: fs.readFileSync(hyderabadImagePath),
                     transformation: {
-                      width: 100,
-                      height: 100,
+                      width: 140,
+                      height: 105,
                     },
                     floating: {
                       horizontalPosition: {
@@ -1287,8 +1396,8 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
                   new Docx.ImageRun({
                     data: fs.readFileSync(chetasImagePath),
                     transformation: {
-                      width: 100,
-                      height: 100,
+                      width: 80,
+                      height: 110,
                     },
                     floating: {
                       horizontalPosition: {
@@ -1409,7 +1518,7 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
   }
 };
 
-const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipelineWithoutPagination = [
       {
@@ -1510,15 +1619,17 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
-      addImageToWorksheet(chetasImagePath, [18, 20]);
-
-      worksheet.getCell('H9').value = 'SRSP Dam Gate 22 To 42 Discharge Report';
-      const cell = worksheet.getCell('H9');
-      cell.font = { bold: true, size: 20 };
+      addImageToWorksheet(chetasImagePath, [18.6, 20]);
 
       const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 22} \n (Cusecs)`)];
       worksheet.addRow([]);
-      worksheet.addRow(headers);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       srspDischargeGate22TO42ReportWithoutPagination.forEach((row) => {
         const rowData = [row.dateTime, ...Array.from({ length: 21 }, (_, i) => row[`gate${i + 22}Discharge`])];
@@ -1529,10 +1640,6 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
-
       worksheet.mergeCells('A1:V8');
       const mergedCell = worksheet.getCell('A1');
 
@@ -1542,6 +1649,39 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
         bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
+
+      
+      mergedCell.value = 'SRSP Dam Gate 22 To 42 Discharge Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
+
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42__Discharge_Report.xlsx');
@@ -1591,8 +1731,6 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
       csvStream.end();
     } else if (exportToExcel == 3) {
       try {
-        const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
-        const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
         const itemsPerPage = 26; // Number of dates to print per page
         const totalItems = srspDischargeGate22TO42ReportWithoutPagination.length; // Total number of dates
@@ -1621,10 +1759,10 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
                 children: [
                   // Left image
                   new Docx.ImageRun({
-                    data: fs.readFileSync(logoImagePath),
+                    data: fs.readFileSync(hyderabadImagePath),
                     transformation: {
-                      width: 100,
-                      height: 100,
+                      width: 140,
+                      height: 105,
                     },
                     floating: {
                       horizontalPosition: {
@@ -1763,7 +1901,7 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
   }
 };
 
-const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipelineWithoutPagination = [
       {
@@ -1861,15 +1999,17 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
-      addImageToWorksheet(chetasImagePath, [18, 20]);
-
-      worksheet.getCell('H9').value = 'SRSP Dam Gate 1 To 21 Opening Report';
-      const cell = worksheet.getCell('H9');
-      cell.font = { bold: true, size: 20 };
+      addImageToWorksheet(chetasImagePath, [18.6, 20]);
 
       const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 1} \n (Feet)`)];
-      worksheet.addRow([]);
-      worksheet.addRow(headers);
+      worksheet.addRows([[]]);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       srspOpeningGate1TO21ReportWithoutPagination.forEach((row) => {
         const rowData = [row.dateTime, ...Array.from({ length: 21 }, (_, i) => row[`gate${i + 1}Position`])];
@@ -1880,10 +2020,6 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
-
       worksheet.mergeCells('A1:V8');
       const mergedCell = worksheet.getCell('A1');
 
@@ -1893,6 +2029,37 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
         bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
+
+      mergedCell.value = 'SRSP Dam Gate 1 To 21 Opening Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21__Opening_Report.xlsx');
@@ -1936,8 +2103,6 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
       csvStream.end();
     } else if (exportToExcel == 3) {
       try {
-        const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
-        const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
         const itemsPerPage = 26; // Number of dates to print per page
         const totalItems = srspOpeningGate1TO21ReportWithoutPagination.length; // Total number of dates
@@ -1966,10 +2131,10 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
                 children: [
                   // Left image
                   new Docx.ImageRun({
-                    data: fs.readFileSync(logoImagePath),
+                    data: fs.readFileSync(hyderabadImagePath),
                     transformation: {
-                      width: 100,
-                      height: 100,
+                      width: 140,
+                      height: 105,
                     },
                     floating: {
                       horizontalPosition: {
@@ -2108,7 +2273,7 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
   }
 };
 
-const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipelineWithoutPagination = [
       {
@@ -2209,15 +2374,17 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
-      addImageToWorksheet(chetasImagePath, [18, 20]);
-
-      worksheet.getCell('H9').value = 'SRSP Dam Gate 22 To 42 Opening Report';
-      const cell = worksheet.getCell('H9');
-      cell.font = { bold: true, size: 20 };
+      addImageToWorksheet(chetasImagePath, [18.6, 20]);
 
       const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 22} \n (Feet)`)];
-      worksheet.addRow([]);
-      worksheet.addRow(headers);
+      worksheet.addRows([[]]);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       srspOpeningGate22TO42ReportWithoutPagination.forEach((row) => {
         const rowData = [row.dateTime, ...Array.from({ length: 21 }, (_, i) => row[`gate${i + 22}Position`])];
@@ -2228,10 +2395,6 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
-
       worksheet.mergeCells('A1:V8');
       const mergedCell = worksheet.getCell('A1');
 
@@ -2241,6 +2404,37 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
         bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
+
+      mergedCell.value = 'SRSP Dam Gate 22 To 42 Opening Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42__Opening_Report.xlsx');
@@ -2284,9 +2478,7 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
       csvStream.end();
     } else if (exportToExcel == 3) {
       try {
-        const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
-        const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
-
+   
         const itemsPerPage = 26; // Number of dates to print per page
         const totalItems = srspOpeningGate22TO42ReportWithoutPagination.length; // Total number of dates
         const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
@@ -2314,10 +2506,10 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
                 children: [
                   // Left image
                   new Docx.ImageRun({
-                    data: fs.readFileSync(logoImagePath),
+                    data: fs.readFileSync(hyderabadImagePath),
                     transformation: {
-                      width: 100,
-                      height: 100,
+                      width: 140,
+                      height: 105,
                     },
                     floating: {
                       horizontalPosition: {
@@ -2456,7 +2648,7 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
   }
 };
 
-const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipelineWithoutPagination = [
       {
@@ -2528,11 +2720,7 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 2.5]);
-      addImageToWorksheet(chetasImagePath, [6, 7]);
-
-      worksheet.getCell('C9').value = 'SRSP Dam Gate 1 To 21 Opening Report';
-      const cell = worksheet.getCell('C9');
-      cell.font = { bold: true, size: 20 };
+      addImageToWorksheet(chetasImagePath, [6.5, 7]);
 
       const headers = [
         'DateTime',
@@ -2545,7 +2733,13 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
         'Pond Level (Feet)',
       ];
       worksheet.addRow([]);
-      worksheet.addRow(headers);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       srspInflowOutflowPondLevelReportWithoutPagination.forEach((row) => {
         const rowData = [
@@ -2565,10 +2759,6 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
-
       worksheet.columns.forEach((column) => {
         column.width = 20;
       });
@@ -2582,6 +2772,37 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
         bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
+
+      mergedCell.value = 'SRSP Dam Inflow Outflow Pond-Level Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Inflow_Outflow_PondLevel_Report.xlsx');
@@ -2610,8 +2831,6 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
       csvStream.pipe(res);
       csvStream.end();
     } else if (exportToExcel == 3) {
-      const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
-      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
 
       const itemsPerPage = 25; // Number of dates to print per page
       const totalItems = srspInflowOutflowPondLevelReportWithoutPagination.length; // Total number of dates
@@ -2640,10 +2859,10 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
               children: [
                 // Left image
                 new Docx.ImageRun({
-                  data: fs.readFileSync(logoImagePath),
+                  data: fs.readFileSync(hyderabadImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 140,
+                    height: 105,
                   },
                   floating: {
                     horizontalPosition: {
@@ -2708,13 +2927,13 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
                         children: [new Docx.Paragraph(formattedDate)],
                         width: { size: 12, type: Docx.WidthType.PERCENTAGE },
                       }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Level.toFixed(3))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Discharge.toFixed(3))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Level.toFixed(3))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Discharge.toFixed(3))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamLevel.toFixed(3))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamDischarge.toFixed(3))] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(3))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Level.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Level.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamLevel.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamDischarge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(2))] }),
                     ],
                   });
                 }),
@@ -2764,7 +2983,7 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
   }
 };
 
-const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipelineWithoutPagination = [
       {
@@ -2845,11 +3064,11 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
-      addImageToWorksheet(chetasImagePath, [8, 9]);
+      addImageToWorksheet(chetasImagePath, [8.5, 9]);
 
-      worksheet.getCell('E9').value = 'SRSP Dam Parameter Overview Report';
-      const cell = worksheet.getCell('E9');
-      cell.font = { bold: true, size: 20 };
+      // worksheet.getCell('E9').value = 'SRSP Dam Parameter Overview Report';
+      // const cell = worksheet.getCell('E9');
+      // cell.font = { bold: true, size: 20 };
 
       const headers = [
         'DateTime',
@@ -2867,7 +3086,13 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
         'Cumulative Dam Discharge (TMC)',
       ];
       worksheet.addRow([]);
-      worksheet.addRow(headers);
+     
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       srspParameterOverviewReportWithoutPagination.forEach((row) => {
         const rowData = [
@@ -2892,9 +3117,6 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
 
       worksheet.columns.forEach((column) => {
         column.width = 20;
@@ -2909,6 +3131,37 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
         bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
+
+      mergedCell.value = 'SRSP Dam Parameter Overview Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Parameter_Overview_Report.xlsx');
@@ -2952,9 +3205,7 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
       // End the CSV stream to complete the response
       csvStream.end();
     } else if (exportToExcel == 3) {
-      const logoImagePath = path.join(__dirname, '../../views/hyderabad.png');
-      const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
-
+   
       const itemsPerPage = 25; // Number of dates to print per page
       const totalItems = srspParameterOverviewReportWithoutPagination.length; // Total number of dates
       const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
@@ -2982,10 +3233,10 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
               children: [
                 // Left image
                 new Docx.ImageRun({
-                  data: fs.readFileSync(logoImagePath),
+                  data: fs.readFileSync(hyderabadImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 140,
+                    height: 105,
                   },
                   floating: {
                     horizontalPosition: {
@@ -3118,7 +3369,7 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
   }
 };
 
-const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const srspHrKakatitaDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipelineWithoutPagination = [
       {
@@ -3142,8 +3393,6 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
           hrkGate2Position: { $first: '$hrkGate2Position' },
           hrkGate3Position: { $first: '$hrkGate3Position' },
           hrkGate4Position: { $first: '$hrkGate4Position' },
-          hrsGate1Position: { $first: '$hrsGate1Position' },
-          hrsGate2Position: { $first: '$hrsGate2Position' },
         },
       },
       {
@@ -3153,9 +3402,7 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
           hrkGate1Position: 1,
           hrkGate2Position: 1,
           hrkGate3Position: 1,
-          hrkGate4Position: 1,
-          hrsGate1Position: 1,
-          hrsGate2Position: 1,
+          hrkGate4Position: 1
         },
       },
       {
@@ -3186,9 +3433,7 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
           hrkGate1Discharge: { $first: '$hrkGate1Discharge' },
           hrkGate2Discharge: { $first: '$hrkGate2Discharge' },
           hrkGate3Discharge: { $first: '$hrkGate3Discharge' },
-          hrkGate4Discharge: { $first: '$hrkGate4Discharge' },
-          hrsGate1Discharge: { $first: '$hrsGate1Discharge' },
-          hrsGate2Discharge: { $first: '$hrsGate2Discharge' },
+          hrkGate4Discharge: { $first: '$hrkGate4Discharge' }
         },
       },
       {
@@ -3198,9 +3443,7 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
           hrkGate1Discharge: 1,
           hrkGate2Discharge: 1,
           hrkGate3Discharge: 1,
-          hrkGate4Discharge: 1,
-          hrsGate1Discharge: 1,
-          hrsGate2Discharge: 1,
+          hrkGate4Discharge: 1
         },
       },
       {
@@ -3223,19 +3466,13 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
       const hrkGate2Discharge = disDataWithoutPagination[index]?.hrkGate2Discharge || 0;
       const hrkGate3Discharge = disDataWithoutPagination[index]?.hrkGate3Discharge || 0;
       const hrkGate4Discharge = disDataWithoutPagination[index]?.hrkGate4Discharge || 0;
-      const hrsGate1Discharge = disDataWithoutPagination[index]?.hrsGate1Discharge || 0;
-      const hrsGate2Discharge = disDataWithoutPagination[index]?.hrsGate2Discharge || 0;
 
       const kakatiyaTotalDischarge = hrkGate1Discharge + hrkGate2Discharge + hrkGate3Discharge + hrkGate4Discharge;
-      const saraswatiTotalDischarge = hrsGate1Discharge + hrsGate2Discharge;
-
       return {
         hrkGate1Position: posDataWithoutPagination[index]?.hrkGate1Position || 0,
         hrkGate2Position: posDataWithoutPagination[index]?.hrkGate2Position || 0,
         hrkGate3Position: posDataWithoutPagination[index]?.hrkGate3Position || 0,
         hrkGate4Position: posDataWithoutPagination[index]?.hrkGate4Position || 0,
-        hrsGate1Position: posDataWithoutPagination[index]?.hrsGate1Position || 0,
-        hrsGate2Position: posDataWithoutPagination[index]?.hrsGate2Position || 0,
         dateTime: posDataWithoutPagination[index]?.dateTime || disDataWithoutPagination[index]?.dateTime || null,
 
         hrkGate1Discharge: hrkGate1Discharge,
@@ -3243,15 +3480,12 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
         hrkGate3Discharge: hrkGate3Discharge,
         hrkGate4Discharge: hrkGate4Discharge,
         kakatiyaTotalDischarge: kakatiyaTotalDischarge,
-        hrsGate1Discharge: hrsGate1Discharge,
-        hrsGate2Discharge: hrsGate2Discharge,
-        saraswatiTotalDischarge: saraswatiTotalDischarge,
       };
     });
 
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet('SRSP HR Kakatiya & Saraswati canal Gate Report');
+      const worksheet = workbook.addWorksheet('SRSP HR Kakatiya canal Gate Report');
 
       const addImageToWorksheet = (imagePath, colRange) => {
         const imageId = workbook.addImage({
@@ -3267,32 +3501,32 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
         });
       };
 
-      addImageToWorksheet(hyderabadImagePath, [1, 4]);
-      addImageToWorksheet(chetasImagePath, [17, 19]);
+      addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
+      addImageToWorksheet(chetasImagePath, [8.8, 9]);
 
-      worksheet.getCell('H9').value = 'SRSP HR Kakatiya & Saraswati canal Gate Report';
-      const cell = worksheet.getCell('H9');
-      cell.font = { bold: true, size: 20 };
 
       const headers = [
         'DateTime',
-        'Kakatiya Gate 1 Opening (Feet)',
-        'Kakatiya Gate 1 Discharge (C/S)',
-        'Kakatiya Gate 2 Opening (Feet)',
-        'Kakatiya Gate 2 Discharge (C/S)',
-        'Kakatiya Gate 3 Opening (Feet)',
-        'Kakatiya Gate 3 Discharge (C/S)',
-        'Kakatiya Gate 4 Opening (Feet)',
-        'Kakatiya Gate 4 Discharge (C/S)',
-        'Kakatiya Total Discharge (C/S)',
-        'Saraswati Gate 1 Opening (Feet)',
-        'Saraswati Gate 1 Discharge (C/S)',
-        'Saraswati Gate 2 Opening (Feet)',
-        'Saraswati Gate 2 Discharge (C/S)',
-        'Saraswati Total Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Total Discharge (C/S)',
       ];
-      worksheet.addRow([]);
+
+      worksheet.addRows([[], headers]);
       worksheet.addRow(headers);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       mergedDataWithoutPagination.forEach((row) => {
         const rowData = [
@@ -3306,11 +3540,6 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
           row.hrkGate4Position,
           row.hrkGate4Discharge,
           row.kakatiyaTotalDischarge,
-          row.hrsGate1Position,
-          row.hrsGate1Discharge,
-          row.hrsGate2Position,
-          row.hrsGate2Discharge,
-          row.saraswatiTotalDischarge,
         ];
         worksheet.addRow(rowData);
       });
@@ -3327,7 +3556,7 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
         column.width = 20;
       });
 
-      worksheet.mergeCells('A1:U8');
+      worksheet.mergeCells('A1:J8');
       const mergedCell = worksheet.getCell('A1');
 
       mergedCell.border = {
@@ -3337,9 +3566,505 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
 
+      mergedCell.value = 'SRSP HR Kakatiya canal Gate Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(13).height = 30;
+
+      worksheet.getRow(13).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
+
+      const mergedCellA11B12 = worksheet.getCell('A11');
+      mergedCellA11B12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellA11B12.font = { bold: true };
+      mergedCellA11B12.value = 'Date-Time';
+      worksheet.mergeCells('A11:A13');
+      applyBorder(mergedCellA11B12);
+
+      const mergedCellB11C12 = worksheet.getCell('B11');
+      mergedCellB11C12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellB11C12.font = { bold: true };
+      mergedCellB11C12.value = 'Gate 1';
+      worksheet.mergeCells('B11:C12');
+      applyBorder(mergedCellB11C12);
+
+      const mergedCellD11E12 = worksheet.getCell('D11');
+      mergedCellD11E12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellD11E12.font = { bold: true };
+      mergedCellD11E12.value = 'Gate 2';
+      worksheet.mergeCells('D11:E12');
+      applyBorder(mergedCellD11E12);
+
+      const mergedCellF11G12 = worksheet.getCell('F11');
+      mergedCellF11G12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellF11G12.font = { bold: true };
+      mergedCellF11G12.value = 'Gate 3';
+      worksheet.mergeCells('F11:G12');
+      applyBorder(mergedCellF11G12);
+
+      const mergedCellH11I12 = worksheet.getCell('H11');
+      mergedCellH11I12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellH11I12.font = { bold: true };
+      mergedCellH11I12.value = 'Gate 4';
+      worksheet.mergeCells('H11:I12');
+      applyBorder(mergedCellH11I12);
+
+      const mergedCellJ11J12 = worksheet.getCell('J11');
+      mergedCellJ11J12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellJ11J12.font = { bold: true };
+      mergedCellJ11J12.value = 'Total Discharge (C/S)';
+      worksheet.mergeCells('J11:J13');
+      applyBorder(mergedCellJ11J12);
+   
+
+      
+      function applyBorder(cell) {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      }
+
+
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Kakatiya_Saraswati_Dam_Gate_Report.xlsx');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Kakatiya_Dam_Gate_Report.xlsx');
       await workbook.xlsx.write(res);
+    } else if (exportToExcel == 2) {
+    }  else if (exportToExcel == 3) {
+      const itemsPerPage = 25; // Number of dates to print per page
+      const totalItems = mergedDataWithoutPagination.length; // Total number of dates
+      const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = mergedDataWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(hyderabadImagePath),
+                  transformation: {
+                    width: 140,
+                    height: 105,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+
+            // Heading
+            new Docx.Paragraph({
+              text: 'SRSP HR Kakatiya canal Gate Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Date Time')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Kakatiya gate 1 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Kakatiya gate 1 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Kakatiya gate 2 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Kakatiya gate 2 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Kakatiya gate 3 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Kakatiya gate 3 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Kakatiya gate 4 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Kakatiya gate 4 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Kakatiya Total Discharge (C/S)')] })
+                  ],
+                }),
+
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                  return new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph(formattedDate)],
+                        width: { size: 12, type: Docx.WidthType.PERCENTAGE },
+                      }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrkGate1Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrkGate1Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrkGate2Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrkGate2Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrkGate3Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrkGate3Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrkGate4Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrkGate4Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.kakatiyaTotalDischarge.toFixed(2))] })
+                    ],
+                  });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Kakatiya_Dam_Gate_Report.docx');
+
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
+
+    } else if (exportToExcel == 4) {
+      try {
+        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspKakatiyaAndSaraswatiGate.ejs'), {
+          mergedDataWithoutPagination: mergedDataWithoutPagination,
+        });
+
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+        await page.setContent(dynamicHtml);
+
+        const pdfBuffer = await page.pdf({ format: 'Letter' });
+
+        // Close browser
+        await browser.close();
+
+        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Kakatiya_Dam_Gate_Report.pdf');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(pdfBuffer);
+      } catch (error) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+      }
+    } else {
+      res.send(mergedDataWithoutPagination);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspHrSaraswatiDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
+  try {
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          hrsGate1Position: { $first: '$hrsGate1Position' },
+          hrsGate2Position: { $first: '$hrsGate2Position' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrsGate1Position: 1,
+          hrsGate2Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const pipeline1WithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          hrsGate1Discharge: { $first: '$hrsGate1Discharge' },
+          hrsGate2Discharge: { $first: '$hrsGate2Discharge' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrsGate1Discharge: 1,
+          hrsGate2Discharge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const srspHrDamGateReportPosWithoutPagination = await SRSP_HR_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
+    const srspHrDamGateReportDisWithoutPagination = await SRSP_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1WithoutPagination);
+
+    let posDataWithoutPagination = srspHrDamGateReportPosWithoutPagination || [];
+    let disDataWithoutPagination = srspHrDamGateReportDisWithoutPagination || [];
+
+    let minLengthWithoutPagination = Math.max(posDataWithoutPagination.length, disDataWithoutPagination.length);
+
+    let mergedDataWithoutPagination = Array.from({ length: minLengthWithoutPagination }, (_, index) => {
+      const hrsGate1Discharge = disDataWithoutPagination[index]?.hrsGate1Discharge || 0;
+      const hrsGate2Discharge = disDataWithoutPagination[index]?.hrsGate2Discharge || 0;
+
+      const saraswatiTotalDischarge = hrsGate1Discharge + hrsGate2Discharge;
+
+      return {
+        hrsGate1Position: posDataWithoutPagination[index]?.hrsGate1Position || 0,
+        hrsGate2Position: posDataWithoutPagination[index]?.hrsGate2Position || 0,
+        dateTime: posDataWithoutPagination[index]?.dateTime || disDataWithoutPagination[index]?.dateTime || null,
+
+        hrsGate1Discharge: hrsGate1Discharge,
+        hrsGate2Discharge: hrsGate2Discharge,
+        saraswatiTotalDischarge: saraswatiTotalDischarge,
+      };
+    });
+
+    if (exportToExcel == 1) {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('SRSP HR Saraswati canal Gate Report');
+
+      const addImageToWorksheet = (imagePath, colRange) => {
+        const imageId = workbook.addImage({
+          filename: imagePath,
+          extension: 'png',
+          dimensions: { height: 100, width: 100 },
+        });
+
+        worksheet.addImage(imageId, {
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
+          editAs: 'oneCell',
+        });
+      };
+
+      addImageToWorksheet(hyderabadImagePath, [1, 2]);
+      addImageToWorksheet(chetasImagePath, [4.9, 5]);
+
+      // worksheet.getCell('H9').value = 'SRSP HR Kakatiya & Saraswati canal Gate Report';
+      // const cell = worksheet.getCell('H9');
+      // cell.font = { bold: true, size: 20 };
+
+      const headers = [
+        'DateTime',
+        'Gate 1 Opening (Feet)',
+        'Gate 1 Discharge (C/S)',
+        'Gate 2 Opening (Feet)',
+        'Gate 2 Discharge (C/S)',
+        'Total Discharge (C/S)',
+      ];
+
+      worksheet.addRows([[], headers]);
+      worksheet.addRow(headers);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
+
+
+      mergedDataWithoutPagination.forEach((row) => {
+        const rowData = [
+          row.dateTime,
+          row.hrsGate1Position,
+          row.hrsGate1Discharge,
+          row.hrsGate2Position,
+          row.hrsGate2Discharge,
+          row.saraswatiTotalDischarge,
+        ];
+        worksheet.addRow(rowData);
+      });
+
+   const dateTimeColumn = worksheet.getColumn(1);
+      dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
+      worksheet.getRow(3).height = 20;
+
+      worksheet.columns.forEach((column) => {
+        column.width = 25;
+    });
+
+    worksheet.mergeCells('A1:F8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
+
+      mergedCell.value = 'SRSP HR Saraswati canal Gate Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(13).height = 30;
+
+      worksheet.getRow(13).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['B', 'C', 'D', 'E', 'F'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
+
+      const mergedCellA11B12 = worksheet.getCell('A11');
+      mergedCellA11B12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellA11B12.font = { bold: true };
+      mergedCellA11B12.value = 'Date-Time';
+      worksheet.mergeCells('A11:A13');
+      applyBorder(mergedCellA11B12);
+
+      const mergedCellB11C12 = worksheet.getCell('B11');
+      mergedCellB11C12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellB11C12.font = { bold: true };
+      mergedCellB11C12.value = 'Gate 1';
+      worksheet.mergeCells('B11:C12');
+      applyBorder(mergedCellB11C12);
+
+      const mergedCellD11E12 = worksheet.getCell('D11');
+      mergedCellD11E12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellD11E12.font = { bold: true };
+      mergedCellD11E12.value = 'Gate 2';
+      worksheet.mergeCells('D11:E12');
+      applyBorder(mergedCellD11E12);
+
+      const mergedCellF11G12 = worksheet.getCell('F11');
+      mergedCellF11G12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellF11G12.font = { bold: true };
+      mergedCellF11G12.value = 'Total Discharge (C/S)';
+      worksheet.mergeCells('F11:F13');
+      applyBorder(mergedCellF11G12);
+   
+
+      
+      function applyBorder(cell) {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      }
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Saraswati_Dam_Gate_Report.xlsx');
+      await workbook.xlsx.write(res);
+      
     } else if (exportToExcel == 2) {
       const csvStream = fastCsv.format({ headers: true });
 
@@ -3375,146 +4100,127 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
 
       csvStream.pipe(res);
       csvStream.end();
-    } else if (exportToExcel == 3) {
-      try {
-        const itemsPerPage = 26; // Number of dates to print per page
-        const totalItems = lmdDischargeGateReport1.length; // Total number of dates
-        const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+    }  else if (exportToExcel == 3) {
+      const itemsPerPage = 25; // Number of dates to print per page
+      const totalItems = mergedDataWithoutPagination.length; // Total number of dates
+      const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
 
-        const sections = [];
-        for (let page = 0; page < totalPages; page++) {
-          const startIndex = page * itemsPerPage;
-          const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-          const pageData = lmdDischargeGateReport1.slice(startIndex, endIndex);
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = mergedDataWithoutPagination.slice(startIndex, endIndex);
 
-          sections.push({
-            properties: {
-              page: {
-                margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
-                size: {
-                  orientation: Docx.PageOrientation.PORTRAIT,
-                  width: 12240,
-                  height: 15840,
-                },
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
               },
             },
-            children: [
-              // Add your images and heading here at the top of every page
-              new Docx.Paragraph({
-                children: [
-                  // Left image
-                  new Docx.ImageRun({
-                    data: fs.readFileSync(hyderabadImagePath),
-                    transformation: {
-                      width: 100,
-                      height: 100,
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(hyderabadImagePath),
+                  transformation: {
+                    width: 140,
+                    height: 105,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
                     },
-                    floating: {
-                      horizontalPosition: {
-                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
-                        align: Docx.HorizontalPositionAlign.LEFT,
-                      },
-                      verticalPosition: {
-                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
-                        align: Docx.VerticalPositionAlign.TOP,
-                      },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
                     },
-                  }),
-                  // Right image
-                  new Docx.ImageRun({
-                    data: fs.readFileSync(chetasImagePath),
-                    transformation: {
-                      width: 100,
-                      height: 100,
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
                     },
-                    floating: {
-                      horizontalPosition: {
-                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
-                        align: Docx.HorizontalPositionAlign.RIGHT,
-                      },
-                      verticalPosition: {
-                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
-                        align: Docx.VerticalPositionAlign.TOP,
-                      },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
                     },
-                  }),
-                ],
-              }),
+                  },
+                }),
+              ],
+            }),
 
-              // Heading
-              new Docx.Paragraph({
-                text: 'LMD Discharge Gate Report',
-                heading: Docx.HeadingLevel.HEADING_1,
-                alignment: Docx.AlignmentType.CENTER,
-              }),
+            // Heading
+            new Docx.Paragraph({
+              text: 'SRSP HR Saraswati canal Gate Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
 
-              // Table
-              new Docx.Table({
-                width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
-                rows: [
-                  // Table header
-                  new Docx.TableRow({
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Date Time')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Saraswati gate 1 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Saraswati gate 1 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Saraswati gate 2 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Saraswati gate 2 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Saraswati Total Discharge (C/S)')] }),
+                  ],
+                }),
+
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                  return new Docx.TableRow({
                     children: [
                       new Docx.TableCell({
-                        children: [new Docx.Paragraph('Date Time')],
-                        alignment: { horizontal: Docx.AlignmentType.CENTER },
-                        // Adjusted width for Date Time column
+                        children: [new Docx.Paragraph(formattedDate)],
+                        width: { size: 12, type: Docx.WidthType.PERCENTAGE },
                       }),
-                      // Adjust the width for each gate column
-                      ...Array.from(
-                        { length: 20 },
-                        (_, i) =>
-                          new Docx.TableCell({
-                            children: [new Docx.Paragraph(`Gate ${i + 1}`)],
-                            alignment: { horizontal: Docx.AlignmentType.CENTER },
-                            // Adjusted width for gate columns
-                          })
-                      ),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrsGate1Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrsGate1Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrsGate2Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrsGate2Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.saraswatiTotalDischarge.toFixed(2))] }),
                     ],
-                  }),
-
-                  // Table rows
-                  ...pageData.map((item) => {
-                    const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
-                    return new Docx.TableRow({
-                      children: [
-                        new Docx.TableCell({
-                          children: [new Docx.Paragraph(formattedDate)],
-                          alignment: { horizontal: Docx.AlignmentType.CENTER },
-                          // Adjusted width for Date Time column
-                        }),
-                        // Include each gate discharge value
-                        ...Array.from(
-                          { length: 20 },
-                          (_, i) =>
-                            new Docx.TableCell({
-                              children: [new Docx.Paragraph(item[`gate${i + 1}Discharge`].toString())],
-                              alignment: { horizontal: Docx.AlignmentType.CENTER },
-                              // Adjusted width for gate columns
-                            })
-                        ),
-                      ],
-                    });
-                  }),
-                ],
-              }),
-            ],
-          });
-        }
-
-        const doc = new Docx.Document({ sections: sections });
-
-        // Set response headers
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        res.setHeader('Content-Disposition', 'attachment; filename=LMD_Discharge_Gate_Report.docx');
-
-        // Stream the Word document to the response
-        const buffer = await Docx.Packer.toBuffer(doc);
-        res.end(buffer);
-      } catch (error) {
-        console.error('Error:', error);
-        res.status(500).send('Internal Server Error');
+                  });
+                }),
+              ],
+            }),
+          ],
+        });
       }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Saraswati_Dam_Gate_Report.docx');
+
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
+
     } else if (exportToExcel == 4) {
       try {
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspKakatiyaAndSaraswatiGate.ejs'), {
@@ -3546,7 +4252,7 @@ const srspHrKakatitaAndSaraswatiDamGateReportWp = async (startDate, endDate, int
   }
 };
 
-const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const srspHrFloodFlowDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipelineWithoutPagination = [
       {
@@ -3572,8 +4278,6 @@ const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, inte
           hrfGate4Position: { $first: '$hrfGate4Position' },
           hrfGate5Position: { $first: '$hrfGate5Position' },
           hrfGate6Position: { $first: '$hrfGate6Position' },
-          hrlManGate1Position: { $first: '$hrlManGate1Position' },
-          hrlManGate2Position: { $first: '$hrlManGate2Position' },
         },
       },
       {
@@ -3586,8 +4290,6 @@ const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, inte
           hrfGate4Position: 1,
           hrfGate5Position: 1,
           hrfGate6Position: 1,
-          hrlManGate1Position: 1,
-          hrlManGate2Position: 1,
         },
       },
       {
@@ -3621,8 +4323,6 @@ const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, inte
           hrfGate4Discharge: { $first: '$hrfGate4Discharge' },
           hrfGate5Discharge: { $first: '$hrfGate5Discharge' },
           hrfGate6Discharge: { $first: '$hrfGate6Discharge' },
-          hrlManGate1Discharge: { $first: '$hrlManGate1Discharge' },
-          hrlManGate2Discharge: { $first: '$hrlManGate2Discharge' },
         },
       },
       {
@@ -3635,8 +4335,6 @@ const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, inte
           hrfGate4Discharge: 1,
           hrfGate5Discharge: 1,
           hrfGate6Discharge: 1,
-          hrlManGate1Discharge: 1,
-          hrlManGate2Discharge: 1,
         },
       },
       {
@@ -3661,8 +4359,6 @@ const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, inte
       const hrfGate4Discharge = disDataWithoutPagination[index]?.hrfGate4Discharge || 0;
       const hrfGate5Discharge = disDataWithoutPagination[index]?.hrfGate5Discharge || 0;
       const hrfGate6Discharge = disDataWithoutPagination[index]?.hrfGate6Discharge || 0;
-      const hrlManGate1Discharge = disDataWithoutPagination[index]?.hrlManGate1Discharge || 0;
-      const hrlManGate2Discharge = disDataWithoutPagination[index]?.hrlManGate2Discharge || 0;
 
       const floodFlowTotalDischarge =
         hrfGate1Discharge +
@@ -3670,8 +4366,7 @@ const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, inte
         hrfGate3Discharge +
         hrfGate4Discharge +
         hrfGate5Discharge +
-        hrfGate6Discharge;
-      const lakshmiGateTotalDischarge = hrlManGate1Discharge + hrlManGate2Discharge;
+        hrfGate6Discharge; 
 
       return {
         hrfGate1Position: posDataWithoutPagination[index]?.hrfGate1Position || 0,
@@ -3680,8 +4375,6 @@ const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, inte
         hrfGate4Position: posDataWithoutPagination[index]?.hrfGate4Position || 0,
         hrfGate5Position: posDataWithoutPagination[index]?.hrfGate5Position || 0,
         hrfGate6Position: posDataWithoutPagination[index]?.hrfGate6Position || 0,
-        hrlManGate1Position: posDataWithoutPagination[index]?.hrlManGate1Position || 0,
-        hrlManGate2Position: posDataWithoutPagination[index]?.hrlManGate2Position || 0,
         dateTime: posDataWithoutPagination[index]?.dateTime || disDataWithoutPagination[index]?.dateTime || null,
 
         hrfGate1Discharge: hrfGate1Discharge,
@@ -3691,16 +4384,351 @@ const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, inte
         hrfGate5Discharge: hrfGate5Discharge,
         hrfGate6Discharge: hrfGate6Discharge,
         floodFlowTotalDischarge: floodFlowTotalDischarge,
-        hrlManGate1Discharge: hrlManGate1Discharge,
-        hrlManGate2Discharge: hrlManGate2Discharge,
-        lakshmiGateTotalDischarge: lakshmiGateTotalDischarge,
       };
     });
 
     if (exportToExcel == 1) {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('SRSP HR Kakatiya canal Gate Report');
+
+      const addImageToWorksheet = (imagePath, colRange) => {
+        const imageId = workbook.addImage({
+          filename: imagePath,
+          extension: 'png',
+          dimensions: { height: 100, width: 100 },
+        });
+
+        worksheet.addImage(imageId, {
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
+          editAs: 'oneCell',
+        });
+      };
+
+      addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
+      addImageToWorksheet(chetasImagePath, [8.8, 9]);
+
+
+      const headers = [
+        'DateTime',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Total Discharge (C/S)',
+      ];
+
+      worksheet.addRows([[], headers]);
+      worksheet.addRow(headers);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
+
+      mergedDataWithoutPagination.forEach((row) => {
+        const rowData = [
+          row.dateTime,
+          row.hrfGate1Position,
+          row.hrfGate1Discharge,
+          row.hrfGate2Position,
+          row.hrfGate2Discharge,
+          row.hrfGate3Position,
+          row.hrfGate3Discharge,
+          row.hrfGate4Position,
+          row.hrfGate4Discharge,
+          row.hrfGate5Position,
+          row.hrfGate5Discharge,
+          row.hrfGate6Position,
+          row.hrfGate6Discharge,
+          row.floodFlowTotalDischarge,
+        ];
+        worksheet.addRow(rowData);
+      });
+
+      const dateTimeColumn = worksheet.getColumn(1);
+      dateTimeColumn.width = 20;
+      dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      worksheet.columns.forEach((column) => {
+        column.width = 20;
+      });
+
+      worksheet.mergeCells('A1:J8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, 
+        left: { style: 'thin', color: { argb: 'FF000000' } },
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, 
+        right: { style: 'thin', color: { argb: 'FF000000' } }, 
+      };
+
+      mergedCell.value = 'SRSP HR Flood Flow canal Gate Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(13).height = 30;
+
+      worksheet.getRow(13).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
+
+      const mergedCellA11B12 = worksheet.getCell('A11');
+      mergedCellA11B12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellA11B12.font = { bold: true };
+      mergedCellA11B12.value = 'Date-Time';
+      worksheet.mergeCells('A11:A13');
+      applyBorder(mergedCellA11B12);
+
+      const mergedCellB11C12 = worksheet.getCell('B11');
+      mergedCellB11C12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellB11C12.font = { bold: true };
+      mergedCellB11C12.value = 'Gate 1';
+      worksheet.mergeCells('B11:C12');
+      applyBorder(mergedCellB11C12);
+
+      const mergedCellD11E12 = worksheet.getCell('D11');
+      mergedCellD11E12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellD11E12.font = { bold: true };
+      mergedCellD11E12.value = 'Gate 2';
+      worksheet.mergeCells('D11:E12');
+      applyBorder(mergedCellD11E12);
+
+      const mergedCellF11G12 = worksheet.getCell('F11');
+      mergedCellF11G12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellF11G12.font = { bold: true };
+      mergedCellF11G12.value = 'Gate 3';
+      worksheet.mergeCells('F11:G12');
+      applyBorder(mergedCellF11G12);
+
+      const mergedCellH11I12 = worksheet.getCell('H11');
+      mergedCellH11I12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellH11I12.font = { bold: true };
+      mergedCellH11I12.value = 'Gate 4';
+      worksheet.mergeCells('H11:I12');
+      applyBorder(mergedCellH11I12);
+
+      const mergedCellJ11K12 = worksheet.getCell('J11');
+      mergedCellJ11K12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellJ11K12.font = { bold: true };
+      mergedCellJ11K12.value = 'Gate 5';
+      worksheet.mergeCells('J11:K12');
+      applyBorder(mergedCellJ11K12);
+
+      const mergedCellL11M12 = worksheet.getCell('L11');
+      mergedCellL11M12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellL11M12.font = { bold: true };
+      mergedCellL11M12.value = 'Gate 6';
+      worksheet.mergeCells('L11:M12');
+      applyBorder(mergedCellL11M12);
+
+      const mergedCellN11N12 = worksheet.getCell('N11');
+      mergedCellN11N12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellN11N12.font = { bold: true };
+      mergedCellN11N12.value = 'Total Discharge (C/S)';
+      worksheet.mergeCells('N11:N13');
+      applyBorder(mergedCellN11N12);
+   
+
+      
+      function applyBorder(cell) {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      }
+
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Flood_Flow_Dam_Gate_Report.xlsx');
+      await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
-    } else if (exportToExcel == 3) {
-    } else if (exportToExcel == 4) {
+    }  else if (exportToExcel == 3) {
+      const itemsPerPage = 25; 
+      const totalItems = mergedDataWithoutPagination.length; 
+      const totalPages = Math.ceil(totalItems / itemsPerPage); 
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = mergedDataWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(hyderabadImagePath),
+                  transformation: {
+                    width: 140,
+                    height: 105,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+
+            // Heading
+            new Docx.Paragraph({
+              text: 'SRSP HR Flood Flow canal Gate Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Date Time')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow gate 1 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow gate 1 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow gate 2 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow gate 2 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow gate 3 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow gate 3 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow gate 4 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow gate 4 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow gate 5 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow gate 5 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow gate 6 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow gate 6 Discharge (C/S)')] }),                
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Flood Flow Total Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Lakshmi gate 1 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Lakshmi gate 1 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Lakshmi gate 2 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Lakshmi gate 2 Discharge (C/S)')] }),           
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Lakshmi Total Discharge (C/S)')] }),
+                  ],
+                }),
+
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                  return new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph(formattedDate)],
+                        width: { size: 12, type: Docx.WidthType.PERCENTAGE },
+                      }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrfGate1Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrfGate1Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrfGate2Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrfGate2Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrfGate3Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrfGate3Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrfGate4Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrfGate4Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrfGate5Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrfGate5Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrfGate6Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrfGate6Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.floodFlowTotalDischarge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrlManGate1Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrlManGate1Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrlManGate2Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrlManGate2Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.lakshmiGateTotalDischarge.toFixed(2))] }),
+                    ],
+                  });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Flood_Flow_Dam_Gate_Report.docx');
+
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
+
+    }  else if (exportToExcel == 4) {
       try {
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/srspFloodFlowAndLakshmiGate.ejs'), {
           mergedDataWithoutPagination: mergedDataWithoutPagination,
@@ -3729,7 +4757,385 @@ const srspHrFloodFlowAndLakshmiDamGateReportWp = async (startDate, endDate, inte
   }
 };
 
-const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, res, req) => {
+const srspHrLakshmiDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
+  try {
+    const pipelineWithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          hrlManGate1Position: { $first: '$hrlManGate1Position' },
+          hrlManGate2Position: { $first: '$hrlManGate2Position' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrlManGate1Position: 1,
+          hrlManGate2Position: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const pipeline1WithoutPagination = [
+      {
+        $match: {
+          dateTime: {
+            $gt: new Date(startDate),
+            $lte: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            interval: {
+              $toDate: {
+                $subtract: [{ $toLong: '$dateTime' }, { $mod: [{ $toLong: '$dateTime' }, intervalMinutes * 60 * 1000] }],
+              },
+            },
+          },
+          hrlManGate1Discharge: { $first: '$hrlManGate1Discharge' },
+          hrlManGate2Discharge: { $first: '$hrlManGate2Discharge' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          dateTime: '$_id.interval',
+          hrlManGate1Discharge: 1,
+          hrlManGate2Discharge: 1,
+        },
+      },
+      {
+        $sort: {
+          dateTime: 1,
+        },
+      },
+    ];
+
+    const srspHrDamGateReportPosWithoutPagination = await SRSP_HR_DAM_OVERVIEW_POS.aggregate(pipelineWithoutPagination);
+    const srspHrDamGateReportDisWithoutPagination = await SRSP_HR_DAM_OVERVIEW_DICH.aggregate(pipeline1WithoutPagination);
+
+    let posDataWithoutPagination = srspHrDamGateReportPosWithoutPagination || [];
+    let disDataWithoutPagination = srspHrDamGateReportDisWithoutPagination || [];
+
+    let minLengthWithoutPagination = Math.max(posDataWithoutPagination.length, disDataWithoutPagination.length);
+
+    let mergedDataWithoutPagination = Array.from({ length: minLengthWithoutPagination }, (_, index) => {
+
+      const hrlManGate1Discharge = disDataWithoutPagination[index]?.hrlManGate1Discharge || 0;
+      const hrlManGate2Discharge = disDataWithoutPagination[index]?.hrlManGate2Discharge || 0;
+
+    
+      const lakshmiGateTotalDischarge = hrlManGate1Discharge + hrlManGate2Discharge;
+
+      return {
+        hrlManGate1Position: posDataWithoutPagination[index]?.hrlManGate1Position || 0,
+        hrlManGate2Position: posDataWithoutPagination[index]?.hrlManGate2Position || 0,
+        dateTime: posDataWithoutPagination[index]?.dateTime || disDataWithoutPagination[index]?.dateTime || null,
+
+        hrlManGate1Discharge: hrlManGate1Discharge,
+        hrlManGate2Discharge: hrlManGate2Discharge,
+        lakshmiGateTotalDischarge: lakshmiGateTotalDischarge,
+      };
+    });
+    if (exportToExcel == 1) {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('SRSP HR Lakshmi canal Gate Report');
+
+      const addImageToWorksheet = (imagePath, colRange) => {
+        const imageId = workbook.addImage({
+          filename: imagePath,
+          extension: 'png',
+          dimensions: { height: 100, width: 100 },
+        });
+
+        worksheet.addImage(imageId, {
+          tl: { col: colRange[0], row: 0 },
+          br: { col: colRange[1], row: 8 },
+          editAs: 'oneCell',
+        });
+      };
+
+      addImageToWorksheet(hyderabadImagePath, [1, 2]);
+      addImageToWorksheet(chetasImagePath, [4.9, 5]);
+
+
+      const headers = [
+        'DateTime',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Opening (Feet)',
+        'Discharge (C/S)',
+        'Total Discharge (C/S)',
+      ];
+
+      worksheet.addRows([[], headers]);
+      worksheet.addRow(headers);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
+
+
+      mergedDataWithoutPagination.forEach((row) => {
+        const rowData = [
+          row.dateTime,
+          row.hrlManGate1Position,
+          row.hrlManGate1Discharge,
+          row.hrlManGate2Position,
+          row.hrlManGate2Discharge,
+          row.lakshmiGateTotalDischarge,
+        ];
+        worksheet.addRow(rowData);
+      });
+
+   const dateTimeColumn = worksheet.getColumn(1);
+      dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
+      worksheet.getRow(3).height = 20;
+
+      worksheet.columns.forEach((column) => {
+        column.width = 25;
+    });
+
+    worksheet.mergeCells('A1:F8');
+      const mergedCell = worksheet.getCell('A1');
+
+      mergedCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+        left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+        bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+        right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+      };
+
+      mergedCell.value = 'SRSP HR Lakshmicanal Gate Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(13).height = 30;
+
+      worksheet.getRow(13).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['B', 'C', 'D', 'E', 'F'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
+
+      const mergedCellA11B12 = worksheet.getCell('A11');
+      mergedCellA11B12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellA11B12.font = { bold: true };
+      mergedCellA11B12.value = 'Date-Time';
+      worksheet.mergeCells('A11:A13');
+      applyBorder(mergedCellA11B12);
+
+      const mergedCellB11C12 = worksheet.getCell('B11');
+      mergedCellB11C12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellB11C12.font = { bold: true };
+      mergedCellB11C12.value = 'Gate 1';
+      worksheet.mergeCells('B11:C12');
+      applyBorder(mergedCellB11C12);
+
+      const mergedCellD11E12 = worksheet.getCell('D11');
+      mergedCellD11E12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellD11E12.font = { bold: true };
+      mergedCellD11E12.value = 'Gate 2';
+      worksheet.mergeCells('D11:E12');
+      applyBorder(mergedCellD11E12);
+
+      const mergedCellF11G12 = worksheet.getCell('F11');
+      mergedCellF11G12.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCellF11G12.font = { bold: true };
+      mergedCellF11G12.value = 'Total Discharge (C/S)';
+      worksheet.mergeCells('F11:F13');
+      applyBorder(mergedCellF11G12);
+   
+
+      
+      function applyBorder(cell) {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      }
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Lakshmi_Dam_Gate_Report.xlsx');
+      await workbook.xlsx.write(res);
+      
+    } else if (exportToExcel == 3) {
+      const itemsPerPage = 25; // Number of dates to print per page
+      const totalItems = mergedDataWithoutPagination.length; // Total number of dates
+      const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+
+      const sections = [];
+      for (let page = 0; page < totalPages; page++) {
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageData = mergedDataWithoutPagination.slice(startIndex, endIndex);
+
+        sections.push({
+          properties: {
+            page: {
+              margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+              size: {
+                orientation: Docx.PageOrientation.PORTRAIT,
+                width: 12240,
+                height: 15840,
+              },
+            },
+          },
+          children: [
+            // Add your images and heading here at the top of every page
+            new Docx.Paragraph({
+              children: [
+                // Left image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(hyderabadImagePath),
+                  transformation: {
+                    width: 140,
+                    height: 105,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.LEFT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+                // Right image
+                new Docx.ImageRun({
+                  data: fs.readFileSync(chetasImagePath),
+                  transformation: {
+                    width: 100,
+                    height: 100,
+                  },
+                  floating: {
+                    horizontalPosition: {
+                      relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                      align: Docx.HorizontalPositionAlign.RIGHT,
+                    },
+                    verticalPosition: {
+                      relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                      align: Docx.VerticalPositionAlign.TOP,
+                    },
+                  },
+                }),
+              ],
+            }),
+
+            // Heading
+            new Docx.Paragraph({
+              text: 'SRSP HR Lakshmi canal Gate Report',
+              heading: Docx.HeadingLevel.HEADING_1,
+              alignment: Docx.AlignmentType.CENTER,
+            }),
+
+            // Table
+            new Docx.Table({
+              width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+              rows: [
+                // Table header
+                new Docx.TableRow({
+                  children: [
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Date Time')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Lakshmi gate 1 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Lakshmi gate 1 Discharge (C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Lakshmi gate 2 Opening (Feet)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Lakshmi gate 2 Discharge (C/S)')] }),           
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Lakshmi Total Discharge (C/S)')] }),
+                  ],
+                }),
+
+                // Table rows
+                ...pageData.map((item) => {
+                  const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                  return new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({
+                        children: [new Docx.Paragraph(formattedDate)],
+                        width: { size: 12, type: Docx.WidthType.PERCENTAGE },
+                      }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrlManGate1Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrlManGate1Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrlManGate2Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrlManGate2Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.lakshmiGateTotalDischarge.toFixed(2))] }),
+                    ],
+                  });
+                }),
+              ],
+            }),
+          ],
+        });
+      }
+
+      const doc = new Docx.Document({
+        sections: sections,
+      });
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Lakshmi_Dam_Gate_Report.docx');
+
+      const buffer = await Docx.Packer.toBuffer(doc);
+      res.end(buffer);
+
+    }  else {
+      res.send(mergedDataWithoutPagination);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
     const pipeline = [
       {
@@ -4265,7 +5671,9 @@ module.exports = {
   srspOpeningGate22TO42ReportWp,
   srspInflowOutflowPondLevelReportWp,
   srspParameterOverviewReportWp,
-  srspHrFloodFlowAndLakshmiDamGateReportWp,
-  srspHrKakatitaAndSaraswatiDamGateReportWp,
+  srspHrFloodFlowDamGateReportWp,
+  srspHrKakatitaDamGateReportWp,
+  srspHrLakshmiDamGateReportWp,
+  srspHrSaraswatiDamGateReportWp,
   srspHrDamGateReportWp,
 };

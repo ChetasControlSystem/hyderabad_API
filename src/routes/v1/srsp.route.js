@@ -22,14 +22,16 @@ router.get('/srsp-hr-dam-gatereport', [auth(), validate('srspReportShow'), srspC
 router.get('/srsp-sevenday-report', auth(), srspController.sevenDayReport);
 
 //without pagination
-router.get('/srsp-1to21-dis-gatereport-download', srspController.srspDischargeGate1TO21ReportWp);
-router.get('/srsp-22to42-dis-gatereport-download', srspController.srspDischargeGate22TO42ReportWp);
-router.get('/srsp-1to21-opn-gatereport-download',  srspController.srspOpeningGate1TO21ReportWp);
-router.get('/srsp-22to42-opn-gatereport-download',  srspController.srspOpeningGate22TO42ReportWp);
-router.get('/srsp-pondlevel-gatereport-download',  srspController.srspInflowOutflowPondLevelReportWp);
-router.get('/srsp-parameter-overview-gatereport-download',  srspController.srspParameterOverviewReportWp);
-router.get('/srsp-hr-dam-gatereport-download', srspController.srspHrDamGateReportWp);
-router.get('/srsp-hr-KS-dam-gatereport-download', srspController.srspHrKakatitaAndSaraswatiDamGateReportWp);
-router.get('/srsp-hr-FL-dam-gatereport-download', srspController.srspHrFloodFlowAndLakshmiDamGateReportWp);
+router.get('/srsp-1to21-dis-gatereport-download', [ validate('srspReportDownload'), srspController.srspDischargeGate1TO21ReportWp]);
+router.get('/srsp-22to42-dis-gatereport-download', [ validate('srspReportDownload'), srspController.srspDischargeGate22TO42ReportWp]);
+router.get('/srsp-1to21-opn-gatereport-download',  [ validate('srspReportDownload'), srspController.srspOpeningGate1TO21ReportWp]);
+router.get('/srsp-22to42-opn-gatereport-download',  [ validate('srspReportDownload'), srspController.srspOpeningGate22TO42ReportWp]);
+router.get('/srsp-pondlevel-gatereport-download',  [ validate('srspReportDownload'), srspController.srspInflowOutflowPondLevelReportWp]);
+router.get('/srsp-parameter-overview-gatereport-download',  [ validate('srspReportDownload'), srspController.srspParameterOverviewReportWp]);
+router.get('/srsp-hr-Kakatita-dam-gatereport-download', [ validate('srspReportDownload'), srspController.srspHrKakatitaDamGateReportWp]);
+router.get('/srsp-hr-saraswati-dam-gatereport-download', [ validate('srspReportDownload'), srspController.srspHrSaraswatiDamGateReportWp]);
+router.get('/srsp-hr-lakshmi-dam-gatereport-download', [ validate('srspReportDownload'), srspController.srspHrLakshmiDamGateReportWp]);
+router.get('/srsp-hr-Floodflow-dam-gatereport-download', [ validate('srspReportDownload'), srspController.srspHrFloodFlowDamGateReportWp]);
 
+router.get('/srsp-hr-dam-gatereport-download', [ validate('srspReportDownload'), srspController.srspHrDamGateReportWp]);
 module.exports = router;
