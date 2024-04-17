@@ -29,7 +29,7 @@ const validation_rules = {
             "startDate": "required|string|ymd_format",
             "endDate": "required|string|ymd_format",
             "intervalMinutes": "required|interval_Minutes",
-            "exportToExcel" : "required|in:1,2,3,4"
+            "exportToExcel" : "required|in:0,1,2,3,4"
         }
     },
 
@@ -38,7 +38,7 @@ const validation_rules = {
             "startDate": "required|string|ymd_format",
             "endDate": "required|string|ymd_format",
             "intervalMinutes": "required|interval_Minutes",
-            "exportToExcel" : "required|in:1,2,3,4"
+            "exportToExcel" : "required|in:0,1,2,3,4"
         }
     },
 
@@ -47,7 +47,7 @@ const validation_rules = {
             "startDate": "required|string|ymd_format",
             "endDate": "required|string|ymd_format",
             "intervalMinutes": "required|interval_Minutes",
-            "exportToExcel" : "required|in:1,2,3,4"
+            "exportToExcel" : "required|in:0,1,2,3,4"
         }
     },
    

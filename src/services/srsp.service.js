@@ -3044,7 +3044,6 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
 
     const srspParameterOverviewReportWithoutPagination = await SRSP_POND_LEVEL_OVERVIEW.aggregate(pipelineWithoutPagination);
 
-    console.log(srspParameterOverviewReportWithoutPagination);
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('SRSP Dam Parameter Overview Report');

@@ -930,15 +930,17 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
-      addImageToWorksheet(chetasImagePath, [15, 17]);
-
-      worksheet.getCell('G9').value = 'KADDAM Dam Gate 1 To 18 Opening Report';
-      const cell = worksheet.getCell('G9');
-      cell.font = { bold: true, size: 20 };
+      addImageToWorksheet(chetasImagePath, [15.5, 17]);
 
       const headers = ['DateTime', ...Array.from({ length: 18 }, (_, i) => `Gate ${i + 1} \n (Feet)`)];
       worksheet.addRow([]);
-      worksheet.addRow(headers);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       kadamOpeningGate1To18ReportWithoutPagination.forEach((row) => {
         const rowData = [row.dateTime, ...Array.from({ length: 18 }, (_, i) => row[`gate${i + 1}Position`])];
@@ -949,10 +951,6 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
-
       worksheet.mergeCells('A1:S8');
       const mergedCell = worksheet.getCell('A1');
 
@@ -962,6 +960,37 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
         bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
+
+      mergedCell.value = 'KADDAM Dam Gate 1 To 18 Opening Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Opening_Report.xlsx');
@@ -1159,7 +1188,7 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
     } else {
       res.send(kadamOpeningGate1To18ReportWithoutPagination);
     }
-  // } else {
+  // } else { 
   //   return 'You are not authorized to access this data';
   // }
   } catch (error) {
@@ -1267,15 +1296,17 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
-      addImageToWorksheet(chetasImagePath, [15, 17]);
-
-      worksheet.getCell('G9').value = 'KADDAM Dam Gate 1 To 18 Discharge Report';
-      const cell = worksheet.getCell('G9');
-      cell.font = { bold: true, size: 20 };
+      addImageToWorksheet(chetasImagePath, [15.5, 17]);
 
       const headers = ['DateTime', ...Array.from({ length: 18 }, (_, i) => `Gate ${i + 1} \n (Cusecs)`)];
       worksheet.addRow([]);
-      worksheet.addRow(headers);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       kadamDishchargeGate1To18ReportWithoutPagination.forEach((row) => {
         const rowData = [row.dateTime, ...Array.from({ length: 18 }, (_, i) => row[`gate${i + 1}Discharge`])];
@@ -1286,10 +1317,6 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
       dateTimeColumn.width = 20;
       dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
-
       worksheet.mergeCells('A1:S8');
       const mergedCell = worksheet.getCell('A1');
 
@@ -1299,6 +1326,37 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
         bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
+
+      mergedCell.value = 'LMD DAM Gate 1 To 20 Discharge Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Discharge_Report.xlsx');
@@ -1588,11 +1646,7 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
-      addImageToWorksheet(chetasImagePath, [8, 9]);
-
-      worksheet.getCell('D9').value = 'KADDAM Dam Inflow Outflow PondLevel Report';
-      const cell = worksheet.getCell('D9');
-      cell.font = { bold: true, size: 20 };
+      addImageToWorksheet(chetasImagePath, [8.7, 9]);
 
       const headers = [
         'DateTime',
@@ -1607,7 +1661,14 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
         'Pond Level (Feet)',
       ];
       worksheet.addRow([]);
-      worksheet.addRow(headers);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
+
 
       kadamInflowOutflowPondLevelReportWithoutPagination.forEach((row) => {
         const rowData = [
@@ -1633,10 +1694,6 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
         column.width = 20;
       });
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
-
       worksheet.mergeCells('A1:J8');
       const mergedCell = worksheet.getCell('A1');
 
@@ -1647,6 +1704,36 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
 
+      mergedCell.value = 'KADDAM Dam Inflow Outflow Pond Level Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      });
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Inflow_Outflow_PondLevel_Report.xlsx');
 
@@ -1925,11 +2012,7 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
-      addImageToWorksheet(chetasImagePath, [8, 9]);
-
-      worksheet.getCell('E9').value = 'KADDAM Dam Paramete Overview Report';
-      const cell = worksheet.getCell('E9');
-      cell.font = { bold: true, size: 20 };
+      addImageToWorksheet(chetasImagePath, [8.5, 9]);
 
       const headers = [
         'DateTime',
@@ -1947,7 +2030,13 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
         'Cumulative Dam Discharge (Cusecs)',
       ];
       worksheet.addRow([]);
-      worksheet.addRow(headers);
+
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+        cell.alignment = { horizontal: 'center' };
+      });
 
       kadamGateParameterOverviewReportWithoutPagination.forEach((row) => {
         const rowData = [
@@ -1976,10 +2065,6 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
         column.width = 20;
       });
 
-      worksheet.getRow(11).eachCell((cell) => {
-        cell.font = { bold: true };
-      });
-
       worksheet.mergeCells('A1:J8');
       const mergedCell = worksheet.getCell('A1');
 
@@ -1989,6 +2074,37 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
         bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
+
+      mergedCell.value = 'KADDAM Dam Parameter Overview Report';
+      mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      mergedCell.font = { bold: true };
+      mergedCell.font = { bold: true, size: 15 };
+      worksheet.getRow(11).height = 30;
+
+      worksheet.getRow(11).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const borderStyle = {
+        style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+        color: { argb: 'FF000000' }, 
+      };
+
+      worksheet.getColumn('B').eachCell((cell) => {
+        cell.border = {
+          ...cell.border,
+          left: borderStyle,
+        };
+      });
+
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'].forEach((column) => {
+        worksheet.getColumn(column).eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            right: borderStyle,
+          };
+        });
+      }); 
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Parameter_Overview_Report.xlsx');
@@ -2340,7 +2456,7 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
-      addImageToWorksheet(chetasImagePath, [8, 9]);
+      addImageToWorksheet(chetasImagePath, [8.5, 9]);
 
       const headers = [
         'DateTime',
