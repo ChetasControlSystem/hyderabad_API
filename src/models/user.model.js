@@ -35,19 +35,16 @@ const userSchema = mongoose.Schema(
       },
       private: true, // used by the toJSON plugin
     },
-    role: {
-      type: String,
-      enum: ["user", "admin"],
-      default: 'user',
-    },
     isActive: {
       type: Boolean,
       default: true,
     },
-    permission: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Permission',
-    }],
+    role: {
+      type: String,
+      required: true,
+      enum: ["user", "admin", "lmdSuperuser", "lmdUser", "srspSuperuser", "srspUser", "kadamSuperuser", "kadamUser"],
+      default: 'user',
+    },
   },
   {
     timestamps: true, versionKey: false

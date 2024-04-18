@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 
-const knrDamOverviewDischarge = mongoose.Schema(
+const knrDamOverviewDischargeSchema  = mongoose.Schema(
   {
     gate1Discharge:{
         type : Number,
@@ -173,7 +174,32 @@ const knrDamOverviewDischarge = mongoose.Schema(
     },
     dateTime:{
         type: Date,
-        require : true
+        require : true,
+        index : true
+    },
+    date: {
+        type: String,
+        // required: true
+    },
+    time: {
+        type: String,
+        // required: true
+    },
+    year: {
+        type: Number,
+        // required: true
+    },
+    week: {
+        type: Number,
+        // required: true
+    },
+    month: {
+        type: Number,
+        // required: true
+    },
+    quarter: {
+        type: Number,
+        // required: true
     },
   },
   {
@@ -181,7 +207,22 @@ const knrDamOverviewDischarge = mongoose.Schema(
   }
 );
 
+// knrDamOverviewDischargeSchema.pre('save', function (next) {
+   
+//     this.date = moment(this.dateTime).format('YYYY-MM-DD');
+//     this.time = moment(this.dateTime).format('HH:mm:ss');
+  
+    
+//     this.year = moment(this.dateTime).year();
+//     this.week = moment(this.dateTime).week();
+//     this.month = moment(this.dateTime).month() + 1; 
+//     this.quarter = moment(this.dateTime).quarter();
+  
+//     next();
+//   });
 
-const SDO = mongoose.model('knr_Dam_Overview_Discharge', knrDamOverviewDischarge);
+
+knrDamOverviewDischargeSchema.index({dateTime : 1})
+const SDO = mongoose.model('knr_Dam_Overview_Discharge', knrDamOverviewDischargeSchema);
 
 module.exports = SDO;

@@ -66,6 +66,10 @@ const lmdHrDamPondLevel = mongoose.Schema(
             type: Number,
             require: true
         },
+        liveCapacity: {
+            type: Number,
+            require: true
+        },
         grossStorage: {
             type: Number,
             require: true
@@ -107,10 +111,6 @@ const lmdHrDamPondLevel = mongoose.Schema(
             require: true
         },
         pondLevel: {
-            type: Number,
-            require: true
-        },
-        D28: {
             type: Number,
             require: true
         },
@@ -173,7 +173,32 @@ const lmdHrDamPondLevel = mongoose.Schema(
         },
         dateTime: {
             type: Date,
-            require: true
+            require: true,
+            index : true
+        },
+        date: {
+            type: String,
+            // required: true
+        },
+        time: {
+            type: String,
+            // required: true
+        },
+        year: {
+            type: Number,
+            // required: true
+        },
+        week: {
+            type: Number,
+            // required: true
+        },
+        month: {
+            type: Number,
+            // required: true
+        },
+        quarter: {
+            type: Number,
+            // required: true
         },
     },
     {
@@ -181,7 +206,7 @@ const lmdHrDamPondLevel = mongoose.Schema(
     }
 );
 
-
+lmdHrDamPondLevel.index({dateTime : 1})
 const SDO = mongoose.model('lmd_Hr_Dam_Pond_Level_overview', lmdHrDamPondLevel);
 
 module.exports = SDO;

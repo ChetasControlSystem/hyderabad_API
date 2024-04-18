@@ -26,11 +26,11 @@ const knrPondLevelOverview = mongoose.Schema(
             type: Number,
             require: true
         },
-        damDownstreamLevel: {
+        damOutflowLevel: {
             type: Number,
             require: true
         },
-        damDownstreamDischarge: {
+        damOutflowDischarge: {
             type: Number,
             require: true
         },
@@ -63,6 +63,10 @@ const knrPondLevelOverview = mongoose.Schema(
             require: true
         },
         D16: {
+            type: Number,
+            require: true
+        },
+        liveCapacity: {
             type: Number,
             require: true
         },
@@ -107,10 +111,6 @@ const knrPondLevelOverview = mongoose.Schema(
             require: true
         },
         pondLevel: {
-            type: Number,
-            require: true
-        },
-        D28: {
             type: Number,
             require: true
         },
@@ -173,7 +173,32 @@ const knrPondLevelOverview = mongoose.Schema(
         },
         dateTime: {
             type: Date,
-            require: true
+            require: true,
+            index : true
+        },
+        date: {
+            type: String,
+            // required: true
+        },
+        time: {
+            type: String,
+            // required: true
+        },
+        year: {
+            type: Number,
+            // required: true
+        },
+        week: {
+            type: Number,
+            // required: true
+        },
+        month: {
+            type: Number,
+            // required: true
+        },
+        quarter: {
+            type: Number,
+            // required: true
         },
     },
     {
@@ -181,6 +206,7 @@ const knrPondLevelOverview = mongoose.Schema(
     }
 );
 
+knrPondLevelOverview.index({dateTime : true})
 const SDO = mongoose.model('knr_Pond_Level_Overview', knrPondLevelOverview);
 
 module.exports = SDO;

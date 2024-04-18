@@ -6,18 +6,17 @@ const createUser = {
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
     name: Joi.string().required(),
-    role: Joi.string().required().valid('user', 'admin'),
-    permission: Joi.alternatives().try(
-      Joi.string().required().custom(objectId),
-      Joi.array().items(Joi.string().custom(objectId)).required()
-    ),
+    role: Joi.string().required(),
+    // permissionName: Joi.alternatives().try(
+    //   Joi.string().required(),
+    //   Joi.array().items(Joi.string()).required()
+    // ),
   }),
 };
 
 const getUsers = {
   query: Joi.object().keys({
     name: Joi.string(),
-    role: Joi.string(),
     sortBy: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
@@ -40,11 +39,11 @@ const updateUser = {
       password: Joi.string().custom(password),
       name: Joi.string(),
       isActive: Joi.boolean(),
-      role: Joi.string().valid('user', 'admin'),
-      permission: Joi.alternatives().try(
-        Joi.string().required().custom(objectId),
-        Joi.array().items(Joi.string().custom(objectId)).required()
-      ),
+      role: Joi.string().valid("user", "admin", "lmdSuperuser", "lmdUser", "srspSuperuser", "srspUser", "kadamSuperuser", "kadamUser"),
+      // permissionName: Joi.alternatives().try(
+      //   Joi.string().required(),
+      // Joi.array().items(Joi.string()).required()
+      // ),
     })
     .min(1),
 };

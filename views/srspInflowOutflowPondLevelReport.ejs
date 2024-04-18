@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Demo test</title>
+      <!-- Include Bootstrap CSS -->
+      <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      table, th, td {
+        border: 1px solid black;
+        font-size: 12px; /* Set the font size for all table elements */
+      }
+
+      .header-container img {
+        height: 200px;
+        margin: 30px 10px;
+      }
+
+      @page {
+        margin-top: 10px;
+      }
+
+      .header-container {
+        text-align: center;
+        position: relative;
+        margin-bottom: 30px;
+        border: 1px solid black;
+        page-break-inside: avoid;
+      }
+
+      .header-container .img-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-container h1 {
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      th, td {
+        text-align: center;
+        padding: 8px;
+      }
+
+      td:first-child,
+      th:first-child {
+        min-width: 120px;
+      }
+
+      th:nth-child(2),
+      td:nth-child(2),
+      th:nth-child(3),
+      td:nth-child(3),
+      th:nth-child(4),
+      td:nth-child(4),
+      th:nth-child(5),
+      td:nth-child(5),
+      th:nth-child(6),
+      td:nth-child(6),
+      th:nth-child(7),
+      td:nth-child(7),
+      th:nth-child(8),
+      td:nth-child(8) {
+        width: 10%; /* Adjust width for columns 2 to 8 */
+      }
+
+      .page-break {
+        page-break-before: always;
+      }
+      
+      .img-size {
+        width: 100px;
+        height: 100px;
+      }
+
+      .page-container {
+        page-break-before: always;
+      }
+    </style>
+  </head>
+  <body> 
+    <% for (let pageIndex = 0; pageIndex < Math.ceil(srspInflowOutflowPondLevelReportWithoutPagination.length / 17); pageIndex++) { %>
+    <div class="header-container">
+      <div class="img-container">
+        <img src="http://142.168.1.106:3002/assets/logo2.jpeg" class="img-size" alt="Placeholder Image" />
+        <img src="https://www.chetascontrol.com/images/ind2.jpg" class="img-size" alt="Placeholder Image" />
+      </div>
+      <h1>SRSP Dam Inflow Outfloe Pond-Level Report</h1>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date-time</th>
+          <th>BASAR Inflow Level (Feet)</th>
+          <th>BASAR Inflow Discharge (Cusecs)</th>
+          <th>Pendapally Inflow Level (Feet)</th>
+          <th>Pendapally Inflow Discharge (Cusecs)</th>
+          <th>SOAN Outflow Level (Feet)</th>
+          <th>SOAN Outflow Discharge (Cusecs)</th>
+          <th>Pond Level (Feet)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let i = pageIndex * 17; i < (pageIndex + 1) * 17 && i < srspInflowOutflowPondLevelReportWithoutPagination.length; i++)
+        { %>
+        <tr>
+          <td>
+            <%= new Date(srspInflowOutflowPondLevelReportWithoutPagination[i].dateTime).toLocaleString('en-US', { year: 'numeric',
+            month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/(\d+)\/(\d+)\/(\d+),/g,
+            '$3-$1-$2T' ) %>
+          </td>
+          <td><%= srspInflowOutflowPondLevelReportWithoutPagination[i].inflow1Level.toFixed(2) %></td>
+          <td><%= srspInflowOutflowPondLevelReportWithoutPagination[i].inflow1Discharge.toFixed(2) %></td>
+          <td><%= srspInflowOutflowPondLevelReportWithoutPagination[i].inflow2Level.toFixed(2) %></td>
+          <td><%= srspInflowOutflowPondLevelReportWithoutPagination[i].inflow2Discharge.toFixed(2) %></td>
+          <td><%= srspInflowOutflowPondLevelReportWithoutPagination[i].damDownstreamLevel.toFixed(2) %></td>
+          <td><%= srspInflowOutflowPondLevelReportWithoutPagination[i].damDownstreamDischarge.toFixed(2) %></td>
+          <td><%= srspInflowOutflowPondLevelReportWithoutPagination[i].pondLevel.toFixed(2) %></td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+    <% } %>
+  </body>
+</html>

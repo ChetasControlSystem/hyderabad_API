@@ -1,24 +1,24 @@
 const mongoose = require('mongoose');
 
-const KnrSpareAdvm = mongoose.Schema(
+const KnrHrDamOverviewPosition = mongoose.Schema(
   {
-    D1:{
+    hrklManGate1Position:{
         type : Number,
         require : true
     },
-    D2:{
+    hrklManGate2Position:{
         type : Number,
         require : true
     },
-    D3:{
+    hrklManGate3Position:{
         type : Number,
         require : true
     },
-    D4:{
+    hrklManGate4Position:{
         type : Number,
         require : true
     },
-    D5:{
+    hrklManGate5Position:{
         type : Number,
         require : true
     },
@@ -173,7 +173,32 @@ const KnrSpareAdvm = mongoose.Schema(
     },
     dateTime:{
         type: Date,
-        require : true
+        require : true,
+        index : true
+    },
+    date: {
+        type: String,
+        // required: true
+    },
+    time: {
+        type: String,
+        // required: true
+    },
+    year: {
+        type: Number,
+        // required: true
+    },
+    week: {
+        type: Number,
+        // required: true
+    },
+    month: {
+        type: Number,
+        // required: true
+    },
+    quarter: {
+        type: Number,
+        // required: true
     },
   },
   {
@@ -181,7 +206,7 @@ const KnrSpareAdvm = mongoose.Schema(
   }
 );
 
-
-const SDO = mongoose.model('Knr_Spare_Advm', KnrSpareAdvm);
+KnrHrDamOverviewPosition.index({dateTime : 1})
+const SDO = mongoose.model('Knr_Hr_Dam_Overview_Position', KnrHrDamOverviewPosition);
 
 module.exports = SDO;

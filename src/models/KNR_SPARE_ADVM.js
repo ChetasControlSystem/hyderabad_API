@@ -1,24 +1,24 @@
 const mongoose = require('mongoose');
 
-const KnrHrDamOverviewDischarge = mongoose.Schema(
+const KnrSpareAdvm = mongoose.Schema(
   {
-    hrklManGate1Discharge:{
+    D1:{
         type : Number,
         require : true
     },
-    hrklManGate2Discharge:{
+    D2:{
         type : Number,
         require : true
     },
-    hrklManGate3Discharge:{
+    D3:{
         type : Number,
         require : true
     },
-    hrklManGate4Discharge:{
+    D4:{
         type : Number,
         require : true
     },
-    hrklManGate5Discharge   :{
+    D5:{
         type : Number,
         require : true
     },
@@ -173,7 +173,32 @@ const KnrHrDamOverviewDischarge = mongoose.Schema(
     },
     dateTime:{
         type: Date,
-        require : true
+        require : true,
+        index : true
+    },
+    date: {
+        type: String,
+        // required: true
+    },
+    time: {
+        type: String,
+        // required: true
+    },
+    year: {
+        type: Number,
+        // required: true
+    },
+    week: {
+        type: Number,
+        // required: true
+    },
+    month: {
+        type: Number,
+        // required: true
+    },
+    quarter: {
+        type: Number,
+        // required: true
     },
   },
   {
@@ -181,7 +206,7 @@ const KnrHrDamOverviewDischarge = mongoose.Schema(
   }
 );
 
-
-const SDO = mongoose.model('Knr_Hr_Dam_Overview_Discharge', KnrHrDamOverviewDischarge);
+KnrSpareAdvm.index({dateTime : true})
+const SDO = mongoose.model('Knr_Spare_Advm', KnrSpareAdvm);
 
 module.exports = SDO;

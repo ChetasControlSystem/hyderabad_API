@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 const SanjayDamPondLevel = mongoose.Schema(
     {
@@ -66,6 +67,10 @@ const SanjayDamPondLevel = mongoose.Schema(
             type: Number,
             require: true
         },
+        liveCapacity: {
+            type: Number,
+            require: true
+        },
         grossStorage: {
             type: Number,
             require: true
@@ -107,10 +112,6 @@ const SanjayDamPondLevel = mongoose.Schema(
             require: true
         },
         pondLevel: {
-            type: Number,
-            require: true
-        },
-        D28: {
             type: Number,
             require: true
         },
@@ -173,7 +174,32 @@ const SanjayDamPondLevel = mongoose.Schema(
         },
         dateTime: {
             type: Date,
-            require: true
+            require: true,
+            index : true
+        },
+        date: {
+            type: String,
+            // required: true
+        },
+        time: {
+            type: String,
+            // required: true
+        },
+        year: {
+            type: Number,
+            // required: true
+        },
+        week: {
+            type: Number,
+            // required: true
+        },
+        month: {
+            type: Number,
+            // required: true
+        },
+        quarter: {
+            type: Number,
+            // required: true
         },
     },
     {
@@ -181,7 +207,18 @@ const SanjayDamPondLevel = mongoose.Schema(
     }
 );
 
+// SanjayDamPondLevel.pre('save', function (next) {
+//     console.log('Middleware triggered!');
+//     this.date = moment(this.dateTime).format('YYYY-MM-DD');
+//     this.time = moment(this.dateTime).format('HH:mm:ss');
+//     this.year = moment(this.dateTime).year();
+//     this.week = moment(this.dateTime).week();
+//     this.month = moment(this.dateTime).month() + 1;
+//     this.quarter = moment(this.dateTime).quarter();
+//     next();
+// });
 
+SanjayDamPondLevel.index({dateTime : 1})
 const SDO = mongoose.model('Sanjay_Dam_Pond_Level_Overview', SanjayDamPondLevel);
 
 module.exports = SDO;

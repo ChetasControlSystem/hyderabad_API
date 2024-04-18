@@ -14,16 +14,15 @@ const menuItemSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-    permission: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Permission',
-        required: false,
-    },
-    sidemenu: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'sidemenu',
-        required: false,
-    },
+    // permissionName: {
+    //     type: String,
+    //     required: false,
+    // },
+    // sidemenu: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'sidemenu',
+    //     required: false,
+    // },
     children: [
         {
             title: {
@@ -38,9 +37,8 @@ const menuItemSchema = new mongoose.Schema({
                 type: String,
                 required: false,
             },
-            permission: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Permission',
+            permissionName: {
+                type: String,
                 required: false,
             },
         },

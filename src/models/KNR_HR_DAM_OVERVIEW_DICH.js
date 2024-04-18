@@ -1,24 +1,24 @@
 const mongoose = require('mongoose');
 
-const KnrHrDamOverviewPosition = mongoose.Schema(
+const KnrHrDamOverviewDischarge = mongoose.Schema(
   {
-    hrklManGate1Position:{
+    hrklManGate1Discharge:{
         type : Number,
         require : true
     },
-    hrklManGate2Position:{
+    hrklManGate2Discharge:{
         type : Number,
         require : true
     },
-    hrklManGate3Position:{
+    hrklManGate3Discharge:{
         type : Number,
         require : true
     },
-    hrklManGate4Position:{
+    hrklManGate4Discharge:{
         type : Number,
         require : true
     },
-    hrklManGate5Position:{
+    hrklManGate5Discharge   :{
         type : Number,
         require : true
     },
@@ -173,7 +173,32 @@ const KnrHrDamOverviewPosition = mongoose.Schema(
     },
     dateTime:{
         type: Date,
-        require : true
+        require : true,
+        index : true
+    },
+    date: {
+        type: String,
+        // required: true
+    },
+    time: {
+        type: String,
+        // required: true
+    },
+    year: {
+        type: Number,
+        // required: true
+    },
+    week: {
+        type: Number,
+        // required: true
+    },
+    month: {
+        type: Number,
+        // required: true
+    },
+    quarter: {
+        type: Number,
+        // required: true
     },
   },
   {
@@ -181,7 +206,7 @@ const KnrHrDamOverviewPosition = mongoose.Schema(
   }
 );
 
-
-const SDO = mongoose.model('Knr_Hr_Dam_Overview_Position', KnrHrDamOverviewPosition);
+KnrHrDamOverviewDischarge.index({dateTime : 1})
+const SDO = mongoose.model('Knr_Hr_Dam_Overview_Discharge', KnrHrDamOverviewDischarge);
 
 module.exports = SDO;

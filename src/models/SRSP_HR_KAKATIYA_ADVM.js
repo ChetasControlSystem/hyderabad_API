@@ -173,7 +173,32 @@ const SanjayHrKakatiyaAdvm = mongoose.Schema(
         },
         dateTime: {
             type: Date,
-            require: true
+            require: true,
+            index : true
+        },
+        date: {
+            type: String,
+            // required: true
+        },
+        time: {
+            type: String,
+            // required: true
+        },
+        year: {
+            type: Number,
+            // required: true
+        },
+        week: {
+            type: Number,
+            // required: true
+        },
+        month: {
+            type: Number,
+            // required: true
+        },
+        quarter: {
+            type: Number,
+            // required: true
         },
     },
     {
@@ -181,7 +206,7 @@ const SanjayHrKakatiyaAdvm = mongoose.Schema(
     }
 );
 
-
+SanjayHrKakatiyaAdvm.index({dateTime : 1})
 const SDO = mongoose.model('Sanjay_Hr_kakatiya_Advm', SanjayHrKakatiyaAdvm);
 
 module.exports = SDO;
