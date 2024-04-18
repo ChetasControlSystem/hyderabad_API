@@ -18,7 +18,6 @@ const {
   KNR_SPARE_ADVM,
   Permission,
 } = require('../models');
-const { log } = require('winston');
 
 const hyderabadImagePath = path.join(__dirname, '../../views/hyderabad.png');
 const chetasImagePath = path.join(__dirname, '../../views/chetas.png');
@@ -2710,7 +2709,7 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
 
             // Heading
             new Docx.Paragraph({
-              text: 'KADDAM HR canal Gate Report',
+              text: 'KADDAM HR Canal Gate Report',
               heading: Docx.HeadingLevel.HEADING_1,
               alignment: Docx.AlignmentType.CENTER,
             }),
@@ -2733,13 +2732,12 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
                     new Docx.TableCell({ children: [new Docx.Paragraph('Gate 4 Discharge (C/S)')] }),
                     new Docx.TableCell({ children: [new Docx.Paragraph('Gete 5 Opening (Feet)')] }),
                     new Docx.TableCell({ children: [new Docx.Paragraph('Gate 5 Discharge (C/S)')] }),
-                    new Docx.TableCell({ children: [new Docx.Paragraph('Total Discharge(C/S)')] }),
+                    new Docx.TableCell({ children: [new Docx.Paragraph('Total Discharge (C/S)')] }),
                   ],
                 }),
 
                 // Table rows
                 ...pageData.map((item) => {
-                  console.log('Item:111111111111111111111111', item); // Add this line to log the item
                   const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
                   return new Docx.TableRow({
                     children: [
@@ -2748,16 +2746,16 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
                         width: { size: 12, type: Docx.WidthType.PERCENTAGE },
                       }),
                       new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate1Position.toFixed(2))] }),
-                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate1Discharge.toFixed(2))] }),
-                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate2Position.toFixed(2))] }),
-                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate2Discharge.toFixed(2))] }),
-                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate3Position.toFixed(2))] }),
-                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate3Discharge.toFixed(2))] }),
-                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate4Position.toFixed(2))] }),
-                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate4Discharge.toFixed(2))] }),
-                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate5Position.toFixed(2))] }),
-                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate5Discharge.toFixed(2))] }),
-                      // new Docx.TableCell({ children: [new Docx.Paragraph(item.totalDischarge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate1Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate2Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate2Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate3Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate3Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate4Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate4Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate5Position.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.hrklManGate5Discharge.toFixed(2))] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph(item.kadamTotalDischarge.toFixed(2))] }),
                     ],
                   });
                 }),

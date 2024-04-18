@@ -679,7 +679,7 @@ const lmdDischargeGateReportWp = catchAsync(async (req, res) => {
     res,
     req,
   );
-  return res.json(lmdDischargeGateReport);
+  res.json(lmdDischargeGateReport);
 });
 
 const lmdOpeningGateReportWp = catchAsync(async (req, res) => {

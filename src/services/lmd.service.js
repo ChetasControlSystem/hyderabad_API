@@ -883,18 +883,25 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
       addImageToWorksheet(chetasImagePath, [17.5, 19]);
 
-      const headers = ['DateTime', ...Array.from({ length: 20 }, (_, i) => `Gate ${i + 1} \n (Cusecs)`)];
-      worksheet.addRows([[]]);
+      const selectedGates = [req.query.selectedGates]; // Replace with user input
 
+      
+      
+      console.log(...selectedGates,"++++++++++++++++++++++++++++" );
+
+      for (let i = 0; i < selectedGates.length; i++) {
+        const headers = ['DateTime', ...selectedGates.map(gate => `${gate} \n (Cusecs)`)];
+        worksheet.addRows([[]]);
+    
       worksheet.addRow(headers).eachCell((cell) => {
         cell.border = {
             top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
         };
         cell.alignment = { horizontal: 'center' };
       });
-
+    }
       lmdDischargeGateReport1.forEach((row) => {
-        const rowData = [row.dateTime, ...Array.from({ length: 20 }, (_, i) => row[`gate${i + 1}Discharge`])];
+        const rowData = [row.dateTime, ...selectedGates.map(gate => row[gate + 'Discharge'])];
         worksheet.addRow(rowData);
       });
 
@@ -947,8 +954,6 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Gate_1_To_20_Discharge_Report.xlsx');
 
-      // res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      // res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_Gate_1_To_20_Discharge_Report.xlsx');
     await workbook.xlsx.write(res);
     } else if (exportToExcel == 2) {
       const csvStream = fastCsv.format({ headers: true });
@@ -1127,6 +1132,9 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
       }
     } else if (exportToExcel == 4) {
       try {
+
+      console.log("555555555555555555");
+
         const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/lmdDischargeGate.ejs'), {
           lmdDischargeGateReport1: lmdDischargeGateReport1,
         });
@@ -1148,7 +1156,7 @@ const lmdDischargeGateReportWp = async (startDate, endDate, intervalMinutes, exp
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
       }
     }else{
-      res.send(lmdDischargeGateReport1)
+       res.send(lmdDischargeGateReport1)
     }
   } catch (error) {
     console.error('Error:', error);
