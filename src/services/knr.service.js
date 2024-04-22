@@ -831,15 +831,11 @@ const sevenDayReport = async (user) => {
 const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
 
-    // console.log(user , "+++++++++++++++++++");
-    // const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+    const checkPermission = await Permission.findOne({ name: 'kadamReport' });
 
-    // if (
-    //   user.role === 'admin' ||
-    //   user.role === 'kadamSuperuser' ||
-    //   (checkPermission && checkPermission.roleName.includes(user.role))
-    // ) {
-    const pipelineWithoutPagination = [
+    if ( user.role === 'admin' || user.role === 'kadamSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role)) ) {
+
+      const pipelineWithoutPagination = [
       {
         $match: {
           dateTime: {
@@ -931,20 +927,56 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
       addImageToWorksheet(chetasImagePath, [15.5, 17]);
 
-      const headers = ['DateTime', ...Array.from({ length: 18 }, (_, i) => `Gate ${i + 1} \n (Feet)`)];
-      worksheet.addRow([]);
+      if (req.query.selectedGates == null || req.query.selectedGates == 0) {
+        const headers = ['DateTime', ...Array.from({ length: 18 }, (_, i) => `Gate ${i + 1} \n (Feet)`)];
+        worksheet.addRow([]);
+  
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+              top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+          };
+          cell.alignment = { horizontal: 'center' };
+        });
+  
+        kadamOpeningGate1To18ReportWithoutPagination.forEach((row) => {
+          const rowData = [row.dateTime, ...Array.from({ length: 18 }, (_, i) => row[`gate${i + 1}Position`])];
+          worksheet.addRow(rowData);
+        });
+      } else {
+        let selectedGatesString = req.query.selectedGates;
+        selectedGatesString = selectedGatesString.replace(/\[|\]/g, "");
+        const selectedGates = selectedGatesString.split(",").map(Number);
 
-      worksheet.addRow(headers).eachCell((cell) => {
-        cell.border = {
-            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
-        };
-        cell.alignment = { horizontal: 'center' };
-      });
+        const headers = [
+          "DateTime",
+          ...selectedGates.map((gate) => `Gate ${gate} \n (Feet)`),
+        ];
 
-      kadamOpeningGate1To18ReportWithoutPagination.forEach((row) => {
-        const rowData = [row.dateTime, ...Array.from({ length: 18 }, (_, i) => row[`gate${i + 1}Position`])];
-        worksheet.addRow(rowData);
-      });
+        worksheet.addRows([[]]);
+
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+          cell.alignment = { horizontal: "center" };
+        });
+
+        kadamOpeningGate1To18ReportWithoutPagination.forEach((row) => {
+          const rowData = [row.dateTime];
+          selectedGates.forEach((gate) => {
+            const fieldName = "gate" + gate + "Position";
+            if (row.hasOwnProperty(fieldName)) {
+              rowData.push(row[fieldName]);
+            } else {
+              rowData.push(null);
+            }
+          });
+          worksheet.addRow(rowData);
+        });
+      }
 
       const dateTimeColumn = worksheet.getColumn(1);
       dateTimeColumn.width = 20;
@@ -995,39 +1027,6 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Opening_Report.xlsx');
 
       await workbook.xlsx.write(res);
-    } else if (exportToExcel == 2) {
-      const csvStream = fastCsv.format({ headers: true });
-
-      kadamOpeningGate1To18ReportWithoutPagination.forEach((row) => {
-        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
-        csvStream.write({
-          DateTime: formattedDate,
-          Gate_1: row.gate1Position,
-          Gate_2: row.gate2Position,
-          Gate_3: row.gate3Position,
-          Gate_4: row.gate4Position,
-          Gate_5: row.gate5Position,
-          Gate_6: row.gate6Position,
-          Gate_7: row.gate7Position,
-          Gate_8: row.gate8Position,
-          Gate_9: row.gate9Position,
-          Gate_10: row.gate10Position,
-          Gate_11: row.gate11Position,
-          Gate_12: row.gate12Position,
-          Gate_13: row.gate13Position,
-          Gate_14: row.gate14Position,
-          Gate_15: row.gate15Position,
-          Gate_16: row.gate16Position,
-          Gate_17: row.gate17Position,
-          Gate_18: row.gate18Position,
-        });
-      });
-
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Opening_Report.csv');
-
-      csvStream.pipe(res);
-      csvStream.end();
     } else if (exportToExcel == 3) {
 
       const itemsPerPage = 26; // Number of dates to print per page
@@ -1077,8 +1076,8 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
                 new Docx.ImageRun({
                   data: fs.readFileSync(chetasImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 110,
                   },
                   floating: {
                     horizontalPosition: {
@@ -1157,39 +1156,17 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
         sections: sections,
       });
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Opening_Report.docx');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Opening_Report.doc');
 
       // Stream the Word document to the response
       const buffer = await Docx.Packer.toBuffer(doc);
       res.end(buffer);
-    } else if (exportToExcel == 4) {
-      try {
-        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/kadamOpeningGate.ejs'), {
-          kadamOpeningGate1To18ReportWithoutPagination: kadamOpeningGate1To18ReportWithoutPagination,
-        });
-
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-
-        await page.setContent(dynamicHtml);
-
-        const pdfBuffer = await page.pdf({ format: 'Letter' });
-
-        // Close browser
-        await browser.close();
-
-        res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Opening_Report.pdf');
-        res.setHeader('Content-Type', 'application/pdf');
-        res.send(pdfBuffer);
-      } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-      }
-    } else {
+    }else {
       res.send(kadamOpeningGate1To18ReportWithoutPagination);
     }
-  // } else { 
-  //   return 'You are not authorized to access this data';
-  // }
+  } else { 
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -1198,14 +1175,12 @@ const kadamOpeningGate1To18ReportWp = async (startDate, endDate, intervalMinutes
 
 const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
-    // const checkPermission = await Permission.findOne({ name: 'kadamReport' });
 
-    // if (
-    //   user.role === 'admin' ||
-    //   user.role === 'kadamSuperuser' ||
-    //   (checkPermission && checkPermission.roleName.includes(user.role))
-    // ) {
-    const pipelineWithoutPagination = [
+    const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+
+    if ( user?.role === 'admin' || user?.role === 'kadamSuperuser' || (checkPermission && checkPermission.roleName.includes(user?.role))  ) {
+  
+      const pipelineWithoutPagination = [
       {
         $match: {
           dateTime: {
@@ -1297,20 +1272,56 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
       addImageToWorksheet(chetasImagePath, [15.5, 17]);
 
-      const headers = ['DateTime', ...Array.from({ length: 18 }, (_, i) => `Gate ${i + 1} \n (Cusecs)`)];
-      worksheet.addRow([]);
+      if (req.query.selectedGates == null || req.query.selectedGates == 0) {
+        const headers = ['DateTime', ...Array.from({ length: 18 }, (_, i) => `Gate ${i + 1} \n (Cusecs)`)];
+        worksheet.addRow([]);
+  
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+              top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+          };
+          cell.alignment = { horizontal: 'center' };
+        });
+  
+        kadamDishchargeGate1To18ReportWithoutPagination.forEach((row) => {
+          const rowData = [row.dateTime, ...Array.from({ length: 18 }, (_, i) => row[`gate${i + 1}Discharge`])];
+          worksheet.addRow(rowData);
+        });
+      } else {
+        let selectedGatesString = req.query.selectedGates;
+        selectedGatesString = selectedGatesString.replace(/\[|\]/g, "");
+        const selectedGates = selectedGatesString.split(",").map(Number);
 
-      worksheet.addRow(headers).eachCell((cell) => {
-        cell.border = {
-            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
-        };
-        cell.alignment = { horizontal: 'center' };
-      });
+        const headers = [
+          "DateTime",
+          ...selectedGates.map((gate) => `Gate ${gate} \n (Cusecs)`),
+        ];
 
-      kadamDishchargeGate1To18ReportWithoutPagination.forEach((row) => {
-        const rowData = [row.dateTime, ...Array.from({ length: 18 }, (_, i) => row[`gate${i + 1}Discharge`])];
-        worksheet.addRow(rowData);
-      });
+        worksheet.addRows([[]]);
+
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+          cell.alignment = { horizontal: "center" };
+        });
+
+        kadamDishchargeGate1To18ReportWithoutPagination.forEach((row) => {
+          const rowData = [row.dateTime];
+          selectedGates.forEach((gate) => {
+            const fieldName = "gate" + gate + "Discharge";
+            if (row.hasOwnProperty(fieldName)) {
+              rowData.push(row[fieldName]);
+            } else {
+              rowData.push(null);
+            }
+          });
+          worksheet.addRow(rowData);
+        });
+      }
 
       const dateTimeColumn = worksheet.getColumn(1);
       dateTimeColumn.width = 20;
@@ -1326,7 +1337,7 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
         right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
       };
 
-      mergedCell.value = 'LMD DAM Gate 1 To 20 Discharge Report';
+      mergedCell.value = 'KADDAM Dam Gate 1 To 18 Discharge Report';
       mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
       mergedCell.font = { bold: true };
       mergedCell.font = { bold: true, size: 15 };
@@ -1360,39 +1371,6 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Discharge_Report.xlsx');
       await workbook.xlsx.write(res);
-    } else if (exportToExcel == 2) {
-      const csvStream = fastCsv.format({ headers: true });
-
-      kadamDishchargeGate1To18ReportWithoutPagination.forEach((row) => {
-        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
-        csvStream.write({
-          DateTime: formattedDate,
-          Gate_1: row.gate1Discharge,
-          Gate_2: row.gate2Discharge,
-          Gate_3: row.gate3Discharge,
-          Gate_4: row.gate4Discharge,
-          Gate_5: row.gate5Discharge,
-          Gate_6: row.gate6Discharge,
-          Gate_7: row.gate7Discharge,
-          Gate_8: row.gate8Discharge,
-          Gate_9: row.gate9Discharge,
-          Gate_10: row.gate10Discharge,
-          Gate_11: row.gate11Discharge,
-          Gate_12: row.gate12Discharge,
-          Gate_13: row.gate13Discharge,
-          Gate_14: row.gate14Discharge,
-          Gate_15: row.gate15Discharge,
-          Gate_16: row.gate16Discharge,
-          Gate_17: row.gate17Discharge,
-          Gate_18: row.gate18Discharge,
-        });
-      });
-
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Disharge_Report.csv');
-
-      csvStream.pipe(res);
-      csvStream.end();
     } else if (exportToExcel == 3) {
    
       const itemsPerPage = 26; // Number of dates to print per page
@@ -1442,8 +1420,8 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
                 new Docx.ImageRun({
                   data: fs.readFileSync(chetasImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 110,
                   },
                   floating: {
                     horizontalPosition: {
@@ -1522,39 +1500,17 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
         sections: sections,
       });
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Discharge_Report.docx');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Discharge_Report.doc');
 
       // Stream the Word document to the response
       const buffer = await Docx.Packer.toBuffer(doc);
       res.end(buffer);
-    } else if (exportToExcel == 4) {
-      try {
-        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/kadamDischargeGate.ejs'), {
-          kadamDishchargeGate1To18ReportWithoutPagination: kadamDishchargeGate1To18ReportWithoutPagination,
-        });
-
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-
-        await page.setContent(dynamicHtml);
-
-        const pdfBuffer = await page.pdf({ format: 'Letter' });
-
-        // Close browser
-        await browser.close();
-
-        res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Gate_1_To_18_Discharge_Report.pdf');
-        res.setHeader('Content-Type', 'application/pdf');
-        res.send(pdfBuffer);
-      } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-      }
     } else {
       res.send(kadamDishchargeGate1To18ReportWithoutPagination);
     }
-  // } else {
-  //   return 'You are not authorized to access this data';
-  // }
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -1563,13 +1519,9 @@ const kadamDishchargeGate1To18ReportWp = async (startDate, endDate, intervalMinu
 
 const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
-    // const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+    const checkPermission = await Permission.findOne({ name: 'kadamReport' });
 
-    // if (
-    //   user.role === 'admin' ||
-    //   user.role === 'kadamSuperuser' ||
-    //   (checkPermission && checkPermission.roleName.includes(user.role))
-    // ) {
+    if ( user.role === 'admin' || user.role === 'kadamSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role)) ) {
 
     const pipelineWithoutPagination = [
       {
@@ -1737,31 +1689,7 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Inflow_Outflow_PondLevel_Report.xlsx');
 
       await workbook.xlsx.write(res);
-    } else if (exportToExcel == 2) {
-      const csvStream = fastCsv.format({ headers: true });
-
-      kadamInflowOutflowPondLevelReportWithoutPagination.forEach((row) => {
-        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
-        csvStream.write({
-          DateTime: formattedDate,
-          'Mendapelly Inflow Level (Feet)': row.inflow1Level,
-          'Itikyal Inflow Level (Feet)': row.inflow2Level,
-          'Sikkumanu Inflow Level (Feet)': row.inflow3Level,
-          'Mendapelly Inflow Discharge (Cusecs)': row.inflow1Discharge,
-          'Itikyal Inflow Discharge (Cusecs)': row.inflow2Discharge,
-          'Sikkumanu Inflow Discharge (Cusecs)': row.inflow3Discharge,
-          'Pandawapur Bridge Outflow Level (Feet)': row.damOutflowLevel,
-          'Pandawapur Bridge Outflow Discharge (Cusecs)': row.damOutflowDischarge,
-          'Pond Level (Feet)': row.pondLevel,
-        });
-      });
-
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Inflow_Outflow_PondLevel_Report.csv');
-
-      csvStream.pipe(res);
-      csvStream.end();
-    } else if (exportToExcel == 3) {
+    }  else if (exportToExcel == 3) {
 
       const itemsPerPage = 25; // Number of dates to print per page
       const totalItems = kadamInflowOutflowPondLevelReportWithoutPagination.length; // Total number of dates
@@ -1810,8 +1738,8 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
                 new Docx.ImageRun({
                   data: fs.readFileSync(chetasImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 110,
                   },
                   floating: {
                     horizontalPosition: {
@@ -1882,39 +1810,17 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
         sections: sections,
       });
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Inflow_Outflow_PondLevel_Report.docx');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Inflow_Outflow_PondLevel_Report.doc');
 
       // Stream the Word document to the response
       const buffer = await Docx.Packer.toBuffer(doc);
       res.end(buffer);
-    } else if (exportToExcel == 4) {
-      try {
-        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/kadamInflowOutflowPondLevel.ejs'), {
-          kadamInflowOutflowPondLevelReportWithoutPagination: kadamInflowOutflowPondLevelReportWithoutPagination,
-        });
-
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-
-        await page.setContent(dynamicHtml);
-
-        const pdfBuffer = await page.pdf({ format: 'Letter' });
-
-        // Close browser
-        await browser.close();
-
-        res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Inflow_Otflow_PondLevel_Report.pdf');
-        res.setHeader('Content-Type', 'application/pdf');
-        res.send(pdfBuffer);
-      } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-      }
-    } else {
+    }else {
       res.send(kadamInflowOutflowPondLevelReportWithoutPagination);
     }
-  // } else {
-  //   return 'You are not authorized to access this data';
-  // }
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -1924,14 +1830,11 @@ const kadamInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalM
 const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
 
-    // const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+    const checkPermission = await Permission.findOne({ name: 'kadamReport' });
 
-    // if (
-    //   user.role === 'admin' ||
-    //   user.role === 'kadamSuperuser' ||
-    //   (checkPermission && checkPermission.roleName.includes(user.role))
-    // ) {
-    const pipelineWithoutPagination = [
+    if(user.role === 'admin' || user.role === 'kadamSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+   
+      const pipelineWithoutPagination = [
       {
         $match: {
           dateTime: {
@@ -1988,9 +1891,7 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
       },
     ];
 
-    const kadamGateParameterOverviewReportWithoutPagination = await KNR_POND_LEVEL_OVERVIEW.aggregate(
-      pipelineWithoutPagination
-    );
+    const kadamGateParameterOverviewReportWithoutPagination = await KNR_POND_LEVEL_OVERVIEW.aggregate(pipelineWithoutPagination);
 
     if (exportToExcel == 1) {
       const workbook = new ExcelJS.Workbook();
@@ -2011,7 +1912,7 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
-      addImageToWorksheet(chetasImagePath, [8.5, 9]);
+      addImageToWorksheet(chetasImagePath, [8.8, 9]);
 
       const headers = [
         'DateTime',
@@ -2109,33 +2010,6 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Parameter_Overview_Report.xlsx');
 
       await workbook.xlsx.write(res);
-    } else if (exportToExcel == 2) {
-      const csvStream = fastCsv.format({ headers: true });
-
-      kadamGateParameterOverviewReportWithoutPagination.forEach((row) => {
-        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
-        csvStream.write({
-          DateTime: formattedDate,
-          'Pond Level (Feet)': row.pondLevel,
-          'Live Capacity (MCFT)': row.liveCapacity,
-          'Gross Storage (MCFT)': row.grossStorage,
-          'Full Reserve Water (Feet)': row.fullReservoirLevel,
-          'Contour Area (M.SqFt)': row.contourArea,
-          'Cathment Area (Sq.Km)': row.catchmentArea,
-          'Ayucut Area (Acres)': row.ayacutArea,
-          'Filing Percentage (%)': row.filling,
-          'Inst. Gate Discharge (Cusecs)': row.instantaneousGateDischarge,
-          'Inst. canal Discharge (Cusecs)': row.instantaneousCanalDischarge,
-          'Total Dam Discharge (Cusecs)': row.totalDamDischarge,
-          'Cumulative Dam Discharge (Cusecs)': row.cumulativeDamDischarge,
-        });
-      });
-
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Parameter_Overview_Report.csv');
-
-      csvStream.pipe(res);
-      csvStream.end();
     } else if (exportToExcel == 3) {
 
       const itemsPerPage = 25; // Number of dates to print per page
@@ -2185,8 +2059,8 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
                 new Docx.ImageRun({
                   data: fs.readFileSync(chetasImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 110,
                   },
                   floating: {
                     horizontalPosition: {
@@ -2266,38 +2140,16 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
         sections: sections,
       });
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Parameter_Overview_Report.docx');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Parameter_Overview_Report.doc');
 
       const buffer = await Docx.Packer.toBuffer(doc);
       res.end(buffer);
-    } else if (exportToExcel == 4) {
-      try {
-        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/kadamParameterOverview.ejs'), {
-          kadamGateParameterOverviewReportWithoutPagination: kadamGateParameterOverviewReportWithoutPagination,
-        });
-
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-
-        await page.setContent(dynamicHtml);
-
-        const pdfBuffer = await page.pdf({ format: 'Letter' });
-
-        // Close browser
-        await browser.close();
-
-        res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_Dam_Parameter_Overview_Report.pdf');
-        res.setHeader('Content-Type', 'application/pdf');
-        res.send(pdfBuffer);
-      } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-      }
     } else {
       res.send(kadamGateParameterOverviewReportWithoutPagination);
     }
-  // } else {
-  //   return 'You are not authorized to access this data';
-  // }
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -2307,13 +2159,10 @@ const kadamGateParameterOverviewReportWp = async (startDate, endDate, intervalMi
 const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
 
-    // const checkPermission = await Permission.findOne({ name: 'kadamReport' });
+    const checkPermission = await Permission.findOne({ name: 'kadamReport' });
 
-    // if (
-    //   user.role === 'admin' ||
-    //   user.role === 'kadamSuperuser' ||
-    //   (checkPermission && checkPermission.roleName.includes(user.role))
-    // ) {
+    if ( user.role === 'admin' || user.role === 'kadamSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role)) ) {
+
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -2455,7 +2304,7 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
-      addImageToWorksheet(chetasImagePath, [8.5, 9]);
+      addImageToWorksheet(chetasImagePath, [8.8, 9]);
 
       const headers = [
         'DateTime',
@@ -2614,32 +2463,6 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
       res.setHeader('Content-Disposition', 'attachment; filename=KADDAM_HR_Gate_Report.xlsx');
 
       await workbook.xlsx.write(res);
-    } else if (exportToExcel == 2) {
-      const csvStream = fastCsv.format({ headers: true });
-
-      mergedDataWithoutPagination.forEach((row) => {
-        const formattedDate = new Date(row.dateTime).toISOString().replace('Z', '');
-        csvStream.write({
-          DateTime: formattedDate,
-          'Gete 1 Opening (Feet)': row.hrklManGate1Position,
-          'Gate 1 Discharge (C/S)': row.hrklManGate1Discharge,
-          'Gete 2 Opening (Feet)': row.hrklManGate2Position,
-          'Gate 2 Discharge (C/S)': row.hrklManGate2Discharge,
-          'Gete 3 Opening (Feet)': row.hrklManGate3Position,
-          'Gate 3 Discharge (C/S)': row.hrklManGate3Discharge,
-          'Gete 4 Opening (Feet)': row.hrklManGate4Position,
-          'Gate 4 Discharge (C/S)': row.hrklManGate4Discharge,
-          'Gete 5 Opening (Feet)': row.hrklManGate5Position,
-          'Gate 5 Discharge (C/S)': row.hrklManGate5Discharge,
-          'Total Discharge(C/S)': row.totalDischarge,
-        });
-      });
-
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', 'attachment; filename=KADAM_HR_Dam_Gate_Report.csv');
-
-      csvStream.pipe(res);
-      csvStream.end();
     } else if (exportToExcel == 3) {
 
       const itemsPerPage = 25;
@@ -2690,8 +2513,8 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
                 new Docx.ImageRun({
                   data: fs.readFileSync(chetasImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 110,
                   },
                   floating: {
                     horizontalPosition: {
@@ -2769,38 +2592,16 @@ const kadamHrDamGateReportWp = async (startDate, endDate, intervalMinutes, expor
         sections: sections,
       });
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', 'attachment; filename=KADAM_HR_Dam_Gate_Report.docx');
+      res.setHeader('Content-Disposition', 'attachment; filename=KADAM_HR_Dam_Gate_Report.doc');
 
       const buffer = await Docx.Packer.toBuffer(doc);
       res.end(buffer);
-    } else if (exportToExcel == 4) {
-      try {
-        const dynamicHtml = await ejs.renderFile(path.join(__dirname, '../../views/kadamHrGate.ejs'), {
-          mergedDataWithoutPagination: mergedDataWithoutPagination,
-        });
-
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-
-        await page.setContent(dynamicHtml);
-
-        const pdfBuffer = await page.pdf({ format: 'Letter' });
-
-        // Close browser
-        await browser.close();
-
-        res.setHeader('Content-Disposition', 'attachment; filename=KADAM_HR_Dam_Gate_Report.pdf');
-        res.setHeader('Content-Type', 'application/pdf');
-        res.send(pdfBuffer);
-      } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-      }
     } else {
       res.send(mergedDataWithoutPagination);
     }
-  // } else {
-  //   return 'You are not authorized to access this data';
-  // }
+  } else {
+    return 'You are not authorized to access this data';
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
