@@ -176,30 +176,6 @@ const KnrHrDamOverviewPosition = mongoose.Schema(
         require : true,
         index : true
     },
-    date: {
-        type: String,
-        // required: true
-    },
-    time: {
-        type: String,
-        // required: true
-    },
-    year: {
-        type: Number,
-        // required: true
-    },
-    week: {
-        type: Number,
-        // required: true
-    },
-    month: {
-        type: Number,
-        // required: true
-    },
-    quarter: {
-        type: Number,
-        // required: true
-    },
   },
   {
     timestamps: true, versionKey: false

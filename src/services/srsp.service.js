@@ -243,17 +243,7 @@ const srspDischargeGate1TO21Report = async (
   }
 };
 
-const srspDischargeGate22TO42Report = async (
-  startDate,
-  endDate,
-  intervalMinutes,
-  currentPage,
-  perPage,
-  startIndex,
-  user,
-  res,
-  req
-) => {
+const srspDischargeGate22TO42Report = async ( startDate, endDate, intervalMinutes, currentPage, perPage, startIndex, user, res, req) => {
   try {
     const checkPermission = await Permission.findOne({ name: 'srspReport' });
     if (
@@ -811,11 +801,7 @@ const srspHrDamGateReport = async (startDate, endDate, intervalMinutes, currentP
   try {
 
     const checkPermission = await Permission.findOne({ name: 'srspReport' });
-    if (
-      user.role === 'admin' ||
-      user.role === 'srspSuperuser' ||
-      (checkPermission && checkPermission.roleName.includes(user.role))
-    ) {
+    if ( user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
 
     const pipeline = [
       {
@@ -1146,6 +1132,10 @@ const sevenDayReport = async (user) => {
 //Report Download
 const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if ( user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -1246,20 +1236,57 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
       addImageToWorksheet(chetasImagePath, [18.6, 20]);
 
-      const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 1} \n (Cusecs)`)];
-      worksheet.addRows([[]]);
 
-      worksheet.addRow(headers).eachCell((cell) => {
-        cell.border = {
-            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
-        };
-        cell.alignment = { horizontal: 'center' };
-      });
+      if (req.query.selectedGates == null || req.query.selectedGates == 0) {
+        const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 1} \n (Cusecs)`)];
+        worksheet.addRows([[]]);
+  
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+              top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+          };
+          cell.alignment = { horizontal: 'center' };
+        });
+  
+        srspDischargeGate1TO21ReportWithoutPagination.forEach((row) => {
+          const rowData = [row.dateTime, ...Array.from({ length: 21 }, (_, i) => row[`gate${i + 1}Discharge`])];
+          worksheet.addRow(rowData);
+        });
+      } else {
+        let selectedGatesString = req.query.selectedGates;
+        selectedGatesString = selectedGatesString.replace(/\[|\]/g, "");
+        const selectedGates = selectedGatesString.split(",").map(Number);
 
-      srspDischargeGate1TO21ReportWithoutPagination.forEach((row) => {
-        const rowData = [row.dateTime, ...Array.from({ length: 21 }, (_, i) => row[`gate${i + 1}Discharge`])];
-        worksheet.addRow(rowData);
-      });
+        const headers = [
+          "DateTime",
+          ...selectedGates.map((gate) => `Gate ${gate} \n (Cusecs)`),
+        ];
+
+        worksheet.addRows([[]]);
+
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+          cell.alignment = { horizontal: "center" };
+        });
+
+        srspDischargeGate1TO21ReportWithoutPagination.forEach((row) => {
+          const rowData = [row.dateTime];
+          selectedGates.forEach((gate) => {
+            const fieldName = "gate" + gate + "Discharge";
+            if (row.hasOwnProperty(fieldName)) {
+              rowData.push(row[fieldName]);
+            } else {
+              rowData.push(null);
+            }
+          });
+          worksheet.addRow(rowData);
+        });
+      }
 
       const dateTimeColumn = worksheet.getColumn(1);
       dateTimeColumn.width = 20;
@@ -1478,7 +1505,7 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
           sections: sections,
         });
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21_Discharge_Report.docx');
+        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21_Discharge_Report.doc');
 
         // Stream the Word document to the response
         const buffer = await Docx.Packer.toBuffer(doc);
@@ -1512,6 +1539,9 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
     } else {
       res.send(srspDischargeGate1TO21ReportWithoutPagination);
     }
+  } else {
+    return "You are not authorized to access this data";
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -1520,6 +1550,10 @@ const srspDischargeGate1TO21ReportWp = async (startDate, endDate, intervalMinute
 
 const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if ( user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -1621,20 +1655,56 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
       addImageToWorksheet(chetasImagePath, [18.6, 20]);
 
-      const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 22} \n (Cusecs)`)];
-      worksheet.addRow([]);
+      if (req.query.selectedGates == null || req.query.selectedGates == 0) {
+        const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 22} \n (Cusecs)`)];
+        worksheet.addRow([]);
+  
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+              top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+          };
+          cell.alignment = { horizontal: 'center' };
+        });
+  
+        srspDischargeGate22TO42ReportWithoutPagination.forEach((row) => {
+          const rowData = [row.dateTime, ...Array.from({ length: 21 }, (_, i) => row[`gate${i + 22}Discharge`])];
+          worksheet.addRow(rowData);
+        });
+      } else {
+        let selectedGatesString = req.query.selectedGates;
+        selectedGatesString = selectedGatesString.replace(/\[|\]/g, "");
+        const selectedGates = selectedGatesString.split(",").map(Number);
 
-      worksheet.addRow(headers).eachCell((cell) => {
-        cell.border = {
-            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
-        };
-        cell.alignment = { horizontal: 'center' };
-      });
+        const headers = [
+          "DateTime",
+          ...selectedGates.map((gate) => `Gate ${gate} \n (Cusecs)`),
+        ];
 
-      srspDischargeGate22TO42ReportWithoutPagination.forEach((row) => {
-        const rowData = [row.dateTime, ...Array.from({ length: 21 }, (_, i) => row[`gate${i + 22}Discharge`])];
-        worksheet.addRow(rowData);
-      });
+        worksheet.addRows([[]]);
+
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+          cell.alignment = { horizontal: "center" };
+        });
+
+        srspDischargeGate22TO42ReportWithoutPagination.forEach((row) => {
+          const rowData = [row.dateTime];
+          selectedGates.forEach((gate) => {
+            const fieldName = "gate" + gate + "Discharge";
+            if (row.hasOwnProperty(fieldName)) {
+              rowData.push(row[fieldName]);
+            } else {
+              rowData.push(null);
+            }
+          });
+          worksheet.addRow(rowData);
+        });
+      }
 
       const dateTimeColumn = worksheet.getColumn(1);
       dateTimeColumn.width = 20;
@@ -1779,8 +1849,8 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
                   new Docx.ImageRun({
                     data: fs.readFileSync(chetasImagePath),
                     transformation: {
-                      width: 100,
-                      height: 100,
+                      width: 80,
+                      height: 110,
                     },
                     floating: {
                       horizontalPosition: {
@@ -1861,7 +1931,7 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
           sections: sections,
         });
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42_Discharge_Report.docx');
+        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42_Discharge_Report.doc');
 
         // Stream the Word document to the response
         const buffer = await Docx.Packer.toBuffer(doc);
@@ -1895,6 +1965,9 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
     } else {
       res.send(srspDischargeGate22TO42ReportWithoutPagination);
     }
+  } else {
+    return "You are not authorized to access this data";
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -1903,6 +1976,10 @@ const srspDischargeGate22TO42ReportWp = async (startDate, endDate, intervalMinut
 
 const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if ( user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -2001,20 +2078,57 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
       addImageToWorksheet(chetasImagePath, [18.6, 20]);
 
-      const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 1} \n (Feet)`)];
-      worksheet.addRows([[]]);
 
-      worksheet.addRow(headers).eachCell((cell) => {
-        cell.border = {
-            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
-        };
-        cell.alignment = { horizontal: 'center' };
-      });
+      if (req.query.selectedGates == null || req.query.selectedGates == 0) {
+        const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 1} \n (Feet)`)];
+        worksheet.addRows([[]]);
+  
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+              top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+          };
+          cell.alignment = { horizontal: 'center' };
+        });
+  
+        srspOpeningGate1TO21ReportWithoutPagination.forEach((row) => {
+          const rowData = [row.dateTime, ...Array.from({ length: 21 }, (_, i) => row[`gate${i + 1}Position`])];
+          worksheet.addRow(rowData);
+        });
+      } else {
+        let selectedGatesString = req.query.selectedGates;
+        selectedGatesString = selectedGatesString.replace(/\[|\]/g, "");
+        const selectedGates = selectedGatesString.split(",").map(Number);
 
-      srspOpeningGate1TO21ReportWithoutPagination.forEach((row) => {
-        const rowData = [row.dateTime, ...Array.from({ length: 21 }, (_, i) => row[`gate${i + 1}Position`])];
-        worksheet.addRow(rowData);
-      });
+        const headers = [
+          "DateTime",
+          ...selectedGates.map((gate) => `Gate ${gate} \n (Feet)`),
+        ];
+
+        worksheet.addRows([[]]);
+
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+          cell.alignment = { horizontal: "center" };
+        });
+
+        srspOpeningGate1TO21ReportWithoutPagination.forEach((row) => {
+          const rowData = [row.dateTime];
+          selectedGates.forEach((gate) => {
+            const fieldName = "gate" + gate + "Position";
+            if (row.hasOwnProperty(fieldName)) {
+              rowData.push(row[fieldName]);
+            } else {
+              rowData.push(null);
+            }
+          });
+          worksheet.addRow(rowData);
+        });
+      }
 
       const dateTimeColumn = worksheet.getColumn(1);
       dateTimeColumn.width = 20;
@@ -2151,8 +2265,8 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
                   new Docx.ImageRun({
                     data: fs.readFileSync(chetasImagePath),
                     transformation: {
-                      width: 100,
-                      height: 100,
+                      width: 80,
+                      height: 110,
                     },
                     floating: {
                       horizontalPosition: {
@@ -2233,7 +2347,7 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
           sections: sections,
         });
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21_Opening_Report.docx');
+        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_1_To_21_Opening_Report.doc');
 
         // Stream the Word document to the response
         const buffer = await Docx.Packer.toBuffer(doc);
@@ -2267,6 +2381,9 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
     } else {
       res.send(srspOpeningGate1TO21ReportWithoutPagination);
     }
+  } else {
+    return "You are not authorized to access this data";
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -2275,6 +2392,10 @@ const srspOpeningGate1TO21ReportWp = async (startDate, endDate, intervalMinutes,
 
 const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if ( user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -2376,20 +2497,57 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
       addImageToWorksheet(hyderabadImagePath, [1, 4]);
       addImageToWorksheet(chetasImagePath, [18.6, 20]);
 
-      const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 22} \n (Feet)`)];
-      worksheet.addRows([[]]);
 
-      worksheet.addRow(headers).eachCell((cell) => {
-        cell.border = {
-            top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
-        };
-        cell.alignment = { horizontal: 'center' };
-      });
+      if (req.query.selectedGates == null || req.query.selectedGates == 0) {
+        const headers = ['DateTime', ...Array.from({ length: 21 }, (_, i) => `Gate ${i + 22} \n (Feet)`)];
+        worksheet.addRows([[]]);
+  
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+              top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+          };
+          cell.alignment = { horizontal: 'center' };
+        });
+  
+        srspOpeningGate22TO42ReportWithoutPagination.forEach((row) => {
+          const rowData = [row.dateTime, ...Array.from({ length: 21 }, (_, i) => row[`gate${i + 22}Position`])];
+          worksheet.addRow(rowData);
+        });
+      } else {
+        let selectedGatesString = req.query.selectedGates;
+        selectedGatesString = selectedGatesString.replace(/\[|\]/g, "");
+        const selectedGates = selectedGatesString.split(",").map(Number);
 
-      srspOpeningGate22TO42ReportWithoutPagination.forEach((row) => {
-        const rowData = [row.dateTime, ...Array.from({ length: 21 }, (_, i) => row[`gate${i + 22}Position`])];
-        worksheet.addRow(rowData);
-      });
+        const headers = [
+          "DateTime",
+          ...selectedGates.map((gate) => `Gate ${gate} \n (Feet)`),
+        ];
+
+        worksheet.addRows([[]]);
+
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+          cell.alignment = { horizontal: "center" };
+        });
+
+        srspOpeningGate22TO42ReportWithoutPagination.forEach((row) => {
+          const rowData = [row.dateTime];
+          selectedGates.forEach((gate) => {
+            const fieldName = "gate" + gate + "Position";
+            if (row.hasOwnProperty(fieldName)) {
+              rowData.push(row[fieldName]);
+            } else {
+              rowData.push(null);
+            }
+          });
+          worksheet.addRow(rowData);
+        });
+      }
 
       const dateTimeColumn = worksheet.getColumn(1);
       dateTimeColumn.width = 20;
@@ -2526,8 +2684,8 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
                   new Docx.ImageRun({
                     data: fs.readFileSync(chetasImagePath),
                     transformation: {
-                      width: 100,
-                      height: 100,
+                      width: 80,
+                      height: 110,
                     },
                     floating: {
                       horizontalPosition: {
@@ -2608,7 +2766,7 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
           sections: sections,
         });
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42_Opening_Report.docx');
+        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Gate_22_To_42_Opening_Report.doc');
 
         // Stream the Word document to the response
         const buffer = await Docx.Packer.toBuffer(doc);
@@ -2642,6 +2800,9 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
     } else {
       res.send(srspOpeningGate22TO42ReportWithoutPagination);
     }
+  } else {
+    return "You are not authorized to access this data";
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -2650,6 +2811,10 @@ const srspOpeningGate22TO42ReportWp = async (startDate, endDate, intervalMinutes
 
 const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if ( user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -2720,7 +2885,7 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 2.5]);
-      addImageToWorksheet(chetasImagePath, [6.5, 7]);
+      addImageToWorksheet(chetasImagePath, [6.9, 7]);
 
       const headers = [
         'DateTime',
@@ -2879,8 +3044,8 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
                 new Docx.ImageRun({
                   data: fs.readFileSync(chetasImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 110,
                   },
                   floating: {
                     horizontalPosition: {
@@ -2947,7 +3112,7 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
         sections: sections,
       });
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Inflow_Outflow_PondLevel_Report.docx');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Inflow_Outflow_PondLevel_Report.doc');
 
       // Stream the Word document to the response
       const buffer = await Docx.Packer.toBuffer(doc);
@@ -2977,6 +3142,9 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
     } else {
       res.send(srspInflowOutflowPondLevelReportWithoutPagination);
     }
+  } else {
+    return "You are not authorized to access this data";
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -2985,6 +3153,10 @@ const srspInflowOutflowPondLevelReportWp = async (startDate, endDate, intervalMi
 
 const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if ( user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -3063,11 +3235,7 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
       };
 
       addImageToWorksheet(hyderabadImagePath, [1, 2.7]);
-      addImageToWorksheet(chetasImagePath, [8.5, 9]);
-
-      // worksheet.getCell('E9').value = 'SRSP Dam Parameter Overview Report';
-      // const cell = worksheet.getCell('E9');
-      // cell.font = { bold: true, size: 20 };
+      addImageToWorksheet(chetasImagePath, [8.9, 9]);
 
       const headers = [
         'DateTime',
@@ -3252,8 +3420,8 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
                 new Docx.ImageRun({
                   data: fs.readFileSync(chetasImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 110,
                   },
                   floating: {
                     horizontalPosition: {
@@ -3333,7 +3501,7 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
         sections: sections,
       });
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Parameter_Overview_Report.docx');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Parameter_Overview_Report.doc');
 
       const buffer = await Docx.Packer.toBuffer(doc);
       res.end(buffer);
@@ -3362,6 +3530,9 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
     } else {
       res.send(srspParameterOverviewReportWithoutPagination);
     }
+  } else {
+    return "You are not authorized to access this data";
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -3370,6 +3541,10 @@ const srspParameterOverviewReportWp = async (startDate, endDate, intervalMinutes
 
 const srspHrKakatitaDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if ( user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -3702,8 +3877,8 @@ const srspHrKakatitaDamGateReportWp = async (startDate, endDate, intervalMinutes
                 new Docx.ImageRun({
                   data: fs.readFileSync(chetasImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 110,
                   },
                   floating: {
                     horizontalPosition: {
@@ -3778,7 +3953,7 @@ const srspHrKakatitaDamGateReportWp = async (startDate, endDate, intervalMinutes
       });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Kakatiya_Dam_Gate_Report.docx');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Kakatiya_Dam_Gate_Report.doc');
 
       const buffer = await Docx.Packer.toBuffer(doc);
       res.end(buffer);
@@ -3808,6 +3983,9 @@ const srspHrKakatitaDamGateReportWp = async (startDate, endDate, intervalMinutes
     } else {
       res.send(mergedDataWithoutPagination);
     }
+  } else {
+    return "You are not authorized to access this data";
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -3816,6 +3994,10 @@ const srspHrKakatitaDamGateReportWp = async (startDate, endDate, intervalMinutes
 
 const srspHrSaraswatiDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if ( user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -3935,10 +4117,6 @@ const srspHrSaraswatiDamGateReportWp = async (startDate, endDate, intervalMinute
 
       addImageToWorksheet(hyderabadImagePath, [1, 2]);
       addImageToWorksheet(chetasImagePath, [4.9, 5]);
-
-      // worksheet.getCell('H9').value = 'SRSP HR Kakatiya & Saraswati canal Gate Report';
-      // const cell = worksheet.getCell('H9');
-      // cell.font = { bold: true, size: 20 };
 
       const headers = [
         'DateTime',
@@ -4147,8 +4325,8 @@ const srspHrSaraswatiDamGateReportWp = async (startDate, endDate, intervalMinute
                 new Docx.ImageRun({
                   data: fs.readFileSync(chetasImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 110,
                   },
                   floating: {
                     horizontalPosition: {
@@ -4215,7 +4393,7 @@ const srspHrSaraswatiDamGateReportWp = async (startDate, endDate, intervalMinute
       });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Saraswati_Dam_Gate_Report.docx');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Saraswati_Dam_Gate_Report.doc');
 
       const buffer = await Docx.Packer.toBuffer(doc);
       res.end(buffer);
@@ -4245,6 +4423,9 @@ const srspHrSaraswatiDamGateReportWp = async (startDate, endDate, intervalMinute
     } else {
       res.send(mergedDataWithoutPagination);
     }
+  } else {
+    return "You are not authorized to access this data";
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -4253,6 +4434,10 @@ const srspHrSaraswatiDamGateReportWp = async (startDate, endDate, intervalMinute
 
 const srspHrFloodFlowDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if ( user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -4628,8 +4813,8 @@ const srspHrFloodFlowDamGateReportWp = async (startDate, endDate, intervalMinute
                 new Docx.ImageRun({
                   data: fs.readFileSync(chetasImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 110,
                   },
                   floating: {
                     horizontalPosition: {
@@ -4712,7 +4897,7 @@ const srspHrFloodFlowDamGateReportWp = async (startDate, endDate, intervalMinute
       });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Flood_Flow_Dam_Gate_Report.docx');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Flood_Flow_Dam_Gate_Report.doc');
 
       const buffer = await Docx.Packer.toBuffer(doc);
       res.end(buffer);
@@ -4740,6 +4925,9 @@ const srspHrFloodFlowDamGateReportWp = async (startDate, endDate, intervalMinute
     } else {
       res.send(mergedDataWithoutPagination);
     }
+  } else {
+    return "You are not authorized to access this data";
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -4748,6 +4936,10 @@ const srspHrFloodFlowDamGateReportWp = async (startDate, endDate, intervalMinute
 
 const srspHrLakshmiDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if ( user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+
     const pipelineWithoutPagination = [
       {
         $match: {
@@ -5042,8 +5234,8 @@ const srspHrLakshmiDamGateReportWp = async (startDate, endDate, intervalMinutes,
                 new Docx.ImageRun({
                   data: fs.readFileSync(chetasImagePath),
                   transformation: {
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 110,
                   },
                   floating: {
                     horizontalPosition: {
@@ -5110,7 +5302,7 @@ const srspHrLakshmiDamGateReportWp = async (startDate, endDate, intervalMinutes,
       });
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Lakshmi_Dam_Gate_Report.docx');
+      res.setHeader('Content-Disposition', 'attachment; filename=SRSP_HR_Lakshmi_Dam_Gate_Report.doc');
 
       const buffer = await Docx.Packer.toBuffer(doc);
       res.end(buffer);
@@ -5118,6 +5310,9 @@ const srspHrLakshmiDamGateReportWp = async (startDate, endDate, intervalMinutes,
     }  else {
       res.send(mergedDataWithoutPagination);
     }
+  } else {
+    return "You are not authorized to access this data";
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -5126,6 +5321,10 @@ const srspHrLakshmiDamGateReportWp = async (startDate, endDate, intervalMinutes,
 
 const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, exportToExcel, user, res, req) => {
   try {
+
+    const checkPermission = await Permission.findOne({ name: 'srspReport' });
+    if ( user.role === 'admin' || user.role === 'srspSuperuser' || (checkPermission && checkPermission.roleName.includes(user.role))) {
+
     const pipeline = [
       {
         $match: {
@@ -5633,6 +5832,9 @@ const srspHrDamGateReportWp = async (startDate, endDate, intervalMinutes, export
     } else {
       res.send(mergedDataWithoutPagination);
     }
+  } else {
+    return "You are not authorized to access this data";
+  }
   } catch (error) {
     console.error('Error:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);

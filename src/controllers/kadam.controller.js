@@ -1,6 +1,5 @@
 const { knrService } = require('../services');
 const httpStatus = require('http-status');
-const moment = require('moment');
 const catchAsync = require('../utils/catchAsync');
 
 const KPLO = require('../models/KNR_POND_LEVEL_OVERVIEW');
@@ -10,33 +9,19 @@ const KHDOP = require('../models/KNR_HR_DAM_OVERVIEW_POS');
 const KHDOD = require('../models/KNR_HR_DAM_OVERVIEW_DICH');
 const KSADVM = require('../models/KNR_SPARE_ADVM');
 
-function getWeekNumber(date) {
-  const onejan = new Date(date.getFullYear(), 0, 1);
-  const millisecsInDay = 86400000;
-  return Math.ceil(((date - onejan) / millisecsInDay + onejan.getDay() + 1) / 7);
-}
-
 async function kadamMongoDBData(data) {
   try {
-    const kadamPondLevel = data.kadamPondLevel;
-    const kadamKnrDamOverviewPosition = data.kadamKnrDamOverviewPosition;
-    const kadamKnrDamOverviewDischarge = data.kadamKnrDamOverviewDischarge;
-    const kadamHrDamOverviewPosition = data.kadamHrDamOverviewPosition;
-    const kadamHrDamOverviewDischarge = data.kadamHrDamOverviewDischarge;
-    const kadamHrKnrAdvm = data.kadamHrKnrAdvm;
+    const kadamPondLevel = data?.kadamPondLevel;
+    const kadamKnrDamOverviewPosition = data?.kadamKnrDamOverviewPosition;
+    const kadamKnrDamOverviewDischarge = data?.kadamKnrDamOverviewDischarge;
+    const kadamHrDamOverviewPosition = data?.kadamHrDamOverviewPosition;
+    const kadamHrDamOverviewDischarge = data?.kadamHrDamOverviewDischarge;
+    const kadamHrKnrAdvm = data?.kadamHrKnrAdvm;
 
-    const mappedData = kadamPondLevel.map((row) => {
-      const dateTime = new Date(row.DateTime);
-      const date = dateTime.toISOString().split('T')[0];
-      const time = dateTime.toTimeString().slice(0, 8);
-
+    const mappedData = kadamPondLevel?.map((row) => {
+    const dateTime = new Date(row.DateTime);
+ 
       return {
-        date: date,
-        time: time,
-        year: dateTime.getFullYear(),
-        month: dateTime.getMonth() + 1,
-        week: getWeekNumber(dateTime),
-        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
         dateTime: dateTime.toISOString(),
         inflow1Level: row.D1,
         inflow2Level: row.D2,
@@ -83,18 +68,10 @@ async function kadamMongoDBData(data) {
       };
     });
 
-    const mappedData1 = kadamKnrDamOverviewPosition.map((row) => {
+    const mappedData1 = kadamKnrDamOverviewPosition?.map((row) => {
       const dateTime = new Date(row.DateTime);
-      const date = dateTime.toISOString().split('T')[0];
-      const time = dateTime.toTimeString().slice(0, 8);
 
-      return {
-        date: date,
-        time: time,
-        year: dateTime.getFullYear(),
-        month: dateTime.getMonth() + 1,
-        week: getWeekNumber(dateTime),
-        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
+      return { 
         dateTime: dateTime.toISOString(),
         gate1Position: row.D1,
         gate2Position: row.D2,
@@ -141,18 +118,10 @@ async function kadamMongoDBData(data) {
       };
     });
 
-    const mappedData2 = kadamKnrDamOverviewDischarge.map((row) => {
+    const mappedData2 = kadamKnrDamOverviewDischarge?.map((row) => {
       const dateTime = new Date(row.DateTime);
-      const date = dateTime.toISOString().split('T')[0];
-      const time = dateTime.toTimeString().slice(0, 8);
-
+ 
       return {
-        date: date,
-        time: time,
-        year: dateTime.getFullYear(),
-        month: dateTime.getMonth() + 1,
-        week: getWeekNumber(dateTime),
-        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
         dateTime: dateTime.toISOString(),
         gate1Discharge: row.D1,
         gate2Discharge: row.D2,
@@ -199,18 +168,10 @@ async function kadamMongoDBData(data) {
       };
     });
 
-    const mappedData3 = kadamHrDamOverviewPosition.map((row) => {
+    const mappedData3 = kadamHrDamOverviewPosition?.map((row) => {
       const dateTime = new Date(row.DateTime);
-      const date = dateTime.toISOString().split('T')[0];
-      const time = dateTime.toTimeString().slice(0, 8);
-
+ 
       return {
-        date: date,
-        time: time,
-        year: dateTime.getFullYear(),
-        month: dateTime.getMonth() + 1,
-        week: getWeekNumber(dateTime),
-        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
         dateTime: dateTime.toISOString(),
         hrklManGate1Position: row.D1,
         hrklManGate2Position: row.D2,
@@ -257,18 +218,10 @@ async function kadamMongoDBData(data) {
       };
     });
 
-    const mappedData4 = kadamHrDamOverviewDischarge.map((row) => {
+    const mappedData4 = kadamHrDamOverviewDischarge?.map((row) => {
       const dateTime = new Date(row.DateTime);
-      const date = dateTime.toISOString().split('T')[0];
-      const time = dateTime.toTimeString().slice(0, 8);
-
+ 
       return {
-        date: date,
-        time: time,
-        year: dateTime.getFullYear(),
-        month: dateTime.getMonth() + 1,
-        week: getWeekNumber(dateTime),
-        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
         dateTime: dateTime.toISOString(),
         hrklManGate1Discharge: row.D1,
         hrklManGate2Discharge: row.D2,
@@ -315,18 +268,10 @@ async function kadamMongoDBData(data) {
       };
     });
 
-    const mappedData5 = kadamHrKnrAdvm.map((row) => {
+    const mappedData5 = kadamHrKnrAdvm?.map((row) => {
       const dateTime = new Date(row.DateTime);
-      const date = dateTime.toISOString().split('T')[0];
-      const time = dateTime.toTimeString().slice(0, 8);
-
+ 
       return {
-        date: date,
-        time: time,
-        year: dateTime.getFullYear(),
-        month: dateTime.getMonth() + 1,
-        week: getWeekNumber(dateTime),
-        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
         dateTime: dateTime.toISOString(),
         D1: row.D1,
         D2: row.D2,

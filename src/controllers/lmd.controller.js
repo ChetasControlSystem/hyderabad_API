@@ -1,6 +1,5 @@
 const { lmdService } = require('../services');
 const httpStatus = require('http-status');
-const moment = require('moment');
 const catchAsync = require('../utils/catchAsync');
 
 const LHRA = require('../models/LMD_HR_RIGHT_ADVM');
@@ -10,33 +9,19 @@ const LDAD = require('../models/LMD_DAM_OVERVIEW_DICH');
 const LHDOP = require('../models/LMD_HR_DAM_OVERVIEW_POS');
 const LHDOD = require('../models/LMD_HR_DAM_OVERVIEW_DICH');
 
-function getWeekNumber(date) {
-  const onejan = new Date(date.getFullYear(), 0, 1);
-  const millisecsInDay = 86400000;
-  return Math.ceil(((date - onejan) / millisecsInDay + onejan.getDay() + 1) / 7);
-}
-
 async function lmdMongoDBData(data) {
   try {
-    const lmdHrSsdAdvm = data.lmdHrSsdAdvm;
-    const lmdPondLevel = data.lmdPondLevel;
-    const lmdDamOverviewPosition = data.lmdDamOverviewPosition;
-    const lmdDamOverviewDischarge = data.lmdDamOverviewDischarge;
-    const lmdHrDamOverviewPosition = data.lmdHrDamOverviewPosition;
-    const lmdHrDamOverviewDischarge = data.lmdHrDamOverviewDischarge;
+    const lmdHrSsdAdvm = data?.lmdHrSsdAdvm;
+    const lmdPondLevel = data?.lmdPondLevel;
+    const lmdDamOverviewPosition = data?.lmdDamOverviewPosition;
+    const lmdDamOverviewDischarge = data?.lmdDamOverviewDischarge;
+    const lmdHrDamOverviewPosition = data?.lmdHrDamOverviewPosition;
+    const lmdHrDamOverviewDischarge = data?.lmdHrDamOverviewDischarge;
 
-    const mappedData = lmdHrSsdAdvm.map((row) => {
+    const mappedData = lmdHrSsdAdvm?.map((row) => {
       const dateTime = new Date(row.DateTime);
-      const date = dateTime.toISOString().split('T')[0];
-      const time = dateTime.toTimeString().slice(0, 8);
-
-      return {
-        date: date,
-        time: time,
-        year: dateTime.getFullYear(),
-        month: dateTime.getMonth() + 1,
-        week: getWeekNumber(dateTime),
-        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
+  
+      return { 
         dateTime: dateTime.toISOString(),
         hrrFlowRate: row.D1,
         hrrTotalizer: row.D2,
@@ -83,18 +68,10 @@ async function lmdMongoDBData(data) {
       };
     });
 
-    const mappedData1 = lmdPondLevel.map((row) => {
+    const mappedData1 = lmdPondLevel?.map((row) => {
       const dateTime = new Date(row.DateTime);
-      const date = dateTime.toISOString().split('T')[0];
-      const time = dateTime.toTimeString().slice(0, 8);
-
+  
       return {
-        date: date,
-        time: time,
-        year: dateTime.getFullYear(),
-        month: dateTime.getMonth() + 1,
-        week: getWeekNumber(dateTime),
-        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
         dateTime: dateTime.toISOString(),
         inflow1Level: row.D1,
         inflow2Level: row.D2,
@@ -141,16 +118,11 @@ async function lmdMongoDBData(data) {
       };
     });
 
-    const mappedData2 = lmdDamOverviewPosition.map((row) => {
-      const dateTime = moment(row.DateTime);
+    const mappedData2 = lmdDamOverviewPosition?.map((row) => {
+      const dateTime = new Date(row.DateTime);
+
       return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+        dateTime: dateTime.toISOString(),
         gate1Position: row.D1,
         gate2Position: row.D2,
         gate3Position: row.D3,
@@ -196,18 +168,10 @@ async function lmdMongoDBData(data) {
       };
     });
 
-    const mappedData3 = lmdDamOverviewDischarge.map((row) => {
+    const mappedData3 = lmdDamOverviewDischarge?.map((row) => {
       const dateTime = new Date(row.DateTime);
-      const date = dateTime.toISOString().split('T')[0];
-      const time = dateTime.toTimeString().slice(0, 8);
-
+  
       return {
-        date: date,
-        time: time,
-        year: dateTime.getFullYear(),
-        month: dateTime.getMonth() + 1,
-        week: getWeekNumber(dateTime),
-        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
         dateTime: dateTime.toISOString(),
         gate1Discharge: row.D1,
         gate2Discharge: row.D2,
@@ -254,18 +218,10 @@ async function lmdMongoDBData(data) {
       };
     });
 
-    const mappedData4 = lmdHrDamOverviewPosition.map((row) => {
+    const mappedData4 = lmdHrDamOverviewPosition?.map((row) => {
       const dateTime = new Date(row.DateTime);
-      const date = dateTime.toISOString().split('T')[0];
-      const time = dateTime.toTimeString().slice(0, 8);
 
       return {
-        date: date,
-        time: time,
-        year: dateTime.getFullYear(),
-        month: dateTime.getMonth() + 1,
-        week: getWeekNumber(dateTime),
-        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
         dateTime: dateTime.toISOString(),
         hrrGate1Position: row.D1,
         hrrGate2Position: row.D2,
@@ -312,18 +268,10 @@ async function lmdMongoDBData(data) {
       };
     });
 
-    const mappedData5 = lmdHrDamOverviewDischarge.map((row) => {
+    const mappedData5 = lmdHrDamOverviewDischarge?.map((row) => {
       const dateTime = new Date(row.DateTime);
-      const date = dateTime.toISOString().split('T')[0];
-      const time = dateTime.toTimeString().slice(0, 8);
-
+  
       return {
-        date: date,
-        time: time,
-        year: dateTime.getFullYear(),
-        month: dateTime.getMonth() + 1,
-        week: getWeekNumber(dateTime),
-        quarter: Math.floor((dateTime.getMonth() + 3) / 3),
         dateTime: dateTime.toISOString(),
         hrrGate1Discharge: row.D1,
         hrrGate2Discharge: row.D2,
