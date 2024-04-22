@@ -20,15 +20,10 @@ async function handleMongoDBData(data) {
     const srspHrDamOverviewDischarge = data?.srspHrDamOverviewDischarge;
 
     const mappedData = srspPondLevel?.map((row) => {
-      const dateTime = moment(row.DateTime);
-      return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+    const dateTime = new Date(row.DateTime);
+
+      return {   
+        dateTime: dateTime.toISOString(),
         inflow1Level: row.D1,
         inflow2Level: row.D2,
         D3: row.D3,
@@ -75,15 +70,10 @@ async function handleMongoDBData(data) {
     });
 
     const mappedData1 = srspSsdDamOverviewPosition?.map((row) => {
-      const dateTime = moment(row.DateTime);
+    const dateTime = new Date(row.DateTime);
+
       return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+        dateTime: dateTime.toISOString(),
         gate1Position: row.D1,
         gate2Position: row.D2,
         gate3Position: row.D3,
@@ -130,15 +120,10 @@ async function handleMongoDBData(data) {
     });
 
     const mappedData2 = srspHrDamOverviewPosition?.map((row) => {
-      const dateTime = moment(row.DateTime);
+    const dateTime = new Date(row.DateTime);
+
       return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+        dateTime: dateTime.toISOString(),
         hrkGate1Position: row.D1,
         hrkGate2Position: row.D2,
         hrkGate3Position: row.D3,
@@ -185,15 +170,10 @@ async function handleMongoDBData(data) {
     });
 
     const mappedData3 = srspSsdDamOverviewDischarge?.map((row) => {
-      const dateTime = moment(row.DateTime);
-      return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+    const dateTime = new Date(row.DateTime);
+
+      return {           
+       dateTime: dateTime.toISOString(),
         gate1Discharge: row.D1,
         gate2Discharge: row.D2,
         gate3Discharge: row.D3,
@@ -240,15 +220,10 @@ async function handleMongoDBData(data) {
     });
 
     const mappedData4 = srspHrSsdAdvm?.map((row) => {
-      const dateTime = moment(row.DateTime);
-      return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+    const dateTime = new Date(row.DateTime);
+
+      return {           
+        dateTime: dateTime.toISOString(),
         hrkFlowRate: row.D1,
         hrkCDQ: row.D2,
         hrkLDQ: row.D3,
@@ -295,15 +270,10 @@ async function handleMongoDBData(data) {
     });
 
     const mappedData5 = srspHrDamOverviewDischarge?.map((row) => {
-      const dateTime = moment(row.DateTime);
+    const dateTime = new Date(row.DateTime);
+
       return {
-        date: dateTime.format('YYYY-MM-DD'),
-        time: dateTime.format('HH:mm:ss'),
-        year: dateTime.year(),
-        month: dateTime.month() + 1,
-        week: dateTime.week(),
-        quarter: dateTime.quarter(),
-        dateTime: dateTime.format(),
+        dateTime: dateTime.toISOString(),
         hrkGate1Discharge: row.D1,
         hrkGate2Discharge: row.D2,
         hrkGate3Discharge: row.D3,

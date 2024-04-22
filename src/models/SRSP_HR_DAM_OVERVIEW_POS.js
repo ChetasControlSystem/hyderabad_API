@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const moment = require('moment');
 
 const SanjayHrDamOverviewPos = mongoose.Schema(
     {
@@ -176,47 +175,12 @@ const SanjayHrDamOverviewPos = mongoose.Schema(
             type: Date,
             require: true,
             index : true
-        },
-        date: {
-            type: String,
-            // required: true
-        },
-        time: {
-            type: String,
-            // required: true
-        },
-        year: {
-            type: Number,
-            // required: true
-        },
-        week: {
-            type: Number,
-            // required: true
-        },
-        month: {
-            type: Number,
-            // required: true
-        },
-        quarter: {
-            type: Number,
-            // required: true
-        },
+        }
     },
     {
         timestamps: true, versionKey: false
     }
 );
-
-// SanjayHrDamOverviewPos.pre('save', function (next) {
-//     console.log('Middleware triggered!');
-//     this.date = moment(this.dateTime).format('YYYY-MM-DD');
-//     this.time = moment(this.dateTime).format('HH:mm:ss');
-//     this.year = moment(this.dateTime).year();
-//     this.week = moment(this.dateTime).week();
-//     this.month = moment(this.dateTime).month() + 1;
-//     this.quarter = moment(this.dateTime).quarter();
-//     next();
-// });
 
 SanjayHrDamOverviewPos.index({dateTime : 1})
 const SDO = mongoose.model('Sanjay_Hr_Dam_Overview_Position', SanjayHrDamOverviewPos);
