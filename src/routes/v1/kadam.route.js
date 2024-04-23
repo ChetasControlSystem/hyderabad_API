@@ -20,11 +20,11 @@ router.get('/kadam-hr-dam-gatereport',  [auth(), validate('kadamReportShow'),kad
 router.get('/kadam-sevenday-report', auth(), kadamController.sevenDayReport);
 
 //Download Report 
-router.get('/kadam-1to18-opn-gatereport-download', [ validate('kadamReportDownload'), kadamController.kadamOpeningGate1To18ReportWp]);
-router.get('/kadam-1to18-dis-gatereport-download', [ validate('kadamReportDownload'), kadamController.kadamDishchargeGate1To18ReportWp]);
-router.get('/kadam-pondlevel-report-download', [ validate('kadamReportDownload'), kadamController.kadamInflowOutflowPondLevelReportWp]);
-router.get('/kadam-parameter-overview-report-download', [ validate('kadamReportDownload'), kadamController.kadamGateParameterOverviewReportWp]);
-router.get('/kadam-hr-dam-gatereport-download', [ validate('kadamReportDownload'), kadamController.kadamHrDamGateReportWp]);
+router.get('/kadam-1to18-opn-gatereport-download', [auth(), validate('kadamReportDownload'), kadamController.kadamOpeningGate1To18ReportWp]);
+router.get('/kadam-1to18-dis-gatereport-download', [auth(), validate('kadamReportDownload'), kadamController.kadamDishchargeGate1To18ReportWp]);
+router.get('/kadam-pondlevel-report-download', [auth(), validate('kadamReportDownload'), kadamController.kadamInflowOutflowPondLevelReportWp]);
+router.get('/kadam-parameter-overview-report-download', [auth(), validate('kadamReportDownload'), kadamController.kadamGateParameterOverviewReportWp]);
+router.get('/kadam-hr-dam-gatereport-download', [auth(), validate('kadamReportDownload'), kadamController.kadamHrDamGateReportWp]);
 
 
  

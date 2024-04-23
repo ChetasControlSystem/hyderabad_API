@@ -21,11 +21,11 @@ router.get('/lmd-sevenday-report', auth(), lmdController.sevenDayReport);
 
 
 //Download Report
-router.get('/lmd-1to20-dis-gatereport-download', [ validate('lmdReportDownload'), lmdController.lmdDischargeGateReportWp]);
-router.get('/lmd-1to20-opn-gatereport-download', [ validate('lmdReportDownload'), lmdController.lmdOpeningGateReportWp]);
-router.get('/lmd-pondlevel-report-download', [ validate('lmdReportDownload'), lmdController.lmdPondlevelGateReportWp]);
-router.get('/lmd-parameter-overview-report-download', [ validate('lmdReportDownload'), lmdController.lmdGateParameterOverviewReportWp]);
-router.get('/lmd-hr-gate-report-download', [ validate('lmdReportDownload'), lmdController.lmdHrGateReportWp]);
+router.get('/lmd-1to20-dis-gatereport-download', [auth(), validate('lmdReportDownload'), lmdController.lmdDischargeGateReportWp]);
+router.get('/lmd-1to20-opn-gatereport-download', [auth(), validate('lmdReportDownload'), lmdController.lmdOpeningGateReportWp]);
+router.get('/lmd-pondlevel-report-download', [auth(), validate('lmdReportDownload'), lmdController.lmdPondlevelGateReportWp]);
+router.get('/lmd-parameter-overview-report-download', [auth(), validate('lmdReportDownload'), lmdController.lmdGateParameterOverviewReportWp]);
+router.get('/lmd-hr-gate-report-download', [auth(), validate('lmdReportDownload'), lmdController.lmdHrGateReportWp]);
 
 
 module.exports = router;
