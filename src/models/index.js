@@ -4,7 +4,7 @@ module.exports.Role = require('./Role.model');
 module.exports.Permission = require('./permission.model');
 
 //Lower Manair Dam
-module.exports.LMDS =require("./LMDsalientfeature");
+module.exports.LMDS =require("./Lmdsalientfeature");
 module.exports.LMD_DAM_OVERVIEW_DICH = require('./LMD_DAM_OVERVIEW_DICH');
 module.exports.LMD_DAM_OVERVIEW_POS = require('./LMD_DAM_OVERVIEW_POS');
 module.exports.LMD_HR_DAM_OVERVIEW_DICH = require('./LMD_HR_DAM_OVERVIEW_DICH');
