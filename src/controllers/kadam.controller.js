@@ -327,8 +327,7 @@ async function kadamMongoDBData(data) {
 
     if (kadamPondLevelOverview.length) {
       const LastDate = new Date(kadamPondLevelOverview[0].dateTime);
-      const newArray = mappedData
-        .map((datetimeString) => {
+      const newArray = mappedData?.map((datetimeString) => {
           const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
             return datetimeString;
@@ -344,8 +343,7 @@ async function kadamMongoDBData(data) {
 
     if (kadamDamOverviewPosition.length) {
       const LastDate = new Date(kadamDamOverviewPosition[0].dateTime);
-      const newArray = mappedData1
-        .map((datetimeString) => {
+      const newArray = mappedData1?.map((datetimeString) => {
           const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
             return datetimeString;
@@ -361,8 +359,7 @@ async function kadamMongoDBData(data) {
 
     if (kadamDamOverviewDischarge.length) {
       const LastDate = new Date(kadamDamOverviewDischarge[0].dateTime);
-      const newArray = mappedData2
-        .map((datetimeString) => {
+      const newArray = mappedData2?.map((datetimeString) => {
           const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
             return datetimeString;
@@ -378,8 +375,7 @@ async function kadamMongoDBData(data) {
 
     if (kadamHrDamOverviewPos.length) {
       const LastDate = new Date(kadamHrDamOverviewPos[0].dateTime);
-      const newArray = mappedData3
-        .map((datetimeString) => {
+      const newArray = mappedData3?.map((datetimeString) => {
           const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
             return datetimeString;
@@ -395,8 +391,7 @@ async function kadamMongoDBData(data) {
 
     if (kadamHrDamOverviewDis.length) {
       const LastDate = new Date(kadamHrDamOverviewDis[0].dateTime);
-      const newArray = mappedData4
-        .map((datetimeString) => {
+      const newArray = mappedData4?.map((datetimeString) => {
           const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
             return datetimeString;
@@ -412,8 +407,7 @@ async function kadamMongoDBData(data) {
 
     if (kadamAdvm.length) {
       const LastDate = new Date(kadamAdvm[0].dateTime);
-      const newArray = mappedData5
-        .map((datetimeString) => {
+      const newArray = mappedData5?.map((datetimeString) => {
           const datetime = new Date(datetimeString.dateTime);
           if (datetime > LastDate) {
             return datetimeString;

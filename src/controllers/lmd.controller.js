@@ -325,107 +325,102 @@ async function lmdMongoDBData(data) {
     const lmdHrDamOverviewPos = await LHDOP.find().sort({ dateTime: -1 }).limit(1);
     const lmdHrDamOverviewDis = await LHDOD.find().sort({ dateTime: -1 }).limit(1);
 
-    if (lmdHrRightAdnm.length) {
-      const LastDate = new Date(lmdHrRightAdnm[0].dateTime);
-      const newArray = mappedData
-        .map((datetimeString) => {
-          const datetime = new Date(datetimeString.dateTime);
-          if (datetime > LastDate) {
-            return datetimeString;
-          }
-          return null;
-        })
-        .filter((item) => item !== null);
+  if (lmdHrRightAdnm.length) {
+    const LastDate = new Date(lmdHrRightAdnm[0].dateTime);
+    const newArray = mappedData?.map((datetimeString) => {
+        const datetime = new Date(datetimeString.dateTime);
+        if (datetime > LastDate) {
+          return datetimeString;
+        }
+        return null;
+      })
+      .filter((item) => item !== null);
 
-      await LHRA.insertMany(newArray);
-    } else {
-      await LHRA.insertMany(mappedData);
-    }
+    await LHRA.insertMany(newArray);
+  } else {
+    await LHRA.insertMany(mappedData);
+  }
+   
+  if (lmdPondLevelOverview.length) {
+    const LastDate = new Date(lmdPondLevelOverview[0].dateTime);
+    const newArray = mappedData1?.map((datetimeString) => {
+        const datetime = new Date(datetimeString.dateTime);
+        if (datetime > LastDate) {
+          return datetimeString;
+        }
+        return null;
+      })
+      .filter((item) => item !== null);
 
-    if (lmdPondLevelOverview.length) {
-      const LastDate = new Date(lmdPondLevelOverview[0].dateTime);
-      const newArray = mappedData1
-        .map((datetimeString) => {
-          const datetime = new Date(datetimeString.dateTime);
-          if (datetime > LastDate) {
-            return datetimeString;
-          }
-          return null;
-        })
-        .filter((item) => item !== null);
+    await LPLO.insertMany(newArray);
+  } else {
+    await LPLO.insertMany(mappedData1);
+  }
+   
+  if (lmdDamOverviewPos.length) {
+    const LastDate = new Date(lmdDamOverviewPos[0].dateTime);
+    const newArray = mappedData2?.map((datetimeString) => {
+        const datetime = new Date(datetimeString.dateTime);
+        if (datetime > LastDate) {
+          return datetimeString;
+        }
+        return null;
+      })
+      .filter((item) => item !== null);
 
-      await LPLO.insertMany(newArray);
-    } else {
-      await LPLO.insertMany(mappedData1);
-    }
+    await LDOP.insertMany(newArray);
+  } else {
+    await LDOP.insertMany(mappedData2);
+  }
 
-    if (lmdDamOverviewPos.length) {
-      const LastDate = new Date(lmdDamOverviewPos[0].dateTime);
-      const newArray = mappedData2
-        .map((datetimeString) => {
-          const datetime = new Date(datetimeString.dateTime);
-          if (datetime > LastDate) {
-            return datetimeString;
-          }
-          return null;
-        })
-        .filter((item) => item !== null);
+  if (lmdDamOverviewDis.length) {
+    const LastDate = new Date(lmdDamOverviewDis[0].dateTime);
+    const newArray = mappedData3?.map((datetimeString) => {
+        const datetime = new Date(datetimeString.dateTime);
+        if (datetime > LastDate) {
+          return datetimeString;
+        }
+        return null;
+      })
+      .filter((item) => item !== null);
 
-      await LDOP.insertMany(newArray);
-    } else {
-      await LDOP.insertMany(mappedData2);
-    }
+    await LDAD.insertMany(newArray);
+  } else {
+    await LDAD.insertMany(mappedData3);
+  }
 
-    if (lmdDamOverviewDis.length) {
-      const LastDate = new Date(lmdDamOverviewDis[0].dateTime);
-      const newArray = mappedData3
-        .map((datetimeString) => {
-          const datetime = new Date(datetimeString.dateTime);
-          if (datetime > LastDate) {
-            return datetimeString;
-          }
-          return null;
-        })
-        .filter((item) => item !== null);
+  if (lmdHrDamOverviewPos.length) {
+    const LastDate = new Date(lmdHrDamOverviewPos[0].dateTime);
+    const newArray = mappedData4?.map((datetimeString) => {
+        const datetime = new Date(datetimeString.dateTime);
+        if (datetime > LastDate) {
+          return datetimeString;
+        }
+        return null;
+      })
+      .filter((item) => item !== null);
 
-      await LDAD.insertMany(newArray);
-    } else {
-      await LDAD.insertMany(mappedData3);
-    }
+    await LHDOP.insertMany(newArray);
+  } else {
+    await LHDOP.insertMany(mappedData4);
+  }
+  
+  if (lmdHrDamOverviewDis.length) {
+    const LastDate = new Date(lmdHrDamOverviewDis[0].dateTime);
+    const newArray = mappedData5?.map((datetimeString) => {
+        const datetime = new Date(datetimeString.dateTime);
+        if (datetime > LastDate) {
+          return datetimeString;
+        }
+        return null;
+      })
+      .filter((item) => item !== null);
 
-    if (lmdHrDamOverviewPos.length) {
-      const LastDate = new Date(lmdHrDamOverviewPos[0].dateTime);
-      const newArray = mappedData4
-        .map((datetimeString) => {
-          const datetime = new Date(datetimeString.dateTime);
-          if (datetime > LastDate) {
-            return datetimeString;
-          }
-          return null;
-        })
-        .filter((item) => item !== null);
+    await LHDOD.insertMany(newArray);
+  } else {
+    await LHDOD.insertMany(mappedData5);
+  }
 
-      await LHDOP.insertMany(newArray);
-    } else {
-      await LHDOP.insertMany(mappedData4);
-    }
-
-    if (lmdHrDamOverviewDis.length) {
-      const LastDate = new Date(lmdHrDamOverviewDis[0].dateTime);
-      const newArray = mappedData5
-        .map((datetimeString) => {
-          const datetime = new Date(datetimeString.dateTime);
-          if (datetime > LastDate) {
-            return datetimeString;
-          }
-          return null;
-        })
-        .filter((item) => item !== null);
-
-      await LHDOD.insertMany(newArray);
-    } else {
-      await LHDOD.insertMany(mappedData5);
-    }
   } catch (error) {
     console.error('Error handling MongoDB data:', error);
   }

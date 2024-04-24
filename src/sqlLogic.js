@@ -38,33 +38,33 @@ const lmd_config = {
   };
 
 
-async function connectToSespSQL() {
+async function connectToSrspSQL() {
   try {
     await sql.connect(sesp_config);
-    console.log('Connected to SQL Server!');
+    console.log('Connected to SRSP SQL Server!');
   } catch (error) {
-    console.error('Error connecting to SQL Server:', error);
-    throw error;
+    console.error('Error connecting to SRSP SQL Server:', error);
+    // throw error;
   }
 }
 
 async function connectTokadamSQL(){
     try {
         await sql.connect(kadam_config);
-        console.log('Connected to SQL Server!');
+        console.log('Connected to KADDAM SQL Server!');
     } catch (error) {
-        console.error('Error connecting to SQL Server:', error);
-        throw error;
+        console.error('Error connecting to KADDAM SQL Server:', error);
+        // throw error;
     }
 }
 
 async function connectToLmdSQl(){
   try {
     await sql.connect(lmd_config);
-    console.log('Connected to SQL Server!');
+    console.log('Connected to LMD SQL Server!');
 } catch (error) {
-    console.error('Error connecting to SQL Server:', error);
-    throw error;
+    console.error('Error connecting to LMD SQL Server:', error);
+    // throw error;
 }
 }
 
@@ -87,7 +87,7 @@ async function LMDDAM() {
        lmdHrSsdAdvm: lmdHrSsdAdvm.recordset
     };
   } catch (error) {
-    console.error('Error fetching data from SQL Server:', error);
+    console.error('Error fetching data from LMD SQL Server:', error);
     // throw error;
   } finally {
     // Close SQL connection
@@ -97,7 +97,7 @@ async function LMDDAM() {
 
 async function SRSPDAM() {
   try {
-    await connectToSespSQL();
+    await connectToSrspSQL();
     const srspPondLevel = await sql.query`SELECT * FROM POND_LEVEL_OVERVIEW`;
     const srspSsdDamOverviewPosition = await sql.query`SELECT * FROM SSD_DAM_OVERVIEW_POS`;
     const srspSsdDamOverviewDischarge = await sql.query`SELECT * FROM SSD_DAM_OVERVIEW_DICH`;
@@ -114,7 +114,7 @@ async function SRSPDAM() {
       srspHrSsdAdvm: srspHrSsdAdvm.recordset
     };
   } catch (error) {
-    console.error('Error fetching data from SQL Server:', error);
+    console.error('Error fetching data from SRSP SQL Server:', error);
     // throw error;
   } finally {
     // Close SQL connection
@@ -141,7 +141,7 @@ async function KADAM(){
       kadamHrKnrAdvm: kadamHrKnrAdvm.recordset
    };
   }  catch (error) {
-    console.error('Error fetching data from SQL Server:', error);
+    console.error('Error fetching data from KADDAM SQL Server:', error);
     // throw error;
   } finally {
     // Close SQL connection
