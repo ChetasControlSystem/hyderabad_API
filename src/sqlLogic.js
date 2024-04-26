@@ -75,7 +75,7 @@ async function LMDDAM() {
   try {
     await connectToSQL(lmd_config, "LMD SERVER");
 
-    let datas = {
+   let datas = {
       lmdPondLevel: null,
       lmdDamOverviewPosition: null,
       lmdDamOverviewDischarge: null,
@@ -83,7 +83,6 @@ async function LMDDAM() {
       lmdHrDamOverviewDischarge: null,
       lmdHrSsdAdvm: null
     };
-
     const getLastRecord = async (Model) => {
       return await Model.findOne().sort({ dateTime: -1 }).lean();
     };
@@ -102,74 +101,25 @@ async function LMDDAM() {
       }
     };
 
-    datas.lmdPondLevel = await getLastRecordWithSQLQuery(LPLO, 'POND_LEVEL_OVERVIEW');
-    await lmdMongoDBData(datas);
-    datas = {
-      lmdPondLevel: null,
-      lmdDamOverviewPosition: null,
-      lmdDamOverviewDischarge: null,
-      lmdHrDamOverviewPosition: null,
-      lmdHrDamOverviewDischarge: null,
-      lmdHrSsdAdvm: null
-    };
+    const mapLmdPondLevel = await getLastRecordWithSQLQuery(LPLO, 'POND_LEVEL_OVERVIEW');
+    await lmdMongoDBData(mapLmdPondLevel, LPLO, 'mapLmdPondLevel');
+    
+    const mapLmdDamOverviewPosition = await getLastRecordWithSQLQuery(LDOP, 'LMD_DAM_OVERVIEW_POS');
+    await lmdMongoDBData(mapLmdDamOverviewPosition, LDOP, 'mapLmdDamOverviewPosition');
 
-    datas.lmdDamOverviewPosition = await getLastRecordWithSQLQuery(LDOP, 'LMD_DAM_OVERVIEW_POS');
-    await lmdMongoDBData(datas);
-    datas = {
-      lmdPondLevel: null,
-      lmdDamOverviewPosition: null,
-      lmdDamOverviewDischarge: null,
-      lmdHrDamOverviewPosition: null,
-      lmdHrDamOverviewDischarge: null,
-      lmdHrSsdAdvm: null
-    };
+    const mapLmdDamOverviewDischarge = await getLastRecordWithSQLQuery(LDAD, 'LMD_DAM_OVERVIEW_DICH');
+    await lmdMongoDBData(mapLmdDamOverviewDischarge, LDAD, 'mapLmdDamOverviewDischarge');
 
-    datas.lmdDamOverviewDischarge = await getLastRecordWithSQLQuery(LDAD, 'LMD_DAM_OVERVIEW_DICH');
-    await lmdMongoDBData(datas);
-    datas = {
-      lmdPondLevel: null,
-      lmdDamOverviewPosition: null,
-      lmdDamOverviewDischarge: null,
-      lmdHrDamOverviewPosition: null,
-      lmdHrDamOverviewDischarge: null,
-      lmdHrSsdAdvm: null
-    };
+    const mapLmdHrDamOverviewPosition = await getLastRecordWithSQLQuery(LHDOP, 'HR_DAM_OVERVIEW_POS');
+    await lmdMongoDBData(mapLmdHrDamOverviewPosition, LHDOP, 'mapLmdHrDamOverviewPosition');
+    
+    const mapLmdHrDamOverviewDischarge = await getLastRecordWithSQLQuery(LHDOD, 'HR_DAM_OVERVIEW_DICH');
+    await lmdMongoDBData(mapLmdHrDamOverviewDischarge, LHDOD, 'mapLmdHrDamOverviewDischarge');
 
-    datas.lmdHrDamOverviewPosition = await getLastRecordWithSQLQuery(LHDOP, 'HR_DAM_OVERVIEW_POS');
-    await lmdMongoDBData(datas);
-    datas = {
-      lmdPondLevel: null,
-      lmdDamOverviewPosition: null,
-      lmdDamOverviewDischarge: null,
-      lmdHrDamOverviewPosition: null,
-      lmdHrDamOverviewDischarge: null,
-      lmdHrSsdAdvm: null
-    };
-    datas.lmdHrDamOverviewDischarge = await getLastRecordWithSQLQuery(LHDOD, 'HR_DAM_OVERVIEW_DICH');
-    await lmdMongoDBData(datas);
-    datas = {
-      lmdPondLevel: null,
-      lmdDamOverviewPosition: null,
-      lmdDamOverviewDischarge: null,
-      lmdHrDamOverviewPosition: null,
-      lmdHrDamOverviewDischarge: null,
-      lmdHrSsdAdvm: null
-    };
-    datas.lmdHrSsdAdvm = await getLastRecordWithSQLQuery(LHRA, 'HR_LMD_ADVM');
-    await lmdMongoDBData(datas);
-    datas = {
-      lmdPondLevel: null,
-      lmdDamOverviewPosition: null,
-      lmdDamOverviewDischarge: null,
-      lmdHrDamOverviewPosition: null,
-      lmdHrDamOverviewDischarge: null,
-      lmdHrSsdAdvm: null
-    };
+    const mapLmdHrSsdAdvm = await getLastRecordWithSQLQuery(LHRA, 'HR_LMD_ADVM');
+    await lmdMongoDBData(mapLmdHrSsdAdvm, LHRA, 'mapLmdHrSsdAdvm');
 
-    // await lmdMongoDBData(datas);
-
-    // return datas;
-
+    
   } catch (error) {
     console.error("Error fetching data from LMD SQL Server:", error);
     throw error;

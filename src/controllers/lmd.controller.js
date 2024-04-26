@@ -9,7 +9,7 @@ const LDAD = require('../models/LMD_DAM_OVERVIEW_DICH');
 const LHDOP = require('../models/LMD_HR_DAM_OVERVIEW_POS');
 const LHDOD = require('../models/LMD_HR_DAM_OVERVIEW_DICH');
 
-async function lmdMongoDBData(data) {
+async function lmdMongoDBData(data, destination, name) {
   try {
   
     const mapLmdHrSsdAdvm = row => ({
@@ -288,15 +288,6 @@ async function lmdMongoDBData(data) {
         D42: row.D42,
     });
 
-    const collections = [
-      { source: data?.lmdHrSsdAdvm, destination: LHRA, mapFunction: mapLmdHrSsdAdvm },
-      { source: data?.lmdPondLevel, destination: LPLO, mapFunction: mapLmdPondLevel },
-      { source: data?.lmdDamOverviewPosition, destination: LDOP, mapFunction: mapLmdDamOverviewPosition },
-      { source: data?.lmdDamOverviewDischarge, destination: LDAD, mapFunction: mapLmdDamOverviewDischarge },
-      { source: data?.lmdHrDamOverviewPosition, destination: LHDOP, mapFunction: mapLmdHrDamOverviewPosition },
-      { source: data?.lmdHrDamOverviewDischarge, destination: LHDOD, mapFunction: mapLmdHrDamOverviewDischarge }
-    ];
-
     const mapDataAndInsert = async (source, destination, mapFunction) => {
       if (source && source.length > 0) {
         const mappedData = source.map(mapFunction);
@@ -304,9 +295,19 @@ async function lmdMongoDBData(data) {
       }
     };
 
-    await Promise.all(collections.map(async ({ source, destination, mapFunction }) => {
-      await mapDataAndInsert(source, destination, mapFunction);
-    }));
+    if(name == 'mapLmdHrSsdAdvm') {
+      await mapDataAndInsert(data, destination, mapLmdHrSsdAdvm);
+    } else if(name == 'mapLmdPondLevel') {    
+      await mapDataAndInsert(data, destination, mapLmdPondLevel);
+    } else if(name == 'mapLmdDamOverviewPosition') {
+      await mapDataAndInsert(data, destination, mapLmdDamOverviewPosition);
+    } else if(name == 'mapLmdDamOverviewDischarge') {
+      await mapDataAndInsert(data, destination, mapLmdDamOverviewDischarge);
+    } else if(name == 'mapLmdHrDamOverviewPosition') {
+      await mapDataAndInsert(data, destination, mapLmdHrDamOverviewPosition);
+    } else if(name == 'mapLmdHrDamOverviewDischarge') {
+      await mapDataAndInsert(data, destination, mapLmdHrDamOverviewDischarge);
+    }
 
   } catch (error) {
     console.error('Error handling MongoDB data:', error);
