@@ -46,7 +46,7 @@ const cronJob = new cron.CronJob('*/5 * * * *', async () => {
 
     await LMDDAM();
     await KADAM();
-    await SRSPDAM();;
+    await SRSPDAM();
 
     logger.info('Cron job executed successfully.');
   } catch (error) {
