@@ -2,13 +2,6 @@ const { lmdService } = require('../services');
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 
-const LHRA = require('../models/LMD_HR_RIGHT_ADVM');
-const LPLO = require('../models/LMD_POND_LEVEL_OVERVIEW');
-const LDOP = require('../models/LMD_DAM_OVERVIEW_POS');
-const LDAD = require('../models/LMD_DAM_OVERVIEW_DICH');
-const LHDOP = require('../models/LMD_HR_DAM_OVERVIEW_POS');
-const LHDOD = require('../models/LMD_HR_DAM_OVERVIEW_DICH');
-
 async function lmdMongoDBData(data, destination, name) {
   try {
   

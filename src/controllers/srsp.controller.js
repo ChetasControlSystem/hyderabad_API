@@ -1,16 +1,10 @@
 const { srspService } = require('../services');
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
-const moment = require('moment');
 
-const SPLO = require('../models/SRSP_POND_LEVEL_OVERVIEW');
-const SSDOP = require('../models/SRSP_SSD_DAM_OVERVIEW_POS');
-const SHDOP = require('../models/SRSP_HR_DAM_OVERVIEW_POS');
-const SDOD = require('../models/SRSP_SSD_DAM_OVERVIEW_DICH');
-const SHKA = require('../models/SRSP_HR_KAKATIYA_ADVM');
-const SHDOD = require('../models/SRSP_HR_DAM_OVERVIEW_DICH');
 
-async function handleMongoDBData(data) {
+
+async function handleMongoDBData(data, destination, name) {
   try {
 
     const mapSrspPondLevel = row => ({
@@ -289,14 +283,6 @@ async function handleMongoDBData(data) {
       D42: row.D42,
     });
 
-    const collections = [
-      { source: data?.srspPondLevel, destination: SPLO, mapFunction: mapSrspPondLevel },
-      { source: data?.srspSsdDamOverviewPosition, destination: SSDOP, mapFunction: mapsrspSsdDamOverviewPosition },
-      { source: data?.srspHrDamOverviewPosition, destination: SHDOP, mapFunction: mapsrspHrDamOverviewPosition },
-      { source: data?.srspSsdDamOverviewDischarge, destination: SDOD, mapFunction: mapsrspSsdDamOverviewDischarge },
-      { source: data?.srspHrSsdAdvm, destination: SHKA, mapFunction: mapsrspHrSsdAdvm },
-      { source: data?.srspHrDamOverviewDischarge, destination: SHDOD, mapFunction: mapsrspHrDamOverviewDischarge }
-    ];
 
     const mapDataAndInsert = async (source, destination, mapFunction) => {
       if (source && source.length > 0) {
@@ -305,9 +291,19 @@ async function handleMongoDBData(data) {
       }
     };
     
-    await Promise.all(collections.map(async ({ source, destination, mapFunction }) => {
-      await mapDataAndInsert(source, destination, mapFunction);
-    }));
+    if(name == 'mapsrspHrSsdAdvm') {
+      await mapDataAndInsert(data, destination, mapsrspHrSsdAdvm);
+    } else if(name == 'mapSrspPondLevel') {    
+      await mapDataAndInsert(data, destination, mapSrspPondLevel);
+    } else if(name == 'mapsrspSsdDamOverviewPosition') {
+      await mapDataAndInsert(data, destination, mapsrspSsdDamOverviewPosition);
+    } else if(name == 'mapsrspSsdDamOverviewDischarge') {
+      await mapDataAndInsert(data, destination, mapsrspSsdDamOverviewDischarge);
+    } else if(name == 'mapsrspHrDamOverviewPosition') {
+      await mapDataAndInsert(data, destination, mapsrspHrDamOverviewPosition);
+    } else if(name == 'mapsrspHrDamOverviewDischarge') {
+      await mapDataAndInsert(data, destination, mapsrspHrDamOverviewDischarge);
+    }
 
   } catch (error) {
     console.error('Error handling MongoDB data:', error);

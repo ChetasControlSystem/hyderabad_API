@@ -2,14 +2,8 @@ const { knrService } = require('../services');
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 
-const KPLO = require('../models/KNR_POND_LEVEL_OVERVIEW');
-const KDOP = require('../models/KNR_DAM_OVERVIEW_POS');
-const KDOD = require('../models/KNR_DAM_OVERVIEW_DICH');
-const KHDOP = require('../models/KNR_HR_DAM_OVERVIEW_POS');
-const KHDOD = require('../models/KNR_HR_DAM_OVERVIEW_DICH');
-const KSADVM = require('../models/KNR_SPARE_ADVM');
 
-async function kadamMongoDBData(data) {
+async function kadamMongoDBData(data, destination, name) {
   try {
 
     const mapKadamPondLevel = row => ({
@@ -288,15 +282,6 @@ async function kadamMongoDBData(data) {
       D42: row.D42,
     });
 
-    const collections = [
-      { source: data?.kadamPondLevel, destination: KPLO, mapFunction: mapKadamPondLevel },
-      { source: data?.kadamKnrDamOverviewPosition, destination: KDOP, mapFunction: mapKadamKnrDamOverviewPosition },
-      { source: data?.kadamKnrDamOverviewDischarge, destination: KDOD, mapFunction: mapKadamKnrDamOverviewDischarge },
-      { source: data?.kadamHrDamOverviewPosition, destination: KHDOP, mapFunction: mapKadamHrDamOverviewPosition },
-      { source: data?.kadamHrDamOverviewDischarge, destination: KHDOD, mapFunction: mapKadamHrDamOverviewDischarge },
-      { source: data?.kadamHrKnrAdvm, destination: KSADVM, mapFunction: mapKadamHrKnrAdvm }
-    ];
-
     const mapDataAndInsert = async (source, destination, mapFunction) => {
       if (source && source.length > 0) {
         const mappedData = source.map(mapFunction);
@@ -304,9 +289,19 @@ async function kadamMongoDBData(data) {
       }
     };
     
-    await Promise.all(collections.map(async ({ source, destination, mapFunction }) => {
-      await mapDataAndInsert(source, destination, mapFunction);
-    }));
+    if(name == 'mapKadamHrKnrAdvm') {
+      await mapDataAndInsert(data, destination, mapKadamHrKnrAdvm);
+    } else if(name == 'mapKadamPondLevel') {    
+      await mapDataAndInsert(data, destination, mapKadamPondLevel);
+    } else if(name == 'mapKadamKnrDamOverviewPosition') {
+      await mapDataAndInsert(data, destination, mapKadamKnrDamOverviewPosition);
+    } else if(name == 'mapKadamKnrDamOverviewDischarge') {
+      await mapDataAndInsert(data, destination, mapKadamKnrDamOverviewDischarge);
+    } else if(name == 'mapKadamHrDamOverviewPosition') {
+      await mapDataAndInsert(data, destination, mapKadamHrDamOverviewPosition);
+    } else if(name == 'mapKadamHrDamOverviewDischarge') {
+      await mapDataAndInsert(data, destination, mapKadamHrDamOverviewDischarge);
+    }
 
   } catch (error) {
     console.error('Error handling MongoDB data:', error);

@@ -5,10 +5,6 @@ const config = require('./config/config');
 const logger = require('./config/logger');
 const { SRSPDAM, KADAM, LMDDAM } = require('./sqlLogic');
 
-const { handleMongoDBData } = require('../src/controllers/srsp.controller');
-const { lmdMongoDBData } = require('../src/controllers/lmd.controller');
-const { kadamMongoDBData } = require('../src/controllers/kadam.controller');
-
 async function startServer() {
   try {
     // Start the Express server
@@ -48,19 +44,13 @@ const cronJob = new cron.CronJob('*/5 * * * *', async () => {
 
     logger.info('Cron job started.');
 
-    // Fetch data from SQL Server
-    const lmd = await LMDDAM();
-    // await lmdMongoDBData(lmd);
-
-    // const kadanData = await KADAM();
-    // await kadamMongoDBData(kadanData);
-
-    // const result = await SRSPDAM();
-    // await handleMongoDBData(result);
+    await LMDDAM();
+    await KADAM();
+    await SRSPDAM();;
 
     logger.info('Cron job executed successfully.');
   } catch (error) {
-    logger.error('Error in cron job:', error);
+    logger.error('Error in cron job:', error.message);
   }
 });
 

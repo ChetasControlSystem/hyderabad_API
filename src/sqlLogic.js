@@ -2,6 +2,7 @@ const sql = require('mssql');
 const sqlconfig = require('./config/sql.config');
 const { lmdMongoDBData } = require('./controllers/lmd.controller');
 const { kadamMongoDBData } = require('./controllers/kadam.controller');
+const { handleMongoDBData } = require('./controllers/srsp.controller');
 
 
 const LHRA = require('./models/LMD_HR_RIGHT_ADVM');
@@ -75,14 +76,6 @@ async function LMDDAM() {
   try {
     await connectToSQL(lmd_config, "LMD SERVER");
 
-   let datas = {
-      lmdPondLevel: null,
-      lmdDamOverviewPosition: null,
-      lmdDamOverviewDischarge: null,
-      lmdHrDamOverviewPosition: null,
-      lmdHrDamOverviewDischarge: null,
-      lmdHrSsdAdvm: null
-    };
     const getLastRecord = async (Model) => {
       return await Model.findOne().sort({ dateTime: -1 }).lean();
     };
@@ -90,7 +83,6 @@ async function LMDDAM() {
     const getLastRecordWithSQLQuery = async (Model, tableName) => {
       const lastRecord = await getLastRecord(Model);
 
-      console.log(lastRecord , "+++++++++++++++++");
       if (lastRecord) {
         const date = new Date(lastRecord?.dateTime).toISOString().slice(0, 19) + ".000Z";
         const result = await sql.query(`SELECT * FROM [DATA_DB_LMD].[dbo].[${tableName}] WHERE DateTime > '${date}'`);
@@ -133,15 +125,6 @@ async function SRSPDAM() {
   try {
     await connectToSQL(sesp_config, "SRSP SERVER");
 
-    const datas = {
-      srspPondLevel: null,
-      srspSsdDamOverviewPosition: null,
-      srspSsdDamOverviewDischarge: null,
-      srspHrDamOverviewPosition: null,
-      srspHrDamOverviewDischarge: null,
-      srspHrSsdAdvm: null
-    };
-
     const getLastRecord = async (Model) => {
       return await Model.findOne().sort({ dateTime: -1 }).lean();
     };
@@ -149,7 +132,6 @@ async function SRSPDAM() {
     const getLastRecordWithSQLQuery = async (Model, tableName) => {
       const lastRecord = await getLastRecord(Model);
 
-      console.log(lastRecord ,"================");
       if (lastRecord) {
         const date = new Date(lastRecord?.dateTime).toISOString().slice(0, 19) + ".000Z";
         const result = await sql.query(`SELECT * FROM [DATA_DB_SSD].[dbo].[${tableName}] WHERE DateTime > '${date}'`);
@@ -160,14 +142,24 @@ async function SRSPDAM() {
       }
     };
 
-    datas.srspPondLevel = await getLastRecordWithSQLQuery(SPLO, 'POND_LEVEL_OVERVIEW');
-    datas.srspSsdDamOverviewPosition = await getLastRecordWithSQLQuery(SSDOP, 'SSD_DAM_OVERVIEW_POS');
-    datas.srspSsdDamOverviewDischarge = await getLastRecordWithSQLQuery(SDOD, 'SSD_DAM_OVERVIEW_DICH');
-    datas.srspHrDamOverviewPosition = await getLastRecordWithSQLQuery(SHDOP, 'HR_DAM_OVERVIEW_POS');
-    datas.srspHrDamOverviewDischarge = await getLastRecordWithSQLQuery(SHDOD, 'HR_DAM_OVERVIEW_DICH');
-    datas.srspHrSsdAdvm = await getLastRecordWithSQLQuery(SHKA, 'HR_SSD_ADVM');
+    const mapSrspPondLevel = await getLastRecordWithSQLQuery(SPLO, 'POND_LEVEL_OVERVIEW');
+    await handleMongoDBData(mapSrspPondLevel, SPLO, 'mapSrspPondLevel');
+    
+    const mapsrspSsdDamOverviewPosition = await getLastRecordWithSQLQuery(SSDOP, 'SSD_DAM_OVERVIEW_POS');
+    await handleMongoDBData(mapsrspSsdDamOverviewPosition, SSDOP, 'mapsrspSsdDamOverviewPosition');
 
-    return datas;
+    const mapsrspSsdDamOverviewDischarge = await getLastRecordWithSQLQuery(SDOD, 'SSD_DAM_OVERVIEW_DICH');
+    await handleMongoDBData(mapsrspSsdDamOverviewDischarge, SDOD, 'mapsrspSsdDamOverviewDischarge');
+
+    const mapsrspHrDamOverviewPosition = await getLastRecordWithSQLQuery(SHDOP, 'HR_DAM_OVERVIEW_POS');
+    await handleMongoDBData(mapsrspHrDamOverviewPosition, SHDOP, 'mapsrspHrDamOverviewPosition');
+    
+    const mapsrspHrDamOverviewDischarge = await getLastRecordWithSQLQuery(SHDOD, 'HR_DAM_OVERVIEW_DICH');
+    await handleMongoDBData(mapsrspHrDamOverviewDischarge, SHDOD, 'mapsrspHrDamOverviewDischarge');
+
+    const mapsrspHrSsdAdvm = await getLastRecordWithSQLQuery(SHKA, 'HR_SSD_ADVM');
+    await handleMongoDBData(mapsrspHrSsdAdvm, SHKA, 'mapsrspHrSsdAdvm');
+
   } catch (error) {
     console.error("Error fetching data from LMD SQL Server:", error);
     throw error;
@@ -181,15 +173,6 @@ async function KADAM() {
   try {
     await connectToSQL(kadam_config, "KADDAM SERVER");
 
-    const datas = {
-      kadamPondLevel: null,
-      kadamKnrDamOverviewPosition: null,
-      kadamKnrDamOverviewDischarge: null,
-      kadamHrDamOverviewPosition: null,
-      kadamHrDamOverviewDischarge: null,
-      kadamHrKnrAdvm: null
-    };
-
     const getLastRecord = async (Model) => {
       return await Model.findOne().sort({ dateTime: -1 }).lean();
     };
@@ -197,7 +180,6 @@ async function KADAM() {
     const getLastRecordWithSQLQuery = async (Model, tableName) => {
       const lastRecord = await getLastRecord(Model);
 
-      console.log(lastRecord, "*********************");
       if (lastRecord) {
         const date = new Date(lastRecord?.dateTime).toISOString().slice(0, 19) + ".000Z";
         const result = await sql.query(`SELECT * FROM [DATA_DB_KNR].[dbo].[${tableName}] WHERE DateTime > '${date}'`);
@@ -208,15 +190,25 @@ async function KADAM() {
       }
     };
 
-    // datas.kadamPondLevel = await getLastRecordWithSQLQuery(KPLO, 'POND_LEVEL_OVERVIEW');
-    // datas.kadamKnrDamOverviewPosition = await getLastRecordWithSQLQuery(KDOP, 'KNR_DAM_OVERVIEW_POS');
-    datas.kadamKnrDamOverviewDischarge = await getLastRecordWithSQLQuery(KDOD, 'KNR_DAM_OVERVIEW_DICH');
-    datas.kadamHrDamOverviewPosition = await getLastRecordWithSQLQuery(KHDOP, 'HR_DAM_OVERVIEW_POS');
-    datas.kadamHrDamOverviewDischarge = await getLastRecordWithSQLQuery(KHDOD, 'HR_DAM_OVERVIEW_DICH');
-    datas.kadamHrKnrAdvm = await getLastRecordWithSQLQuery(KSADVM, 'HR_KNR_ADVM');
 
-    kadamMongoDBData(datas);
-    return datas;
+    const mapKadamPondLevel = await getLastRecordWithSQLQuery(KPLO, 'POND_LEVEL_OVERVIEW');
+    await kadamMongoDBData(mapKadamPondLevel, KPLO, 'mapKadamPondLevel');
+    
+    const mapKadamKnrDamOverviewPosition = await getLastRecordWithSQLQuery(KDOP, 'KNR_DAM_OVERVIEW_POS');
+    await kadamMongoDBData(mapKadamKnrDamOverviewPosition, KDOP, 'mapKadamKnrDamOverviewPosition');
+
+    const mapKadamKnrDamOverviewDischarge = await getLastRecordWithSQLQuery(KDOD, 'KNR_DAM_OVERVIEW_DICH');
+    await kadamMongoDBData(mapKadamKnrDamOverviewDischarge, KDOD, 'mapKadamKnrDamOverviewDischarge');
+
+    const mapKadamHrDamOverviewPosition = await getLastRecordWithSQLQuery(KHDOP, 'HR_DAM_OVERVIEW_POS');
+    await kadamMongoDBData(mapKadamHrDamOverviewPosition, KHDOP, 'mapKadamHrDamOverviewPosition');
+    
+    const mapKadamHrDamOverviewDischarge = await getLastRecordWithSQLQuery(KHDOD, 'HR_DAM_OVERVIEW_DICH');
+    await kadamMongoDBData(mapKadamHrDamOverviewDischarge, KHDOD, 'mapKadamHrDamOverviewDischarge');
+
+    const mapKadamHrKnrAdvm = await getLastRecordWithSQLQuery(KSADVM, 'HR_KNR_ADVM');
+    await kadamMongoDBData(mapKadamHrKnrAdvm, KSADVM, 'mapKadamHrKnrAdvm');
+
   } catch (error) {
     console.error("Error fetching data from LMD SQL Server:", error);
     throw error;
