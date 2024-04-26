@@ -43,24 +43,20 @@ mongoose
   });
 
 // Schedule Cron Job
-const cronJob = new cron.CronJob('*/3 * * * *', async () => {
+const cronJob = new cron.CronJob('*/1 * * * *', async () => {
   try {
+
     logger.info('Cron job started.');
 
     // Fetch data from SQL Server
-    const result = await SRSPDAM();
+    // const lmd = await LMDDAM();
+    // await lmdMongoDBData(lmd);
+
     const kadanData = await KADAM();
-    const lmd = await LMDDAM();
+    // await kadamMongoDBData(kadanData);
 
-    // Log SQL Server data
-    logger.info('SRSPDAM Result:', result);
-    logger.info('KADAM Result:', kadanData);
-    logger.info('LMDDAM Result:', lmd);
-
-    // Insert data into MongoDB
-    await handleMongoDBData(result);
-    await lmdMongoDBData(lmd);
-    await kadamMongoDBData(kadanData);
+    // const result = await SRSPDAM();
+    // await handleMongoDBData(result);
 
     logger.info('Cron job executed successfully.');
   } catch (error) {
@@ -68,5 +64,5 @@ const cronJob = new cron.CronJob('*/3 * * * *', async () => {
   }
 });
 
-// Start Cron Job
+
 cronJob.start();

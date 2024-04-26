@@ -11,18 +11,9 @@ const LHDOD = require('../models/LMD_HR_DAM_OVERVIEW_DICH');
 
 async function lmdMongoDBData(data) {
   try {
-    const lmdHrSsdAdvm = data?.lmdHrSsdAdvm;
-    const lmdPondLevel = data?.lmdPondLevel;
-    const lmdDamOverviewPosition = data?.lmdDamOverviewPosition;
-    const lmdDamOverviewDischarge = data?.lmdDamOverviewDischarge;
-    const lmdHrDamOverviewPosition = data?.lmdHrDamOverviewPosition;
-    const lmdHrDamOverviewDischarge = data?.lmdHrDamOverviewDischarge;
-
-    const mappedData = lmdHrSsdAdvm?.map((row) => {
-      const dateTime = new Date(row.DateTime);
   
-      return { 
-        dateTime: dateTime.toISOString(),
+    const mapLmdHrSsdAdvm = row => ({
+        dateTime: row.DateTime.toISOString(),
         hrrFlowRate: row.D1,
         hrrTotalizer: row.D2,
         hrrCDQ: row.D3,
@@ -65,14 +56,10 @@ async function lmdMongoDBData(data) {
         D40: row.D40,
         D41: row.D41,
         D42: row.D42,
-      };
     });
 
-    const mappedData1 = lmdPondLevel?.map((row) => {
-      const dateTime = new Date(row.DateTime);
-  
-      return {
-        dateTime: dateTime.toISOString(),
+    const mapLmdPondLevel = row => ({
+      dateTime: row.DateTime.toISOString(),
         inflow1Level: row.D1,
         inflow2Level: row.D2,
         inflow3Level: row.D3,
@@ -115,14 +102,10 @@ async function lmdMongoDBData(data) {
         D40: row.D40,
         D41: row.D41,
         D42: row.D42,
-      };
     });
 
-    const mappedData2 = lmdDamOverviewPosition?.map((row) => {
-      const dateTime = new Date(row.DateTime);
-
-      return {
-        dateTime: dateTime.toISOString(),
+    const mapLmdDamOverviewPosition = row => ({
+        dateTime: row.DateTime.toISOString(),
         gate1Position: row.D1,
         gate2Position: row.D2,
         gate3Position: row.D3,
@@ -165,14 +148,10 @@ async function lmdMongoDBData(data) {
         D40: row.D40,
         D41: row.D41,
         D42: row.D42,
-      };
     });
 
-    const mappedData3 = lmdDamOverviewDischarge?.map((row) => {
-      const dateTime = new Date(row.DateTime);
-  
-      return {
-        dateTime: dateTime.toISOString(),
+    const mapLmdDamOverviewDischarge = row => ({
+        dateTime: row.DateTime.toISOString(),
         gate1Discharge: row.D1,
         gate2Discharge: row.D2,
         gate3Discharge: row.D3,
@@ -215,14 +194,10 @@ async function lmdMongoDBData(data) {
         D40: row.D40,
         D41: row.D41,
         D42: row.D42,
-      };
     });
 
-    const mappedData4 = lmdHrDamOverviewPosition?.map((row) => {
-      const dateTime = new Date(row.DateTime);
-
-      return {
-        dateTime: dateTime.toISOString(),
+    const mapLmdHrDamOverviewPosition = row => ({
+        dateTime: row.DateTime.toISOString(),
         hrrGate1Position: row.D1,
         hrrGate2Position: row.D2,
         D3: row.D3,
@@ -265,14 +240,10 @@ async function lmdMongoDBData(data) {
         D40: row.D40,
         D41: row.D41,
         D42: row.D42,
-      };
     });
 
-    const mappedData5 = lmdHrDamOverviewDischarge?.map((row) => {
-      const dateTime = new Date(row.DateTime);
-  
-      return {
-        dateTime: dateTime.toISOString(),
+    const mapLmdHrDamOverviewDischarge = row => ({
+        dateTime: row.DateTime.toISOString(),
         hrrGate1Discharge: row.D1,
         hrrGate2Discharge: row.D2,
         D3: row.D3,
@@ -315,111 +286,27 @@ async function lmdMongoDBData(data) {
         D40: row.D40,
         D41: row.D41,
         D42: row.D42,
-      };
     });
 
-    const lmdHrRightAdnm = await LHRA.find().sort({ dateTime: -1 }).limit(1);
-    const lmdPondLevelOverview = await LPLO.find().sort({ dateTime: -1 }).limit(1);
-    const lmdDamOverviewPos = await LDOP.find().sort({ dateTime: -1 }).limit(1);
-    const lmdDamOverviewDis = await LDAD.find().sort({ dateTime: -1 }).limit(1);
-    const lmdHrDamOverviewPos = await LHDOP.find().sort({ dateTime: -1 }).limit(1);
-    const lmdHrDamOverviewDis = await LHDOD.find().sort({ dateTime: -1 }).limit(1);
+    const collections = [
+      { source: data?.lmdHrSsdAdvm, destination: LHRA, mapFunction: mapLmdHrSsdAdvm },
+      { source: data?.lmdPondLevel, destination: LPLO, mapFunction: mapLmdPondLevel },
+      { source: data?.lmdDamOverviewPosition, destination: LDOP, mapFunction: mapLmdDamOverviewPosition },
+      { source: data?.lmdDamOverviewDischarge, destination: LDAD, mapFunction: mapLmdDamOverviewDischarge },
+      { source: data?.lmdHrDamOverviewPosition, destination: LHDOP, mapFunction: mapLmdHrDamOverviewPosition },
+      { source: data?.lmdHrDamOverviewDischarge, destination: LHDOD, mapFunction: mapLmdHrDamOverviewDischarge }
+    ];
 
-  if (lmdHrRightAdnm.length) {
-    const LastDate = new Date(lmdHrRightAdnm[0].dateTime);
-    const newArray = mappedData?.map((datetimeString) => {
-        const datetime = new Date(datetimeString.dateTime);
-        if (datetime > LastDate) {
-          return datetimeString;
-        }
-        return null;
-      })
-      .filter((item) => item !== null);
+    const mapDataAndInsert = async (source, destination, mapFunction) => {
+      if (source && source.length > 0) {
+        const mappedData = source.map(mapFunction);
+        await destination.insertMany(mappedData);
+      }
+    };
 
-    await LHRA.insertMany(newArray);
-  } else {
-    await LHRA.insertMany(mappedData);
-  }
-   
-  if (lmdPondLevelOverview.length) {
-    const LastDate = new Date(lmdPondLevelOverview[0].dateTime);
-    const newArray = mappedData1?.map((datetimeString) => {
-        const datetime = new Date(datetimeString.dateTime);
-        if (datetime > LastDate) {
-          return datetimeString;
-        }
-        return null;
-      })
-      .filter((item) => item !== null);
-
-    await LPLO.insertMany(newArray);
-  } else {
-    await LPLO.insertMany(mappedData1);
-  }
-   
-  if (lmdDamOverviewPos.length) {
-    const LastDate = new Date(lmdDamOverviewPos[0].dateTime);
-    const newArray = mappedData2?.map((datetimeString) => {
-        const datetime = new Date(datetimeString.dateTime);
-        if (datetime > LastDate) {
-          return datetimeString;
-        }
-        return null;
-      })
-      .filter((item) => item !== null);
-
-    await LDOP.insertMany(newArray);
-  } else {
-    await LDOP.insertMany(mappedData2);
-  }
-
-  if (lmdDamOverviewDis.length) {
-    const LastDate = new Date(lmdDamOverviewDis[0].dateTime);
-    const newArray = mappedData3?.map((datetimeString) => {
-        const datetime = new Date(datetimeString.dateTime);
-        if (datetime > LastDate) {
-          return datetimeString;
-        }
-        return null;
-      })
-      .filter((item) => item !== null);
-
-    await LDAD.insertMany(newArray);
-  } else {
-    await LDAD.insertMany(mappedData3);
-  }
-
-  if (lmdHrDamOverviewPos.length) {
-    const LastDate = new Date(lmdHrDamOverviewPos[0].dateTime);
-    const newArray = mappedData4?.map((datetimeString) => {
-        const datetime = new Date(datetimeString.dateTime);
-        if (datetime > LastDate) {
-          return datetimeString;
-        }
-        return null;
-      })
-      .filter((item) => item !== null);
-
-    await LHDOP.insertMany(newArray);
-  } else {
-    await LHDOP.insertMany(mappedData4);
-  }
-  
-  if (lmdHrDamOverviewDis.length) {
-    const LastDate = new Date(lmdHrDamOverviewDis[0].dateTime);
-    const newArray = mappedData5?.map((datetimeString) => {
-        const datetime = new Date(datetimeString.dateTime);
-        if (datetime > LastDate) {
-          return datetimeString;
-        }
-        return null;
-      })
-      .filter((item) => item !== null);
-
-    await LHDOD.insertMany(newArray);
-  } else {
-    await LHDOD.insertMany(mappedData5);
-  }
+    await Promise.all(collections.map(async ({ source, destination, mapFunction }) => {
+      await mapDataAndInsert(source, destination, mapFunction);
+    }));
 
   } catch (error) {
     console.error('Error handling MongoDB data:', error);
