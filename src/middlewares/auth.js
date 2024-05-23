@@ -25,11 +25,7 @@ const auth = (...requiredRights) => async (req, res, next) => {
     passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject, requiredRights))(req, res, next);
   })
     .then(() => next())
-    .catch((err) => {
-      const apiError = new ApiError(httpStatus.UNAUTHORIZED, 'Error: Please authenticate');
-      const { code, message } = apiError;
-      next({ code, message });
-    });
+    .catch((err) => next(err));
 };
 
 module.exports = auth;
