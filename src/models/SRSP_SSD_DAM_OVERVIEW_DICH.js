@@ -183,6 +183,6 @@ const  srspSsdDamOverviewDicharge = mongoose.Schema(
 );
 
  srspSsdDamOverviewDicharge.index({dateTime : 1})
-const SDO = mongoose.model(' srsp_Ssd_Dam_Overview_Discharge',  srspSsdDamOverviewDicharge);
+const SDO = mongoose.model('srsp_Ssd_Dam_Overview_Discharge',  srspSsdDamOverviewDicharge);
 
 module.exports = SDO;

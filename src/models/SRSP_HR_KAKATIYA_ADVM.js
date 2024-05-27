@@ -183,6 +183,6 @@ const  srspHrKakatiyaAdvm = mongoose.Schema(
 );
 
  srspHrKakatiyaAdvm.index({dateTime : 1})
-const SDO = mongoose.model(' srsp_Hr_kakatiya_Advm',  srspHrKakatiyaAdvm);
+const SDO = mongoose.model('srsp_Hr_kakatiya_Advm',  srspHrKakatiyaAdvm);
 
 module.exports = SDO;

@@ -183,6 +183,6 @@ const  srspHrDamOverviewPos = mongoose.Schema(
 );
 
  srspHrDamOverviewPos.index({dateTime : 1})
-const SDO = mongoose.model(' srsp_Hr_Dam_Overview_Position',  srspHrDamOverviewPos);
+const SDO = mongoose.model('srsp_Hr_Dam_Overview_Position',  srspHrDamOverviewPos);
 
 module.exports = SDO;

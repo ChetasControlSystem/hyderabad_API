@@ -183,6 +183,6 @@ const  srspHrDamOverviewDich = mongoose.Schema(
 );
 
  srspHrDamOverviewDich.index({dateTime : 1})
-const SDO = mongoose.model(' srsp_Hr_Dam_Overview_Discharge',  srspHrDamOverviewDich);
+const SDO = mongoose.model('srsp_Hr_Dam_Overview_Discharge',  srspHrDamOverviewDich);
 
 module.exports = SDO;

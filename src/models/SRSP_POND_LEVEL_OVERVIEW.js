@@ -183,6 +183,6 @@ const  srspDamPondLevel = mongoose.Schema(
 );
 
  srspDamPondLevel.index({dateTime : 1})
-const SDO = mongoose.model(' srsp_Dam_Pond_Level_Overview',  srspDamPondLevel);
+const SDO = mongoose.model('srsp_Dam_Pond_Level_Overview',  srspDamPondLevel);
 
 module.exports = SDO;

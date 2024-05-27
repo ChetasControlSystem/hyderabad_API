@@ -183,7 +183,7 @@ const  srspSsdDamOverviewPos = mongoose.Schema(
 );
 
  srspSsdDamOverviewPos.index({dateTime : 1})
-const SDO = mongoose.model(' srsp_Ssd_Dam_Overview_Position',  srspSsdDamOverviewPos);
+const SDO = mongoose.model('srsp_Ssd_Dam_Overview_Position',  srspSsdDamOverviewPos);
 
 module.exports = SDO;
 
