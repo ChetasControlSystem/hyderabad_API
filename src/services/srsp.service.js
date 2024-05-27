@@ -58,35 +58,180 @@ const getLastDataSrspDamOverview = async (user) => {
       user.role === 'srspSuperuser' ||
       (checkPermission && checkPermission.roleName.includes(user.role))
     ) {
+      const defaultPondLevelOverview = {
+        pondLevel: 0,
+        liveCapacity: 0,
+        grossStorage: 0,
+        fullReservoirLevel: 0,
+        contourArea: 0,
+        catchmentArea: 0,
+        ayacutArea: 0,
+        filling: 0,
+        instantaneousGateDischarge: 0,
+        instantaneousCanalDischarge: 0,
+        totalDamDischarge: 0,
+        cumulativeDamDischarge: 0,
+        inflow1Level: 0,
+        inflow2Level: 0,
+        inflow1Discharge: 0,
+        inflow2Discharge: 0,
+        damDownstreamLevel: 0,
+        damDownstreamDischarge: 0,
+      };
+
+      const defaultDamOverviewPos = {
+        gate1Position: 0,
+        gate2Position: 0,
+        gate3Position: 0,
+        gate4Position: 0,
+        gate5Position: 0,
+        gate6Position: 0,
+        gate7Position: 0,
+        gate8Position: 0,
+        gate9Position: 0,
+        gate10Position: 0,
+        gate11Position: 0,
+        gate12Position: 0,
+        gate13Position: 0,
+        gate14Position: 0,
+        gate15Position: 0,
+        gate16Position: 0,
+        gate17Position: 0,
+        gate18Position: 0,
+        gate19Position: 0,
+        gate20Position: 0,
+        gate21Position: 0,
+        gate22Position: 0,
+        gate23Position: 0,
+        gate24Position: 0,
+        gate25Position: 0,
+        gate26Position: 0,
+        gate27Position: 0,
+        gate28Position: 0,
+        gate29Position: 0,
+        gate30Position: 0,
+        gate31Position: 0,
+        gate32Position: 0,
+        gate33Position: 0,
+        gate34Position: 0,
+        gate35Position: 0,
+        gate36Position: 0,
+        gate37Position: 0,
+        gate38Position: 0,
+        gate39Position: 0,
+        gate40Position: 0,
+        gate41Position: 0,
+        gate42Position: 0,
+      };
+
+      const defaultDamOverviewDish = {
+        gate1Discharge: 0,
+        gate2Discharge: 0,
+        gate3Discharge: 0,
+        gate4Discharge: 0,
+        gate5Discharge: 0,
+        gate6Discharge: 0,
+        gate7Discharge: 0,
+        gate8Discharge: 0,
+        gate9Discharge: 0,
+        gate10Discharge: 0,
+        gate11Discharge: 0,
+        gate12Discharge: 0,
+        gate13Discharge: 0,
+        gate14Discharge: 0,
+        gate15Discharge: 0,
+        gate16Discharge: 0,
+        gate17Discharge: 0,
+        gate18Discharge: 0,
+        gate19Discharge: 0,
+        gate20Discharge: 0,
+        gate21Discharge: 0,
+        gate22Discharge: 0,
+        gate23Discharge: 0,
+        gate24Discharge: 0,
+        gate25Discharge: 0,
+        gate26Discharge: 0,
+        gate27Discharge: 0,
+        gate28Discharge: 0,
+        gate29Discharge: 0,
+        gate30Discharge: 0,
+        gate31Discharge: 0,
+        gate32Discharge: 0,
+        gate33Discharge: 0,
+        gate34Discharge: 0,
+        gate35Discharge: 0,
+        gate36Discharge: 0,
+        gate37Discharge: 0,
+        gate38Discharge: 0,
+        gate39Discharge: 0,
+        gate40Discharge: 0,
+        gate41Discharge: 0,
+        gate42Discharge: 0,
+      };
+
+      const defaultHrDamOverviewPos = {
+        hrkGate1Position: 0,
+        hrkGate2Position: 0,
+        hrkGate3Position: 0,
+        hrkGate4Position: 0,
+        hrsGate1Position: 0,
+        hrsGate2Position: 0,
+        hrfGate1Position: 0,
+        hrfGate2Position: 0,
+        hrfGate3Position: 0,
+        hrfGate4Position: 0,
+        hrfGate5Position: 0,
+        hrfGate6Position: 0,
+        hrlManGate1Position: 0,
+        hrlManGate2Position: 0,
+      };
+
+      const defaultHrDamOverviewDish = {
+        hrkGate1Discharge: 0,
+        hrkGate2Discharge: 0,
+        hrkGate3Discharge: 0,
+        hrkGate4Discharge: 0,
+        hrsGate1Discharge: 0,
+        hrsGate2Discharge: 0,
+        hrfGate1Discharge: 0,
+        hrfGate2Discharge: 0,
+        hrfGate3Discharge: 0,
+        hrfGate4Discharge: 0,
+        hrfGate5Discharge: 0,
+        hrfGate6Discharge: 0,
+        hrlManGate1Discharge: 0,
+        hrlManGate2Discharge: 0,
+      };
+
       const getLastDataSrspDamPondLevelOverview = await SRSP_POND_LEVEL_OVERVIEW.findOne()
         .select(
           'pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge inflow1Level inflow2Level inflow1Discharge inflow2Discharge damDownstreamLevel damDownstreamDischarge'
         )
-        .sort({ dateTime: -1 });
+        .sort({ dateTime: -1 }) || defaultPondLevelOverview;
 
       const getLastDataSrspDamOverviewPos = await SRSP_SSD_DAM_OVERVIEW_POS.findOne()
         .select(
           'gate1Position gate2Position gate3Position gate4Position gate5Position gate6Position gate7Position gate8Position gate9Position gate10Position gate11Position gate12Position gate13Position gate14Position gate15Position gate16Position gate17Position gate18Position gate19Position gate20Position gate21Position gate22Position gate23Position gate24Position gate25Position gate26Position gate27Position gate28Position gate29Position gate30Position gate31Position gate32Position gate33Position gate34Position gate35Position gate36Position gate37Position gate38Position gate39Position gate40Position gate41Position gate42Position'
         )
-        .sort({ dateTime: -1 });
+        .sort({ dateTime: -1 }) || defaultDamOverviewPos;
 
       const getLastDataSrspDamOverviewDish = await SRSP_SSD_DAM_OVERVIEW_DICH.findOne()
         .select(
           'gate1Discharge gate2Discharge gate3Discharge gate4Discharge gate5Discharge gate6Discharge gate7Discharge gate8Discharge gate9Discharge gate10Discharge gate11Discharge gate12Discharge gate13Discharge gate14Discharge gate15Discharge gate16Discharge gate17Discharge gate18Discharge gate19Discharge gate20Discharge gate21Discharge gate22Discharge gate23Discharge gate24Discharge gate25Discharge gate26Discharge gate27Discharge gate28Discharge gate29Discharge gate30Discharge gate31Discharge gate32Discharge gate33Discharge gate34Discharge gate35Discharge gate36Discharge gate37Discharge gate38Discharge gate39Discharge gate40Discharge gate41Discharge gate42Discharge'
         )
-        .sort({ dateTime: -1 });
+        .sort({ dateTime: -1 }) || defaultDamOverviewDish;
 
       const getLastDataSrspHrDamOverviewPos = await SRSP_HR_DAM_OVERVIEW_POS.findOne()
         .select(
           'hrkGate1Position hrkGate2Position hrkGate3Position hrkGate4Position hrsGate1Position hrsGate2Position hrfGate1Position hrfGate2Position hrfGate3Position hrfGate4Position hrfGate5Position hrfGate6Position hrlManGate1Position hrlManGate2Position'
         )
-        .sort({ dateTime: -1 });
+        .sort({ dateTime: -1 }) || defaultHrDamOverviewPos;
 
       const getLastDataSrspHrDamOverviewDish = await SRSP_HR_DAM_OVERVIEW_DICH.findOne()
         .select(
           'hrkGate1Discharge hrkGate2Discharge hrkGate3Discharge hrkGate4Discharge hrsGate1Discharge hrsGate2Discharge hrfGate1Discharge hrfGate2Discharge hrfGate3Discharge hrfGate4Discharge hrfGate5Discharge hrfGate6Discharge hrlManGate1Discharge hrlManGate2Discharge'
         )
-        .sort({ dateTime: -1 });
+        .sort({ dateTime: -1 }) || defaultHrDamOverviewDish;
 
       return {
         getLastDataSrspHrDamOverviewDish,
@@ -102,6 +247,7 @@ const getLastDataSrspDamOverview = async (user) => {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
+
 
 const getLastDataSrspDamSpareAdvm = async (user) => {
   try {

@@ -54,40 +54,120 @@ const getSalientFeature = async (user) => {
 
 const getLastDataLmdDamOverview = async (user) => {
   try {
-    const checkPermission = await Permission.findOne({
-      name: "lmdDamOverview",
-    });
+    const checkPermission = await Permission.findOne({ name: 'lmdDamOverview' });
 
     if (
-      user.role === "admin" ||
-      user.role === "lmdSuperuser" ||
+      user.role === 'admin' ||
+      user.role === 'lmdSuperuser' ||
       (checkPermission && checkPermission.roleName.includes(user.role))
     ) {
-      const getLastDataLmdDamPondLevelOverview =
-        await LMD_POND_LEVEL_OVERVIEW.findOne()
-          .select(
-            "pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge inflow1Level inflow2Level inflow3Level inflow1Discharge inflow2Discharge inflow3Discharge damDownstreamLevel damDownstreamDischarge hrrDownstreamLevel hrrDownstreamDischarge"
-          )
-          .sort({ dateTime: -1 });
+      const defaultPondLevelOverview = {
+        pondLevel: 0,
+        liveCapacity: 0,
+        grossStorage: 0,
+        fullReservoirLevel: 0,
+        contourArea: 0,
+        catchmentArea: 0,
+        ayacutArea: 0,
+        filling: 0,
+        instantaneousGateDischarge: 0,
+        instantaneousCanalDischarge: 0,
+        totalDamDischarge: 0,
+        cumulativeDamDischarge: 0,
+        inflow1Level: 0,
+        inflow2Level: 0,
+        inflow3Level: 0,
+        inflow1Discharge: 0,
+        inflow2Discharge: 0,
+        inflow3Discharge: 0,
+        damDownstreamLevel: 0,
+        damDownstreamDischarge: 0,
+        hrrDownstreamLevel: 0,
+        hrrDownstreamDischarge: 0,
+      };
+
+      const defaultDamOverviewPos = {
+        gate1Position: 0,
+        gate2Position: 0,
+        gate3Position: 0,
+        gate4Position: 0,
+        gate5Position: 0,
+        gate6Position: 0,
+        gate7Position: 0,
+        gate8Position: 0,
+        gate9Position: 0,
+        gate10Position: 0,
+        gate11Position: 0,
+        gate12Position: 0,
+        gate13Position: 0,
+        gate14Position: 0,
+        gate15Position: 0,
+        gate16Position: 0,
+        gate17Position: 0,
+        gate18Position: 0,
+        gate19Position: 0,
+        gate20Position: 0,
+      };
+
+      const defaultDamOverviewDish = {
+        gate1Discharge: 0,
+        gate2Discharge: 0,
+        gate3Discharge: 0,
+        gate4Discharge: 0,
+        gate5Discharge: 0,
+        gate6Discharge: 0,
+        gate7Discharge: 0,
+        gate8Discharge: 0,
+        gate9Discharge: 0,
+        gate10Discharge: 0,
+        gate11Discharge: 0,
+        gate12Discharge: 0,
+        gate13Discharge: 0,
+        gate14Discharge: 0,
+        gate15Discharge: 0,
+        gate16Discharge: 0,
+        gate17Discharge: 0,
+        gate18Discharge: 0,
+        gate19Discharge: 0,
+        gate20Discharge: 0,
+      };
+
+      const defaultHrDamOverviewPos = {
+        hrrGate1Position: 0,
+        hrrGate2Position: 0,
+      };
+
+      const defaultHrDamOverviewDish = {
+        hrrGate1Discharge: 0,
+        hrrGate2Discharge: 0,
+      };
+
+      const getLastDataLmdDamPondLevelOverview = await LMD_POND_LEVEL_OVERVIEW.findOne()
+        .select(
+          'pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge inflow1Level inflow2Level inflow3Level inflow1Discharge inflow2Discharge inflow3Discharge damDownstreamLevel damDownstreamDischarge hrrDownstreamLevel hrrDownstreamDischarge'
+        )
+        .sort({ dateTime: -1 }) || defaultPondLevelOverview;
+
       const getLastDataLmdDamOverviewPos = await LMD_DAM_OVERVIEW_POS.findOne()
         .select(
-          "gate1Position gate2Position gate3Position gate4Position gate5Position gate6Position gate7Position gate8Position gate9Position gate10Position gate11Position gate12Position gate13Position gate14Position gate15Position gate16Position gate17Position gate18Position gate19Position gate20Position"
+          'gate1Position gate2Position gate3Position gate4Position gate5Position gate6Position gate7Position gate8Position gate9Position gate10Position gate11Position gate12Position gate13Position gate14Position gate15Position gate16Position gate17Position gate18Position gate19Position gate20Position'
         )
-        .sort({ dateTime: -1 });
-      const getLastDataLmdDamOverviewDish =
-        await LMD_DAM_OVERVIEW_DICH.findOne()
-          .select(
-            "gate1Discharge gate2Discharge gate3Discharge gate4Discharge gate5Discharge gate6Discharge gate7Discharge gate8Discharge gate9Discharge gate10Discharge gate11Discharge gate12Discharge gate13Discharge gate14Discharge gate15Discharge gate16Discharge gate17Discharge gate18Discharge  gate19Discharge gate20Discharge"
-          )
-          .sort({ dateTime: -1 });
-      const getLastDataLmdHrDamOverviewPos =
-        await LMD_HR_DAM_OVERVIEW_POS.findOne()
-          .select("hrrGate1Position hrrGate2Position")
-          .sort({ dateTime: -1 });
-      const getLastDataLmdHrDamOverviewDish =
-        await LMD_HR_DAM_OVERVIEW_DICH.findOne()
-          .select("hrrGate1Discharge hrrGate2Discharge")
-          .sort({ dateTime: -1 });
+        .sort({ dateTime: -1 }) || defaultDamOverviewPos;
+
+      const getLastDataLmdDamOverviewDish = await LMD_DAM_OVERVIEW_DICH.findOne()
+        .select(
+          'gate1Discharge gate2Discharge gate3Discharge gate4Discharge gate5Discharge gate6Discharge gate7Discharge gate8Discharge gate9Discharge gate10Discharge gate11Discharge gate12Discharge gate13Discharge gate14Discharge gate15Discharge gate16Discharge gate17Discharge gate18Discharge gate19Discharge gate20Discharge'
+        )
+        .sort({ dateTime: -1 }) || defaultDamOverviewDish;
+
+      const getLastDataLmdHrDamOverviewPos = await LMD_HR_DAM_OVERVIEW_POS.findOne()
+        .select('hrrGate1Position hrrGate2Position')
+        .sort({ dateTime: -1 }) || defaultHrDamOverviewPos;
+
+      const getLastDataLmdHrDamOverviewDish = await LMD_HR_DAM_OVERVIEW_DICH.findOne()
+        .select('hrrGate1Discharge hrrGate2Discharge')
+        .sort({ dateTime: -1 }) || defaultHrDamOverviewDish;
+
       return {
         getLastDataLmdHrDamOverviewDish,
         getLastDataLmdHrDamOverviewPos,
@@ -96,12 +176,13 @@ const getLastDataLmdDamOverview = async (user) => {
         getLastDataLmdDamPondLevelOverview,
       };
     } else {
-      return "You are not authorized to access this data";
+      return 'You are not authorized to access this data';
     }
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
+
 
 const getLastDataLmdDamSpareAdvm = async (user) => {
   try {
