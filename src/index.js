@@ -41,18 +41,39 @@ mongoose
 // Schedule Cron Job
 const cronJob = new cron.CronJob('*/5 * * * *', async () => {
   try {
-
-    logger.info('Cron job started.');
+    logger.info('LMD Dam Cron job started.');
+    logger.info('Kadam Dam Cron job started.');
+    logger.info('SRSP Dam Cron job started.');
 
     await LMDDAM();
-    await KADAM();
     await SRSPDAM();
+    await KADAM();
 
-    logger.info('Cron job executed successfully.');
+    logger.info('LMD Dam Cron job executed successfully.');
+    logger.info('Kadam Dam Cron job executed successfully.');
+    logger.info('SRSP Dam  Cron job executed successfully.');
+
   } catch (error) {
     logger.error('Error in cron job:', error.message);
   }
 });
 
-
 cronJob.start();
+
+
+// const cronJobKADAM = new cron.CronJob('*/5 * * * *', async () => {
+//   try {
+//   } catch (error) {
+//   }
+// });
+// cronJobKADAM.start();
+
+
+// const cronJobSRSPDAM = new cron.CronJob('*/3 * * * *', async () => {
+//   try {
+//   } catch (error) {
+//   }
+// });
+
+
+// cronJobSRSPDAM.start();

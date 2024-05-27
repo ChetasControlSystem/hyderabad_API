@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const SanjayHrDamOverviewPos = mongoose.Schema(
+const  srspHrDamOverviewPos = mongoose.Schema(
     {
         hrkGate1Position: {
             type: Number,
@@ -182,7 +182,7 @@ const SanjayHrDamOverviewPos = mongoose.Schema(
     }
 );
 
-SanjayHrDamOverviewPos.index({dateTime : 1})
-const SDO = mongoose.model('Sanjay_Hr_Dam_Overview_Position', SanjayHrDamOverviewPos);
+ srspHrDamOverviewPos.index({dateTime : 1})
+const SDO = mongoose.model(' srsp_Hr_Dam_Overview_Position',  srspHrDamOverviewPos);
 
 module.exports = SDO;

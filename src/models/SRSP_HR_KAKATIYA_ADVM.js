@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const SanjayHrKakatiyaAdvm = mongoose.Schema(
+const  srspHrKakatiyaAdvm = mongoose.Schema(
     {
         hrkFlowRate: {
             type: Number,
@@ -182,7 +182,7 @@ const SanjayHrKakatiyaAdvm = mongoose.Schema(
     }
 );
 
-SanjayHrKakatiyaAdvm.index({dateTime : 1})
-const SDO = mongoose.model('Sanjay_Hr_kakatiya_Advm', SanjayHrKakatiyaAdvm);
+ srspHrKakatiyaAdvm.index({dateTime : 1})
+const SDO = mongoose.model(' srsp_Hr_kakatiya_Advm',  srspHrKakatiyaAdvm);
 
 module.exports = SDO;

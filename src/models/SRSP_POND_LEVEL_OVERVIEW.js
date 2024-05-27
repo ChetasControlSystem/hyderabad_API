@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const SanjayDamPondLevel = mongoose.Schema(
+const  srspDamPondLevel = mongoose.Schema(
     {
         inflow1Level: {
             type: Number,
@@ -182,7 +182,7 @@ const SanjayDamPondLevel = mongoose.Schema(
     }
 );
 
-SanjayDamPondLevel.index({dateTime : 1})
-const SDO = mongoose.model('Sanjay_Dam_Pond_Level_Overview', SanjayDamPondLevel);
+ srspDamPondLevel.index({dateTime : 1})
+const SDO = mongoose.model(' srsp_Dam_Pond_Level_Overview',  srspDamPondLevel);
 
 module.exports = SDO;

@@ -83,14 +83,17 @@ async function LMDDAM() {
     const getLastRecordWithSQLQuery = async (Model, tableName) => {
       const lastRecord = await getLastRecord(Model);
 
+      let query;
+
       if (lastRecord) {
         const date = new Date(lastRecord?.dateTime).toISOString().slice(0, 19) + ".000Z";
-        const result = await sql.query(`SELECT * FROM [DATA_DB_LMD].[dbo].[${tableName}] WHERE DateTime > '${date}'`);
-        return result.recordset;
+       query = `SELECT * FROM [DATA_DB_LMD].[dbo].[${tableName}] WHERE DateTime > '${date}'`;
       } else {
-        const result = await sql.query(`SELECT * FROM ${tableName}`);
-        return result.recordset;
+        query = `SELECT * FROM ${tableName}`;
       }
+      const result = await sql.query(query);
+      return result.recordset;
+
     };
 
     const mapLmdPondLevel = await getLastRecordWithSQLQuery(LPLO, 'POND_LEVEL_OVERVIEW');
@@ -113,8 +116,8 @@ async function LMDDAM() {
 
     
   } catch (error) {
-    console.error("Error fetching data from LMD SQL Server:", error);
-    throw error;
+    console.error("Error fetching data from LMD SQL Server:", error.message);
+    // throw error;
   } finally {
     // Close SQL connection
     await sql.close();
@@ -131,15 +134,17 @@ async function SRSPDAM() {
 
     const getLastRecordWithSQLQuery = async (Model, tableName) => {
       const lastRecord = await getLastRecord(Model);
-
+   let query;
       if (lastRecord) {
         const date = new Date(lastRecord?.dateTime).toISOString().slice(0, 19) + ".000Z";
-        const result = await sql.query(`SELECT * FROM [DATA_DB_SSD].[dbo].[${tableName}] WHERE DateTime > '${date}'`);
-        return result.recordset;
+        query = `SELECT * FROM [DATA_DB_SSD].[dbo].[${tableName}] WHERE DateTime > '${date}'`;
+       
       } else {
-        const result = await sql.query(`SELECT * FROM ${tableName}`);
-        return result.recordset;
+        query =`SELECT * FROM ${tableName}`;
       }
+      const result = await sql.query(query);
+      return result.recordset;
+
     };
 
     const mapSrspPondLevel = await getLastRecordWithSQLQuery(SPLO, 'POND_LEVEL_OVERVIEW');
@@ -161,8 +166,8 @@ async function SRSPDAM() {
     await handleMongoDBData(mapsrspHrSsdAdvm, SHKA, 'mapsrspHrSsdAdvm');
 
   } catch (error) {
-    console.error("Error fetching data from LMD SQL Server:", error);
-    throw error;
+    console.error("Error fetching data from SRSP SQL Server:", error.message);
+    // throw error;
   } finally {
     // Close SQL connection
     await sql.close();
@@ -179,15 +184,17 @@ async function KADAM() {
 
     const getLastRecordWithSQLQuery = async (Model, tableName) => {
       const lastRecord = await getLastRecord(Model);
+      let query;
 
       if (lastRecord) {
         const date = new Date(lastRecord?.dateTime).toISOString().slice(0, 19) + ".000Z";
-        const result = await sql.query(`SELECT * FROM [DATA_DB_KNR].[dbo].[${tableName}] WHERE DateTime > '${date}'`);
-        return result.recordset;
+        query =`SELECT * FROM [DATA_DB_KNR].[dbo].[${tableName}] WHERE DateTime > '${date}'`;
       } else {
-        const result = await sql.query(`SELECT * FROM ${tableName}`);
-        return result.recordset;
+        query = `SELECT * FROM ${tableName}`;
+       
       }
+      const result = await sql.query(query);
+      return result.recordset;
     };
 
 
@@ -210,8 +217,8 @@ async function KADAM() {
     await kadamMongoDBData(mapKadamHrKnrAdvm, KSADVM, 'mapKadamHrKnrAdvm');
 
   } catch (error) {
-    console.error("Error fetching data from LMD SQL Server:", error);
-    throw error;
+    console.error("Error fetching data from Kadam SQL Server:", error.message);
+    // throw error;
   } finally {
     // Close SQL connection
     await sql.close();
