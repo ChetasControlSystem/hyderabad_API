@@ -1,6 +1,6 @@
 # Dependencies
 node_modules
-
+src/iisnode
 # yarn error logs
 yarn-error.log
 
