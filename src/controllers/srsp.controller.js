@@ -469,6 +469,36 @@ const srspHrDamGateReport = catchAsync(async (req, res) => {
   res.json(srspHrDamGateReport);
 });
 
+const srspAdvmOverviewReport = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes } = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const srspAdvmOverviewReport = await srspService.srspAdvmOverviewReport(
+    startDate,
+    endDate,
+    intervalMinutes,
+    currentPage,
+    perPage,
+    startIndex,
+    req.user,
+    res,
+    req,
+  );
+
+  res.json(srspAdvmOverviewReport);
+});
+
 const sevenDayReport = catchAsync(async (req, res) => {
   const sevenDayReport = await srspService.sevenDayReport(req.user);
   res.json(sevenDayReport);
@@ -653,6 +683,29 @@ const srspHrDamGateReportWp = catchAsync(async (req, res) => {
   res.json(srspHrDamGateReport);
 });
 
+const srspAdvmOverviewReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes, exportToExcel } = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const srspAdvmOverviewReportWp = await srspService.srspAdvmOverviewReportWp(
+    startDate,
+    endDate,
+    intervalMinutes,
+    exportToExcel,
+    req.user,
+    res,
+    req,
+  );
+  res.json(srspAdvmOverviewReportWp);
+});
+
 module.exports = {
   handleMongoDBData,
   createSalientFeature,
@@ -666,6 +719,7 @@ module.exports = {
   srspInflowOutflowPondLevelReport,
   srspParameterOverviewReport,
   srspHrDamGateReport,
+  srspAdvmOverviewReport,
   sevenDayReport,
   
 
@@ -680,5 +734,6 @@ module.exports = {
   srspHrSaraswatiDamGateReportWp,
   srspHrKakatitaDamGateReportWp,
   srspHrFloodFlowDamGateReportWp,
-  srspHrLakshmiDamGateReportWp
+  srspHrLakshmiDamGateReportWp,
+  srspAdvmOverviewReportWp
 };

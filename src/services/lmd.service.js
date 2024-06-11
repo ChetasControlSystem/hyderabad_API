@@ -3359,6 +3359,7 @@ const lmdAdvmOverviewReportWp = async (
       user.role === "lmdSuperuser" ||
       (checkPermission && checkPermission.roleName.includes(user.role))
     ) {
+
       const pipelineWithoutPagination = [
         {
           $match: {
@@ -3437,7 +3438,7 @@ const lmdAdvmOverviewReportWp = async (
         };
   
         addImageToWorksheet(hyderabadImagePath, [1, 2.5]);
-        addImageToWorksheet(chetasImagePath, [6.9, 7]);
+        addImageToWorksheet(chetasImagePath, [5.9, 6]);
   
         const headers = [
           'DateTime',
@@ -3478,7 +3479,7 @@ const lmdAdvmOverviewReportWp = async (
           column.width = 20;
         });
   
-        worksheet.mergeCells('A1:H8');
+        worksheet.mergeCells('A1:G8');
         const mergedCell = worksheet.getCell('A1');
   
         mergedCell.border = {
@@ -3510,7 +3511,7 @@ const lmdAdvmOverviewReportWp = async (
           };
         });
   
-        ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].forEach((column) => {
+        ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach((column) => {
           worksheet.getColumn(column).eachCell((cell) => {
             cell.border = {
               ...cell.border,
@@ -3526,14 +3527,14 @@ const lmdAdvmOverviewReportWp = async (
       }else if (exportToExcel == 3) {
   
         const itemsPerPage = 25; // Number of dates to print per page
-        const totalItems = srspInflowOutflowPondLevelReportWithoutPagination.length; // Total number of dates
+        const totalItems = lmdAdvmOverviewReportWp.length; // Total number of dates
         const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
   
         const sections = [];
         for (let page = 0; page < totalPages; page++) {
           const startIndex = page * itemsPerPage;
           const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-          const pageData = srspInflowOutflowPondLevelReportWithoutPagination.slice(startIndex, endIndex);
+          const pageData = lmdAdvmOverviewReportWp.slice(startIndex, endIndex);
   
           sections.push({
             properties: {
@@ -3590,7 +3591,7 @@ const lmdAdvmOverviewReportWp = async (
               }),
               // Heading
               new Docx.Paragraph({
-                text: 'SRSP Dam Inflow Outflow Pond-Level Report',
+                text: 'LMD Dam ADVM Data Report',
                 heading: Docx.HeadingLevel.HEADING_1,
                 alignment: Docx.AlignmentType.CENTER,
               }),
@@ -3602,13 +3603,12 @@ const lmdAdvmOverviewReportWp = async (
                   new Docx.TableRow({
                     children: [
                       new Docx.TableCell({ children: [new Docx.Paragraph('Date Time')] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph('BASAR Inflow Level (Feet)')] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph('BASAR Inflow Discharge (Cusecs)')] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph('Pendapally Inflow Level (Feet)')] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph('Pendapally Inflow Discharge (Cusecs)')] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph('SOAN Outflow Level (Feet)')] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph('SOAN Outflow Discharge (Cusecs)')] }),
-                      new Docx.TableCell({ children: [new Docx.Paragraph('Pond Level (Feet)')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('Flow Rate(ft3/s)')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('Totalizer(ft3)')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('CDQ(ft3)')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('LDQ(ft3)')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('Monthly Qty(ft3)')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('Velocity(ft/s)')] }),
                     ],
                   }),
                   // Table rows
@@ -3620,13 +3620,12 @@ const lmdAdvmOverviewReportWp = async (
                           children: [new Docx.Paragraph(formattedDate)],
                           width: { size: 12, type: Docx.WidthType.PERCENTAGE },
                         }),
-                        new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Level.toFixed(2))] }),
-                        new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Discharge.toFixed(2))] }),
-                        new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Level.toFixed(2))] }),
-                        new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Discharge.toFixed(2))] }),
-                        new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamLevel.toFixed(2))] }),
-                        new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamDischarge.toFixed(2))] }),
-                        new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(2))] }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.hrrFlowRate.toFixed(2))] }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.hrrTotalizer.toFixed(2))] }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.hrrCDQ.toFixed(2))] }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.hrrLDQ.toFixed(2))] }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.hrrMQ.toFixed(2))] }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.hrrVelocity.toFixed(2))] }),
                       ],
                     });
                   }),
@@ -3640,7 +3639,7 @@ const lmdAdvmOverviewReportWp = async (
           sections: sections,
         });
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Inflow_Outflow_PondLevel_Report.doc');
+        res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_ADVM_Data_Report.doc');
   
         // Stream the Word document to the response
         const buffer = await Docx.Packer.toBuffer(doc);
@@ -3656,6 +3655,8 @@ const lmdAdvmOverviewReportWp = async (
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
+
+
 
 module.exports = {
   createSalientFeature,
