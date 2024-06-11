@@ -477,6 +477,36 @@ const lmdHrGateReport = catchAsync(async (req, res) => {
   res.json(lmdGateParameterOverviewReport);
 });
 
+const lmdAdvmOverviewReport = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes } = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const currentPage = parseInt(req.query.currentPage) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+  let startIndex = (currentPage - 1) * perPage;
+
+  const lmdAdvmOverviewReport = await lmdService.lmdAdvmOverviewReport(
+    startDate,
+    endDate,
+    intervalMinutes,
+    currentPage,
+    perPage,
+    startIndex,
+    req.user,
+    res,
+    req,
+  );
+
+  res.json(lmdAdvmOverviewReport);
+});
+
 const sevenDayReport = catchAsync(async (req, res) => {
   const sevenDayReport = await lmdService.sevenDayReport(req.user);
   res.json(sevenDayReport);
@@ -602,6 +632,29 @@ const lmdHrGateReportWp = catchAsync(async (req, res) => {
   res.json(lmdHrGateReportWp);
 });
 
+const lmdAdvmOverviewReportWp = catchAsync(async (req, res) => {
+  let { startDate, endDate, intervalMinutes, exportToExcel } = req.query;
+
+  if (!startDate && !endDate) {
+    return res.status(400).json({ message: 'Please provide startDate or endDate' });
+  }
+
+  if (startDate === '' || endDate === '') {
+    return res.status(400).json({ message: 'Please ensure you pick two dates' });
+  }
+
+  const lmdAdvmOverviewReportWp = await lmdService.lmdAdvmOverviewReportWp(
+    startDate,
+    endDate,
+    intervalMinutes,
+    exportToExcel,
+    req.user,
+    res,
+    req,
+  );
+  res.json(lmdAdvmOverviewReportWp);
+});
+
 module.exports = {
   lmdMongoDBData,
   createSalientFeature,
@@ -613,6 +666,7 @@ module.exports = {
   lmdPondlevelGateReport,
   lmdGateParameterOverviewReport,
   lmdHrGateReport,
+  lmdAdvmOverviewReport,
   sevenDayReport,
 
   //without pagination
@@ -621,4 +675,5 @@ module.exports = {
   lmdPondlevelGateReportWp,
   lmdGateParameterOverviewReportWp,
   lmdHrGateReportWp,
+  lmdAdvmOverviewReportWp
 };

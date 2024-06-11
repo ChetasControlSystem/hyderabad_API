@@ -39,7 +39,7 @@ mongoose
   });
 
 // Schedule Cron Job
-const cronJob = new cron.CronJob('*/5 * * * *', async () => {
+const cronJob = new cron.CronJob('*/1 * * * *', async () => {
   try {
     logger.info('LMD Dam Cron job started.');
     logger.info('Kadam Dam Cron job started.');

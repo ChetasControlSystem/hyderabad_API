@@ -16,6 +16,7 @@ router.get('/lmd-1to20-opn-gatereport',  [auth(), validate('lmdReportShow'), lmd
 router.get('/lmd-pondlevel-report', [auth(), validate('lmdReportShow'), lmdController.lmdPondlevelGateReport]);
 router.get('/lmd-parameter-overview-report', [auth(), validate('lmdReportShow'), lmdController.lmdGateParameterOverviewReport]);
 router.get('/lmd-hr-gate-report', [auth(), validate('lmdReportShow'), lmdController.lmdHrGateReport]);
+router.get('/lmd-advm-gate-report', [auth(), validate('lmdReportShow'), lmdController.lmdAdvmOverviewReport]);
  
 router.get('/lmd-sevenday-report', auth(), lmdController.sevenDayReport);
 
@@ -26,6 +27,7 @@ router.get('/lmd-1to20-opn-gatereport-download', [auth(), validate('lmdReportDow
 router.get('/lmd-pondlevel-report-download', [auth(), validate('lmdReportDownload'), lmdController.lmdPondlevelGateReportWp]);
 router.get('/lmd-parameter-overview-report-download', [auth(), validate('lmdReportDownload'), lmdController.lmdGateParameterOverviewReportWp]);
 router.get('/lmd-hr-gate-report-download', [auth(), validate('lmdReportDownload'), lmdController.lmdHrGateReportWp]);
+router.get('/lmd-advm-gate-report-download', [auth(), validate('lmdReportShow'), lmdController.lmdAdvmOverviewReportWp]);
 
 
 module.exports = router;

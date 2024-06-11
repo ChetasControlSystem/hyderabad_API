@@ -6,6 +6,10 @@ const  srspHrKakatiyaAdvm = mongoose.Schema(
             type: Number,
             require: true
         },
+        hrkTotalizer: {
+            type: Number,
+            require: true
+        },
         hrkCDQ: {
             type: Number,
             require: true
@@ -43,10 +47,6 @@ const  srspHrKakatiyaAdvm = mongoose.Schema(
             require: true
         },
         hrkAdvmSpare6: {
-            type: Number,
-            require: true
-        },
-        D12: {
             type: Number,
             require: true
         },

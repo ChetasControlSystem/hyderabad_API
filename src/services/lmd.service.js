@@ -865,6 +865,111 @@ const lmdGateReport = async (
   }
 };
 
+const lmdAdvmOverviewReport = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  currentPage,
+  perPage,
+  startIndex,
+  user,
+  res,
+  req
+) => {
+  try {
+    const checkPermission = await Permission.findOne({ name: "lmdReport" });
+
+    if (
+      user.role === "admin" ||
+      user.role === "lmdSuperuser" ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+      const pipeline = [
+        {
+          $match: {
+            dateTime: {
+              $gt: new Date(startDate),
+              $lte: new Date(
+                new Date(endDate).setDate(new Date(endDate).getDate() + 1)
+              ),
+            },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              interval: {
+                $toDate: {
+                  $subtract: [
+                    { $toLong: "$dateTime" },
+                    {
+                      $mod: [
+                        { $toLong: "$dateTime" },
+                        intervalMinutes * 60 * 1000,
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+            hrrFlowRate: { $first: "$hrrFlowRate" },
+            hrrTotalizer: { $first: "$hrrTotalizer" },
+            hrrCDQ: { $first: "$hrrCDQ" },
+            hrrLDQ: { $first: "$hrrLDQ" },
+            hrrMQ: { $first: "$hrrMQ" },
+            hrrVelocity: { $first: "$hrrVelocity" },
+            hrrAdvmSpare1: { $first: "$hrrAdvmSpare1" }
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            dateTime: "$_id.interval",
+            hrrFlowRate: 1,
+            hrrTotalizer: 1,
+            hrrCDQ: 1,
+            hrrLDQ: 1,
+            hrrMQ: 1,
+            hrrVelocity: 1,
+            hrrAdvmSpare1: 1,
+          },
+        },
+        {
+          $sort: {
+            dateTime: 1,
+          },
+        },
+        {
+          $facet: {
+            data: [{ $skip: startIndex }, { $limit: perPage }],
+            totalCount: [{ $count: "count" }],
+          },
+        },
+      ];
+
+      const lmdAdvmOverviewReport = await LMD_HR_RIGHT_ADVM.aggregate(
+        pipeline
+      );
+
+      let totalCount = lmdAdvmOverviewReport[0]?.totalCount[0]?.count;
+      const totalPage = Math.ceil(totalCount / perPage);
+
+      return {
+        data: lmdAdvmOverviewReport[0]?.data,
+        currentPage,
+        perPage,
+        totalCount,
+        totalPage,
+      };
+    } else {
+      return "You are not authorized to access this data";
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
 const sevenDayReport = async (user) => {
   try {
     const checkPermission = await Permission.findOne({ name: "lmdReport" });
@@ -3237,6 +3342,321 @@ const lmdGateReportWp = async (
   }
 };
 
+const lmdAdvmOverviewReportWp = async (
+  startDate,
+  endDate,
+  intervalMinutes,
+  exportToExcel,
+  user,
+  res,
+  req
+) => {
+  try {
+    const checkPermission = await Permission.findOne({ name: "lmdReport" });
+
+    if (
+      user.role === "admin" ||
+      user.role === "lmdSuperuser" ||
+      (checkPermission && checkPermission.roleName.includes(user.role))
+    ) {
+      const pipelineWithoutPagination = [
+        {
+          $match: {
+            dateTime: {
+              $gt: new Date(startDate),
+              $lte: new Date(
+                new Date(endDate).setDate(new Date(endDate).getDate() + 1)
+              ),
+            },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              interval: {
+                $toDate: {
+                  $subtract: [
+                    { $toLong: "$dateTime" },
+                    {
+                      $mod: [
+                        { $toLong: "$dateTime" },
+                        intervalMinutes * 60 * 1000,
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+            hrrFlowRate: { $first: "$hrrFlowRate" },
+            hrrTotalizer: { $first: "$hrrTotalizer" },
+            hrrCDQ: { $first: "$hrrCDQ" },
+            hrrLDQ: { $first: "$hrrLDQ" },
+            hrrMQ: { $first: "$hrrMQ" },
+            hrrVelocity: { $first: "$hrrVelocity" }
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            dateTime: "$_id.interval",
+            hrrFlowRate: 1,
+            hrrTotalizer: 1,
+            hrrCDQ: 1,
+            hrrLDQ: 1,
+            hrrMQ: 1,
+            hrrVelocity: 1
+          },
+        },
+        {
+          $sort: {
+            dateTime: 1,
+          },
+        },
+      ];
+
+      const lmdAdvmOverviewReportWp = await LMD_HR_RIGHT_ADVM.aggregate(
+        pipelineWithoutPagination
+      );
+
+      if (exportToExcel == 1) {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('LMD Dam ADVM Data Report');
+  
+        const addImageToWorksheet = (imagePath, colRange) => {
+          const imageId = workbook.addImage({
+            filename: imagePath,
+            extension: 'png',
+            dimensions: { height: 100, width: 100 },
+          });
+  
+          worksheet.addImage(imageId, {
+            tl: { col: colRange[0], row: 0 },
+            br: { col: colRange[1], row: 8 },
+            editAs: 'oneCell',
+          });
+        };
+  
+        addImageToWorksheet(hyderabadImagePath, [1, 2.5]);
+        addImageToWorksheet(chetasImagePath, [6.9, 7]);
+  
+        const headers = [
+          'DateTime',
+          'Flow Rate(ft3/s)',
+          'Totalizer(ft3)',
+          'CDQ(ft3)	',
+          'LDQ(ft3)	',
+          'Monthly Qty(ft3)	',
+          'Velocity(ft/s)',
+        ];
+        worksheet.addRow([]);
+  
+        worksheet.addRow(headers).eachCell((cell) => {
+          cell.border = {
+              top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' },
+          };
+          cell.alignment = { horizontal: 'center' };
+        });
+  
+        lmdAdvmOverviewReportWp.forEach((row) => {
+          const rowData = [
+            row.dateTime,
+            row.hrrFlowRate,
+            row.hrrTotalizer,
+            row.hrrCDQ,
+            row.hrrLDQ,
+            row.hrrMQ,
+            row.hrrVelocity,
+          ];
+          worksheet.addRow(rowData);
+        });
+  
+        const dateTimeColumn = worksheet.getColumn(1);
+        dateTimeColumn.width = 20;
+        dateTimeColumn.numFmt = 'yyyy-mm-dd hh:mm:ss';
+  
+        worksheet.columns.forEach((column) => {
+          column.width = 20;
+        });
+  
+        worksheet.mergeCells('A1:H8');
+        const mergedCell = worksheet.getCell('A1');
+  
+        mergedCell.border = {
+          top: { style: 'thin', color: { argb: 'FF000000' } }, // Top border
+          left: { style: 'thin', color: { argb: 'FF000000' } }, // Left border
+          bottom: { style: 'thin', color: { argb: 'FF000000' } }, // Bottom border
+          right: { style: 'thin', color: { argb: 'FF000000' } }, // Right border
+        };
+  
+        mergedCell.value = 'LMD Dam ADVM Data Report';
+        mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+        mergedCell.font = { bold: true };
+        mergedCell.font = { bold: true, size: 15 };
+        worksheet.getRow(11).height = 30;
+  
+        worksheet.getRow(11).eachCell((cell) => {
+          cell.font = { bold: true };
+        });
+  
+        const borderStyle = {
+          style: 'thin', // You can change this to 'medium', 'thick', etc. as needed
+          color: { argb: 'FF000000' }, 
+        };
+  
+        worksheet.getColumn('B').eachCell((cell) => {
+          cell.border = {
+            ...cell.border,
+            left: borderStyle,
+          };
+        });
+  
+        ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].forEach((column) => {
+          worksheet.getColumn(column).eachCell((cell) => {
+            cell.border = {
+              ...cell.border,
+              right: borderStyle,
+            };
+          });
+        });
+  
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=LMD_Dam_ADVM_Data_Report.xlsx');
+  
+        await workbook.xlsx.write(res);
+      }else if (exportToExcel == 3) {
+  
+        const itemsPerPage = 25; // Number of dates to print per page
+        const totalItems = srspInflowOutflowPondLevelReportWithoutPagination.length; // Total number of dates
+        const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages needed
+  
+        const sections = [];
+        for (let page = 0; page < totalPages; page++) {
+          const startIndex = page * itemsPerPage;
+          const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+          const pageData = srspInflowOutflowPondLevelReportWithoutPagination.slice(startIndex, endIndex);
+  
+          sections.push({
+            properties: {
+              page: {
+                margin: { top: 1500, right: 1000, bottom: 1000, left: 100 },
+                size: {
+                  orientation: Docx.PageOrientation.PORTRAIT,
+                  width: 12240,
+                  height: 15840,
+                },
+              },
+            },
+            children: [
+              // Add your images and heading here at the top of every page
+              new Docx.Paragraph({
+                children: [
+                  // Left image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(hyderabadImagePath),
+                    transformation: {
+                      width: 140,
+                      height: 105,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.LEFT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                  // Right image
+                  new Docx.ImageRun({
+                    data: fs.readFileSync(chetasImagePath),
+                    transformation: {
+                      width: 80,
+                      height: 110,
+                    },
+                    floating: {
+                      horizontalPosition: {
+                        relative: Docx.HorizontalPositionRelativeFrom.PAGE,
+                        align: Docx.HorizontalPositionAlign.RIGHT,
+                      },
+                      verticalPosition: {
+                        relative: Docx.VerticalPositionRelativeFrom.PAGE,
+                        align: Docx.VerticalPositionAlign.TOP,
+                      },
+                    },
+                  }),
+                ],
+              }),
+              // Heading
+              new Docx.Paragraph({
+                text: 'SRSP Dam Inflow Outflow Pond-Level Report',
+                heading: Docx.HeadingLevel.HEADING_1,
+                alignment: Docx.AlignmentType.CENTER,
+              }),
+              // Table
+              new Docx.Table({
+                width: { size: '109%', type: Docx.WidthType.PERCENTAGE },
+                rows: [
+                  // Table header
+                  new Docx.TableRow({
+                    children: [
+                      new Docx.TableCell({ children: [new Docx.Paragraph('Date Time')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('BASAR Inflow Level (Feet)')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('BASAR Inflow Discharge (Cusecs)')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('Pendapally Inflow Level (Feet)')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('Pendapally Inflow Discharge (Cusecs)')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('SOAN Outflow Level (Feet)')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('SOAN Outflow Discharge (Cusecs)')] }),
+                      new Docx.TableCell({ children: [new Docx.Paragraph('Pond Level (Feet)')] }),
+                    ],
+                  }),
+                  // Table rows
+                  ...pageData.map((item) => {
+                    const formattedDate = new Date(item.dateTime).toISOString().replace('T', '   T').slice(0, -8);
+                    return new Docx.TableRow({
+                      children: [
+                        new Docx.TableCell({
+                          children: [new Docx.Paragraph(formattedDate)],
+                          width: { size: 12, type: Docx.WidthType.PERCENTAGE },
+                        }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Level.toFixed(2))] }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow1Discharge.toFixed(2))] }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Level.toFixed(2))] }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.inflow2Discharge.toFixed(2))] }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamLevel.toFixed(2))] }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.damDownstreamDischarge.toFixed(2))] }),
+                        new Docx.TableCell({ children: [new Docx.Paragraph(item.pondLevel.toFixed(2))] }),
+                      ],
+                    });
+                  }),
+                ],
+              }),
+            ],
+          });
+        }
+  
+        const doc = new Docx.Document({
+          sections: sections,
+        });
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        res.setHeader('Content-Disposition', 'attachment; filename=SRSP_Dam_Inflow_Outflow_PondLevel_Report.doc');
+  
+        // Stream the Word document to the response
+        const buffer = await Docx.Packer.toBuffer(doc);
+        res.end(buffer);
+      } else {
+        res.send(lmdAdvmOverviewReportWp);
+      }
+    } else {
+      return "You are not authorized to access this data";
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
 module.exports = {
   createSalientFeature,
   getSalientFeature,
@@ -3247,6 +3667,7 @@ module.exports = {
   lmdPondlevelGateReport,
   lmdGateParameterOverviewReport,
   lmdGateReport,
+  lmdAdvmOverviewReport,
   sevenDayReport,
 
   //Report Download
@@ -3255,4 +3676,5 @@ module.exports = {
   lmdPondlevelGateReportWp,
   lmdGateParameterOverviewReportWp,
   lmdGateReportWp,
+  lmdAdvmOverviewReportWp
 };
