@@ -39,7 +39,29 @@ mongoose
   });
 
 // Schedule Cron Job
-const cronJob = new cron.CronJob('*/1 * * * *', async () => {
+// const cronJob = new cron.CronJob('*/1 * * * *', async () => {
+//   try {
+//     logger.info('LMD Dam Cron job started.');
+//     logger.info('Kadam Dam Cron job started.');
+//     logger.info('SRSP Dam Cron job started.');
+
+//     await LMDDAM();
+//     await SRSPDAM();
+//     await KADAM();
+
+//     logger.info('LMD Dam Cron job executed successfully.');
+//     logger.info('Kadam Dam Cron job executed successfully.');
+//     logger.info('SRSP Dam  Cron job executed successfully.');
+
+//   } catch (error) {
+//     logger.error('Error in cron job:', error.message);
+//   }
+// });
+
+// cronJob.start();
+
+
+async function executeDamTasks() {
   try {
     logger.info('LMD Dam Cron job started.');
     logger.info('Kadam Dam Cron job started.');
@@ -51,29 +73,15 @@ const cronJob = new cron.CronJob('*/1 * * * *', async () => {
 
     logger.info('LMD Dam Cron job executed successfully.');
     logger.info('Kadam Dam Cron job executed successfully.');
-    logger.info('SRSP Dam  Cron job executed successfully.');
+    logger.info('SRSP Dam Cron job executed successfully.');
 
   } catch (error) {
-    logger.error('Error in cron job:', error.message);
+    logger.error('Error in dam tasks:', error.message);
   }
-});
+}
 
-cronJob.start();
+// Schedule the tasks to run every minute (60000 milliseconds)
+setInterval(executeDamTasks, 60000);
 
-
-// const cronJobKADAM = new cron.CronJob('*/5 * * * *', async () => {
-//   try {
-//   } catch (error) {
-//   }
-// });
-// cronJobKADAM.start();
-
-
-// const cronJobSRSPDAM = new cron.CronJob('*/3 * * * *', async () => {
-//   try {
-//   } catch (error) {
-//   }
-// });
-
-
-// cronJobSRSPDAM.start();
+// Start the first execution immediately
+executeDamTasks();
