@@ -63,17 +63,17 @@ mongoose
 
 async function executeDamTasks() {
   try {
-    logger.info('LMD Dam Cron job started.');
-    logger.info('Kadam Dam Cron job started.');
-    logger.info('SRSP Dam Cron job started.');
+    logger.info('LMD Dam Dam data fatch started.');
+    logger.info('Kadam Dam Dam data fatch started.');
+    logger.info('SRSP Dam Dam data fatch started.');
 
     await LMDDAM();
     await SRSPDAM();
     await KADAM();
 
-    logger.info('LMD Dam Cron job executed successfully.');
-    logger.info('Kadam Dam Cron job executed successfully.');
-    logger.info('SRSP Dam Cron job executed successfully.');
+    logger.info('LMD Dam data fatch successfully.');
+    logger.info('Kadam Dam data fatch successfully.');
+    logger.info('SRSP Dam data fatch successfully.');
 
   } catch (error) {
     logger.error('Error in dam tasks:', error.message);
@@ -81,7 +81,7 @@ async function executeDamTasks() {
 }
 
 // Schedule the tasks to run every minute (60000 milliseconds)
-setInterval(executeDamTasks, 60000);
+setInterval(executeDamTasks, 60000 * 5);
 
 // Start the first execution immediately
 executeDamTasks();

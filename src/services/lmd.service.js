@@ -84,6 +84,7 @@ const getLastDataLmdDamOverview = async (user) => {
         damDownstreamDischarge: 0,
         hrrDownstreamLevel: 0,
         hrrDownstreamDischarge: 0,
+        dateTime: Date.now()
       };
 
       const defaultDamOverviewPos = {
@@ -107,6 +108,7 @@ const getLastDataLmdDamOverview = async (user) => {
         gate18Position: 0,
         gate19Position: 0,
         gate20Position: 0,
+        dateTime: Date.now()
       };
 
       const defaultDamOverviewDish = {
@@ -130,42 +132,45 @@ const getLastDataLmdDamOverview = async (user) => {
         gate18Discharge: 0,
         gate19Discharge: 0,
         gate20Discharge: 0,
+        dateTime: Date.now()
       };
 
       const defaultHrDamOverviewPos = {
         hrrGate1Position: 0,
         hrrGate2Position: 0,
+        dateTime: Date.now()
       };
 
       const defaultHrDamOverviewDish = {
         hrrGate1Discharge: 0,
         hrrGate2Discharge: 0,
+        dateTime: Date.now()
       };
 
       const getLastDataLmdDamPondLevelOverview = await LMD_POND_LEVEL_OVERVIEW.findOne()
         .select(
-          'pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge inflow1Level inflow2Level inflow3Level inflow1Discharge inflow2Discharge inflow3Discharge damDownstreamLevel damDownstreamDischarge hrrDownstreamLevel hrrDownstreamDischarge'
+          'dateTime pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge inflow1Level inflow2Level inflow3Level inflow1Discharge inflow2Discharge inflow3Discharge damDownstreamLevel damDownstreamDischarge hrrDownstreamLevel hrrDownstreamDischarge'
         )
         .sort({ dateTime: -1 }) || defaultPondLevelOverview;
 
       const getLastDataLmdDamOverviewPos = await LMD_DAM_OVERVIEW_POS.findOne()
         .select(
-          'gate1Position gate2Position gate3Position gate4Position gate5Position gate6Position gate7Position gate8Position gate9Position gate10Position gate11Position gate12Position gate13Position gate14Position gate15Position gate16Position gate17Position gate18Position gate19Position gate20Position'
+          'dateTime gate1Position gate2Position gate3Position gate4Position gate5Position gate6Position gate7Position gate8Position gate9Position gate10Position gate11Position gate12Position gate13Position gate14Position gate15Position gate16Position gate17Position gate18Position gate19Position gate20Position'
         )
         .sort({ dateTime: -1 }) || defaultDamOverviewPos;
 
       const getLastDataLmdDamOverviewDish = await LMD_DAM_OVERVIEW_DICH.findOne()
         .select(
-          'gate1Discharge gate2Discharge gate3Discharge gate4Discharge gate5Discharge gate6Discharge gate7Discharge gate8Discharge gate9Discharge gate10Discharge gate11Discharge gate12Discharge gate13Discharge gate14Discharge gate15Discharge gate16Discharge gate17Discharge gate18Discharge gate19Discharge gate20Discharge'
+          'dateTime gate1Discharge gate2Discharge gate3Discharge gate4Discharge gate5Discharge gate6Discharge gate7Discharge gate8Discharge gate9Discharge gate10Discharge gate11Discharge gate12Discharge gate13Discharge gate14Discharge gate15Discharge gate16Discharge gate17Discharge gate18Discharge gate19Discharge gate20Discharge'
         )
         .sort({ dateTime: -1 }) || defaultDamOverviewDish;
 
       const getLastDataLmdHrDamOverviewPos = await LMD_HR_DAM_OVERVIEW_POS.findOne()
-        .select('hrrGate1Position hrrGate2Position')
+        .select('dateTime hrrGate1Position hrrGate2Position')
         .sort({ dateTime: -1 }) || defaultHrDamOverviewPos;
 
       const getLastDataLmdHrDamOverviewDish = await LMD_HR_DAM_OVERVIEW_DICH.findOne()
-        .select('hrrGate1Discharge hrrGate2Discharge')
+        .select('dateTime hrrGate1Discharge hrrGate2Discharge')
         .sort({ dateTime: -1 }) || defaultHrDamOverviewDish;
 
       return {

@@ -81,6 +81,7 @@ const getLastDataKadamDamOverview = async (user) => {
         damOutflowDischarge: 0,
         hrrDownstreamLevel: 0,
         hrrDownstreamDischarge: 0,
+        dateTime: Date.now()
       };
 
       const defaultDamOverviewPos = {
@@ -102,6 +103,7 @@ const getLastDataKadamDamOverview = async (user) => {
         gate16Position: 0,
         gate17Position: 0,
         gate18Position: 0,
+        dateTime: Date.now()
       };
 
       const defaultDamOverviewDish = {
@@ -123,6 +125,7 @@ const getLastDataKadamDamOverview = async (user) => {
         gate16Discharge: 0,
         gate17Discharge: 0,
         gate18Discharge: 0,
+        dateTime: Date.now()
       };
 
       const defaultHrDamOverviewPos = {
@@ -131,6 +134,7 @@ const getLastDataKadamDamOverview = async (user) => {
         hrklManGate3Position: 0,
         hrklManGate4Position: 0,
         hrklManGate5Position: 0,
+        dateTime: Date.now()
       };
 
       const defaultHrDamOverviewDish = {
@@ -139,33 +143,34 @@ const getLastDataKadamDamOverview = async (user) => {
         hrklManGate3Discharge: 0,
         hrklManGate4Discharge: 0,
         hrklManGate5Discharge: 0,
+        dateTime: Date.now()
       };
 
       const getLastDataKadamDamPondLevelOverview = await KNR_POND_LEVEL_OVERVIEW.findOne()
         .select(
-          'pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge inflow1Level inflow2Level inflow3Level inflow1Discharge inflow2Discharge inflow3Discharge damOutflowLevel damOutflowDischarge hrrDownstreamLevel hrrDownstreamDischarge'
+          'dateTime pondLevel liveCapacity grossStorage fullReservoirLevel contourArea catchmentArea ayacutArea filling instantaneousGateDischarge instantaneousCanalDischarge totalDamDischarge cumulativeDamDischarge inflow1Level inflow2Level inflow3Level inflow1Discharge inflow2Discharge inflow3Discharge damOutflowLevel damOutflowDischarge hrrDownstreamLevel hrrDownstreamDischarge'
         )
         .sort({ dateTime: -1 }) || defaultPondLevelOverview;
         
       const getLastDataKadamDamOverviewPos = await KNR_DAM_OVERVIEW_POS.findOne()
         .select(
-          'gate1Position gate2Position gate3Position gate4Position gate5Position gate6Position gate7Position gate8Position gate9Position gate10Position gate11Position gate12Position gate13Position gate14Position gate15Position gate16Position gate17Position gate18Position'
+          'dateTime gate1Position gate2Position gate3Position gate4Position gate5Position gate6Position gate7Position gate8Position gate9Position gate10Position gate11Position gate12Position gate13Position gate14Position gate15Position gate16Position gate17Position gate18Position'
         )
         .sort({ dateTime: -1 }) || defaultDamOverviewPos;
 
       const getLastDataKadamDamOverviewDish = await KNR_DAM_OVERVIEW_DICH.findOne()
         .select(
-          'gate1Discharge gate2Discharge gate3Discharge gate4Discharge gate5Discharge gate6Discharge gate7Discharge gate8Discharge gate9Discharge gate10Discharge gate11Discharge gate12Discharge gate13Discharge gate14Discharge gate15Discharge gate16Discharge gate17Discharge gate18Discharge'
+          'dateTime gate1Discharge gate2Discharge gate3Discharge gate4Discharge gate5Discharge gate6Discharge gate7Discharge gate8Discharge gate9Discharge gate10Discharge gate11Discharge gate12Discharge gate13Discharge gate14Discharge gate15Discharge gate16Discharge gate17Discharge gate18Discharge'
         )
         .sort({ dateTime: -1 }) || defaultDamOverviewDish;
 
       const getLastDataKadamHrDamOverviewPos = await KNR_HR_DAM_OVERVIEW_POS.findOne()
-        .select('hrklManGate1Position hrklManGate2Position hrklManGate3Position hrklManGate4Position hrklManGate5Position')
+        .select('dateTime hrklManGate1Position hrklManGate2Position hrklManGate3Position hrklManGate4Position hrklManGate5Position')
         .sort({ dateTime: -1 }) || defaultHrDamOverviewPos;
 
       const getLastDataKadamHrDamOverviewDish = await KNR_HR_DAM_OVERVIEW_DICH.findOne()
         .select(
-          'hrklManGate1Discharge hrklManGate2Discharge hrklManGate3Discharge hrklManGate4Discharge hrklManGate5Discharge'
+          'dateTime hrklManGate1Discharge hrklManGate2Discharge hrklManGate3Discharge hrklManGate4Discharge hrklManGate5Discharge'
         )
         .sort({ dateTime: -1 }) || defaultHrDamOverviewDish;
 
